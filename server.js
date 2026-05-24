@@ -176,7 +176,7 @@ async function proxyWorker(req, res, workerPath) {
 }
 
 app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, service: 'Kiwi LLM API' })
+  res.json({ ok: true, service: 'Kiwi LLM API', version: 'worker-proxy-db-fallback' })
 })
 
 app.get('/api/models', (_req, res) => {
