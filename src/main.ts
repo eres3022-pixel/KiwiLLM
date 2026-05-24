@@ -178,24 +178,6 @@ const topUpPlans = [
   { price: '$99', name: 'Launch', credits: '4,200 credits' },
 ]
 
-const allowedModels = [
-  'gpt-frontier',
-  'gpt-mini-fast',
-  'claude-sonnet-route',
-  'claude-opus-route',
-  'claude-haiku-route',
-  'qwen-coder-fast',
-  'kimi-reasoner',
-  'glm-agentic',
-  'deepseek-v4-pro',
-  'gemini-flash-route',
-  'image-frontier',
-  'video-frontier',
-  'local-llama-70b',
-  'mistral-code',
-  'openrouter-any',
-]
-
 const modelFilters = ['All', 'Text', 'Code', 'Reasoning', 'Image', 'Video']
 
 
@@ -948,41 +930,19 @@ const renderDashboard = () => `
         <div class="dash-panel-head">
           <div>
             <h2>Create an API key</h2>
-            <p>Name the key, choose model access, and optionally pin it for clients that only send one model id.</p>
+            <p>Name the key and use it with any live Kiwi model route.</p>
           </div>
-          <span>Step 2 of 2</span>
+          <span>Free plan</span>
         </div>
         <div class="key-builder-form">
           <input id="key-name" type="text" placeholder="Key name, e.g. codex-production" aria-label="Key name" />
           <select id="key-mode" aria-label="Model routing mode">
             <option>Any model the client chooses</option>
-            <option>Pin to selected model</option>
-            <option>Only allow selected models</option>
           </select>
-        </div>
-        <div class="model-picker-head">
-          <p><a href="/models">Allowed models</a></p>
-          <div>
-            <button type="button">Select all</button>
-            <button type="button">Clear</button>
-          </div>
-        </div>
-        <p class="paid-note">Paid models are visible here. Free workspaces will see an upgrade prompt if a restricted route is used.</p>
-        <div class="model-picker">
-          ${allowedModels
-            .map(
-              (model, index) => `
-                <label>
-                  <input type="checkbox" value="${model}" ${index < 5 ? 'checked' : ''} />
-                  <span>${model}${model.includes('frontier') || model.includes('opus') ? ' ◆' : ''}</span>
-                </label>
-              `,
-            )
-            .join('')}
         </div>
         <div class="key-builder-footer">
           <button id="create-key-button" class="button button-light" type="button">Create key</button>
-          <p id="create-key-message">Model pinning lets Claude CLI, Codex, and IDE clients keep a simple config while Kiwi routes to your chosen model.</p>
+          <p id="create-key-message">New free keys can call any live model and are limited to 5 RPM / 200 RPD.</p>
         </div>
       </section>
     </section>
@@ -1271,10 +1231,6 @@ if (isDashboardPage) {
     }
   }
 
-  type ModelPayload = {
-    models: Array<{ id: string; provider: string; type: string; context: string; input: number | null; output: number | null; status: string }>
-  }
-
   const updateBars = (selector: string, values: number[]) => {
     const bars = document.querySelector<HTMLElement>(selector)
     if (!bars) return
@@ -1362,23 +1318,6 @@ if (isDashboardPage) {
   }, 5000)
   window.addEventListener('beforeunload', () => window.clearInterval(dashboardRefresh))
 
-  api<ModelPayload>('/api/models')
-    .then(({ models }) => {
-      const picker = document.querySelector<HTMLElement>('.model-picker')
-      if (!picker) return
-      picker.innerHTML = models
-        .map(
-          (model, index) => `
-            <label>
-              <input type="checkbox" value="${escapeHtml(model.id)}" ${index < 5 ? 'checked' : ''} />
-              <span>${escapeHtml(model.id)}${model.status === 'Paid' ? ' ◆' : ''}</span>
-            </label>
-          `,
-        )
-        .join('')
-    })
-    .catch(console.error)
-
   document.querySelector<HTMLButtonElement>('#redeem-button')?.addEventListener('click', async () => {
     const input = document.querySelector<HTMLInputElement>('#redeem-code')
     const message = document.querySelector<HTMLElement>('#redeem-message')
@@ -1397,12 +1336,11 @@ if (isDashboardPage) {
 
   document.querySelector<HTMLButtonElement>('#create-key-button')?.addEventListener('click', async () => {
     const name = document.querySelector<HTMLInputElement>('#key-name')?.value || 'Dashboard key'
-    const models = [...document.querySelectorAll<HTMLInputElement>('.model-picker input:checked')].map((input) => input.value)
     const message = document.querySelector<HTMLElement>('#create-key-message')
     try {
       const created = await api<{ key: string }>('/api/keys', {
         method: 'POST',
-        body: JSON.stringify({ name, models }),
+        body: JSON.stringify({ name, models: [] }),
       })
       if (message) message.textContent = `Created key: ${created.key}`
       await hydrateDashboard()
