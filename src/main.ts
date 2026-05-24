@@ -1409,10 +1409,18 @@ if (isDashboardPage) {
 if (isModelsPage) {
   type ModelPayload = {
     models: Array<{ id: string; provider: string; type: string; context: string; input: number | null; output: number | null; status: string }>
-    summary: { total: number; text: number; code: number; reasoning: number; image: number; video: number }
+    summary?: { total: number; text: number; code: number; reasoning: number; image: number; video: number }
   }
 
   const priceText = (value: number | null) => (typeof value === 'number' ? `$${value.toFixed(2)}` : 'Provider')
+  const summarizeModels = (models: ModelPayload['models']) => ({
+    total: models.length,
+    text: models.filter((model) => model.type === 'Text').length,
+    code: models.filter((model) => model.type === 'Code').length,
+    reasoning: models.filter((model) => model.type === 'Reasoning').length,
+    image: models.filter((model) => model.type === 'Image').length,
+    video: models.filter((model) => model.type === 'Video').length,
+  })
   const renderModelRows = (models: ModelPayload['models']) => {
     const table = document.querySelector('.model-table')
     if (!table) return
@@ -1441,12 +1449,13 @@ if (isModelsPage) {
 
   api<ModelPayload>('/api/models')
     .then(({ models, summary }) => {
+      const modelSummary = summary || summarizeModels(models)
       const total = document.querySelector<HTMLElement>('#model-total')
       const textCode = document.querySelector<HTMLElement>('#model-text-code')
       const media = document.querySelector<HTMLElement>('#model-media')
-      if (total) total.textContent = summary.total.toLocaleString()
-      if (textCode) textCode.textContent = (summary.text + summary.code + summary.reasoning).toLocaleString()
-      if (media) media.textContent = (summary.image + summary.video).toLocaleString()
+      if (total) total.textContent = modelSummary.total.toLocaleString()
+      if (textCode) textCode.textContent = (modelSummary.text + modelSummary.code + modelSummary.reasoning).toLocaleString()
+      if (media) media.textContent = (modelSummary.image + modelSummary.video).toLocaleString()
 
       renderModelRows(models)
 
@@ -1493,8 +1502,7 @@ if (isPlaygroundPage) {
     const data = await api<ModelPayload>('/api/models')
     const select = document.querySelector<HTMLSelectElement>('#playground-model')
     if (!select) return
-    const chatModels = data.models.filter((model) => !['Image', 'Video'].includes(model.type))
-    select.innerHTML = chatModels
+    select.innerHTML = data.models
       .map((model) => `<option value="${escapeHtml(model.id)}">${escapeHtml(model.id)} · ${escapeHtml(model.provider)}</option>`)
       .join('')
     updateRequestJson()
