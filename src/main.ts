@@ -65,7 +65,7 @@ const docExamples = [
     title: 'Claude CLI',
     note: 'Messages route compatible',
     code: [
-      'export ANTHROPIC_API_KEY=kiwi_sk_••••',
+      'export ANTHROPIC_API_KEY=Kiwi_••••',
       'export ANTHROPIC_BASE_URL=https://api.kiwillm.dev/v1',
       'claude "review this pull request"',
     ],
@@ -76,7 +76,7 @@ const docExamples = [
     code: [
       'from openai import OpenAI',
       'client = OpenAI(',
-      '  api_key="kiwi_sk_••••",',
+      '  api_key="Kiwi_••••",',
       '  base_url="https://api.kiwillm.dev/v1"',
       ')',
       'client.chat.completions.create(model="gpt-frontier")',
@@ -88,7 +88,7 @@ const docExamples = [
     code: [
       'Provider:  OpenAI Compatible',
       'Base URL:  https://api.kiwillm.dev/v1',
-      'API Key:   kiwi_sk_••••',
+      'API Key:   Kiwi_••••',
       'Model:     claude-sonnet or any route',
     ],
   },
@@ -96,7 +96,7 @@ const docExamples = [
     title: 'Codex CLI',
     note: 'Chat completions endpoint',
     code: [
-      'export OPENAI_API_KEY=kiwi_sk_••••',
+      'export OPENAI_API_KEY=Kiwi_••••',
       'export OPENAI_BASE_URL=https://api.kiwillm.dev/v1',
       'codex "scaffold a fastapi service"',
     ],
@@ -186,9 +186,9 @@ const modelSpend = [
 ]
 
 const apiKeys = [
-  { name: 'Production agents', key: 'kiwi_sk_live_8c4f••••', scope: 'All text models', lastUsed: '2 min ago' },
-  { name: 'Design playground', key: 'kiwi_sk_img_71aa••••', scope: 'Image + video', lastUsed: '1 hr ago' },
-  { name: 'Local testing', key: 'kiwi_sk_dev_19bf••••', scope: 'Budget capped', lastUsed: 'Yesterday' },
+  { name: 'Production agents', key: 'Kiwi_live_8c4f••••', scope: 'All text models', lastUsed: '2 min ago' },
+  { name: 'Design playground', key: 'Kiwi_img_71aa••••', scope: 'Image + video', lastUsed: '1 hr ago' },
+  { name: 'Local testing', key: 'Kiwi_dev_19bf••••', scope: 'Budget capped', lastUsed: 'Yesterday' },
 ]
 
 const topUpPlans = [
@@ -301,7 +301,7 @@ console.log(image.data?.[0]?.url);`,
   {
     section: 'Video',
     title: 'CURL',
-    code: `curl https://api.kiwillm.dev/v1/videos/generations \\
+    code: `curl https://api.kiwillm.dev/v1/video/generations \\
   -H "Authorization: Bearer YOUR_KIWI_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -313,7 +313,7 @@ console.log(image.data?.[0]?.url);`,
   {
     section: 'Video',
     title: 'JAVASCRIPT FETCH',
-    code: `const res = await fetch("https://api.kiwillm.dev/v1/videos/generations", {
+    code: `const res = await fetch("https://api.kiwillm.dev/v1/video/generations", {
   method: "POST",
   headers: {
     "Authorization": "Bearer YOUR_KIWI_KEY",
@@ -492,7 +492,7 @@ const renderHome = () => `
         <div class="terminal-dots" aria-hidden="true">
           <span></span><span></span><span></span>
         </div>
-        <pre><code><span>$</span> export KIWI_KEY=kiwi_sk_live_••••••••
+        <pre><code><span>$</span> export KIWI_KEY=Kiwi_live_••••••••
 <span>$</span> export KIWI_URL=https://api.kiwillm.dev/v1
 <b>$ kiwi ask</b> "map this repo and plan the change"</code></pre>
         <div class="terminal-status">
@@ -633,7 +633,7 @@ const renderHome = () => `
           <p>ENDPOINTS</p>
           <code>POST https://api.kiwillm.dev/v1/chat/completions</code>
           <code>POST https://api.kiwillm.dev/v1/messages</code>
-          <small>Auth header: Authorization: Bearer kiwi_sk_••••</small>
+          <small>Auth header: Authorization: Bearer Kiwi_••••</small>
         </div>
         <a class="button button-light" href="/dashboard">Get a key <span aria-hidden="true">↗</span></a>
       </div>
@@ -743,7 +743,7 @@ const renderDocs = () => `
         <h2>Three things you need</h2>
         <div class="need-grid">
           <article><span>Base URL</span><code>https://api.kiwillm.dev/v1</code></article>
-          <article><span>API key</span><code>kiwi_sk_xxxxxxxxxxxx</code><p>Create one from your dashboard.</p></article>
+          <article><span>API key</span><code>Kiwi_xxxxxxxxxxxx</code><p>Create one from your dashboard.</p></article>
           <article><span>Model id</span><code>gpt-frontier</code><p>Use text models for chat, image models for images, and video models for video runs.</p></article>
         </div>
       </section>
@@ -766,7 +766,7 @@ const renderDocs = () => `
 
       <section class="docs-block">
         <h2>Video generation</h2>
-        <p>Video routes use <code>/videos/generations</code>. Provider-specific fields can pass through when enabled on the upstream route.</p>
+        <p>Video routes use <code>/video/generations</code>. Provider-specific fields can pass through when enabled on the upstream route.</p>
         ${docsCodeBlocks.filter((block) => block.section === 'Video').map((block) => codePanel(block.title, block.code)).join('')}
         <p class="docs-note">Some video providers return async job responses. Keep the returned id or status URL and poll according to that provider response.</p>
       </section>
@@ -807,7 +807,7 @@ const renderDocs = () => `
       <section class="docs-block">
         <h2>Troubleshooting</h2>
         <div class="trouble-list">
-          <p><b>401 invalid key</b> — confirm the key starts with <code>kiwi_sk_</code> and is still active.</p>
+          <p><b>401 invalid key</b> — confirm the key starts with <code>Kiwi_</code> and is still active.</p>
           <p><b>402 out of credits</b> — add credits or redeem a team invite code.</p>
           <p><b>403 model not allowed</b> — your workspace route may not include that model yet.</p>
           <p><b>404 model not available</b> — call <code>/models</code> to see the live list.</p>
@@ -1466,3 +1466,4 @@ if (isPlaygroundPage) {
     }
   })
 }
+

@@ -9,6 +9,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express()
 const port = process.env.PORT || 3000
 const dbPath = process.env.DB_PATH || join(__dirname, 'data', 'db.json')
+const workerBaseUrl = (process.env.UNIFIED_AI_WORKER_URL || 'https://unified-ai-worker.rutv.workers.dev').replace(/\/$/, '')
+const workerApiKey = process.env.UNIFIED_AI_WORKER_API_KEY || ''
+const kiwiApiPrefix = process.env.KIWI_API_KEY_PREFIX || 'Kiwi'
 
 app.use(cors())
 app.use(express.json({ limit: '1mb' }))
@@ -38,7 +41,7 @@ const seedDb = {
     {
       id: crypto.randomUUID(),
       name: 'Production agents',
-      key: 'kiwi_sk_live_8c4f9d3a2b1c',
+      key: 'Kiwi_live_8c4f9d3a2b1c',
       scope: 'All text models',
       models: ['gpt-frontier', 'claude-sonnet-route', 'qwen-coder-fast'],
       lastUsed: '2 min ago',
@@ -47,7 +50,7 @@ const seedDb = {
     {
       id: crypto.randomUUID(),
       name: 'Design playground',
-      key: 'kiwi_sk_img_71aa00dd441f',
+      key: 'Kiwi_img_71aa00dd441f',
       scope: 'Image + video',
       models: ['image-frontier', 'video-frontier'],
       lastUsed: '1 hr ago',
@@ -90,7 +93,56 @@ function publicKey(key) {
 }
 
 function keyValue() {
-  return `kiwi_sk_${crypto.randomUUID().replaceAll('-', '').slice(0, 24)}`
+  return `${kiwiApiPrefix}_${crypto.randomUUID().replaceAll('-', '').slice(0, 28)}`
+}
+
+function isKiwiKey(value = '') {
+  return value.startsWith(`${kiwiApiPrefix}_`) || value.startsWith('kiwi_sk_')
+}
+
+function getBearer(req) {
+  const header = req.get('authorization') || ''
+  return header.toLowerCase().startsWith('bearer ') ? header.slice(7).trim() : ''
+}
+
+async function proxyWorker(req, res, workerPath) {
+  const userKey = getBearer(req) || req.get('x-api-key') || ''
+
+  if (!isKiwiKey(userKey)) {
+    return res.status(401).json({ error: `Missing or invalid ${kiwiApiPrefix} API key.` })
+  }
+
+  const headers = {
+    'Content-Type': 'application/json',
+  }
+
+  if (workerApiKey) {
+    headers.Authorization = `Bearer ${workerApiKey}`
+  } else if (req.get('authorization')) {
+    headers.Authorization = req.get('authorization')
+  }
+
+  try {
+    const response = await fetch(`${workerBaseUrl}${workerPath}`, {
+      method: req.method,
+      headers,
+      body: req.method === 'GET' ? undefined : JSON.stringify(req.body || {}),
+    })
+
+    const contentType = response.headers.get('content-type') || ''
+    res.status(response.status)
+
+    if (contentType.includes('application/json')) {
+      return res.json(await response.json())
+    }
+
+    return res.send(await response.text())
+  } catch (error) {
+    return res.status(502).json({
+      error: 'Worker request failed.',
+      detail: error instanceof Error ? error.message : 'Unknown upstream error',
+    })
+  }
 }
 
 app.get('/api/health', (_req, res) => {
@@ -99,6 +151,26 @@ app.get('/api/health', (_req, res) => {
 
 app.get('/api/models', (_req, res) => {
   res.json({ models })
+})
+
+app.get('/v1/models', (req, res) => {
+  proxyWorker(req, res, '/v1/models')
+})
+
+app.post('/v1/chat/completions', (req, res) => {
+  proxyWorker(req, res, '/v1/chat/completions')
+})
+
+app.post('/v1/images/generations', (req, res) => {
+  proxyWorker(req, res, '/v1/images/generations')
+})
+
+app.post('/v1/images/edits', (req, res) => {
+  proxyWorker(req, res, '/v1/images/edits')
+})
+
+app.post('/v1/video/generations', (req, res) => {
+  proxyWorker(req, res, '/v1/video/generations')
 })
 
 app.get('/api/dashboard', async (_req, res) => {
