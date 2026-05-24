@@ -2236,6 +2236,13 @@ code b {
   color: var(--muted);
 }
 
+.empty-state {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 .reveal-item {
   opacity: 0;
   transform: translateY(34px) scale(0.985);

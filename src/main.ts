@@ -169,27 +169,7 @@ const footerColumns = [
   },
 ]
 
-const dashboardStats = [
-  { label: 'Credit balance', value: '$42.80', note: '2,140 credits ready', trend: '+18%' },
-  { label: 'Requests', value: '1,284', note: 'Last 30 days', trend: '+31%' },
-  { label: 'Tokens', value: '4.8M', note: 'Input + output', trend: '+12%' },
-  { label: 'Credits used', value: '$17.20', note: 'Last 30 days', trend: '-6%' },
-]
-
-const activityBars = [38, 52, 44, 68, 56, 74, 63, 82, 70, 88, 76, 92]
-const requestBars = [24, 30, 28, 44, 36, 52, 48, 64, 58, 71, 66, 80]
-const modelSpend = [
-  { model: 'claude-sonnet-route', requests: '482', spend: '$7.84', width: 86 },
-  { model: 'gpt-frontier', requests: '391', spend: '$5.92', width: 68 },
-  { model: 'qwen-coder-fast', requests: '268', spend: '$2.31', width: 42 },
-  { model: 'image-frontier', requests: '24', spend: '$1.13', width: 28 },
-]
-
-const apiKeys = [
-  { name: 'Production agents', key: 'Kiwi_live_8c4f••••', scope: 'All text models', lastUsed: '2 min ago' },
-  { name: 'Design playground', key: 'Kiwi_img_71aa••••', scope: 'Image + video', lastUsed: '1 hr ago' },
-  { name: 'Local testing', key: 'Kiwi_dev_19bf••••', scope: 'Budget capped', lastUsed: 'Yesterday' },
-]
+const dashboardPlaceholders = ['Credit balance', 'Requests', 'Tokens', 'Credits used']
 
 const topUpPlans = [
   { price: '$10', name: 'Seed', credits: '350 credits' },
@@ -216,25 +196,8 @@ const allowedModels = [
   'openrouter-any',
 ]
 
-const modelCatalog = [
-  { name: 'gpt-frontier', provider: 'OpenAI', type: 'Text', context: '1M', input: '$3.00', output: '$12.00', status: 'Live' },
-  { name: 'claude-sonnet-route', provider: 'Anthropic', type: 'Text', context: '200K', input: '$3.00', output: '$15.00', status: 'Live' },
-  { name: 'claude-opus-route', provider: 'Anthropic', type: 'Text', context: '200K', input: '$15.00', output: '$75.00', status: 'Paid' },
-  { name: 'qwen-coder-fast', provider: 'Qwen', type: 'Code', context: '128K', input: '$0.70', output: '$2.80', status: 'Live' },
-  { name: 'kimi-reasoner', provider: 'Moonshot', type: 'Reasoning', context: '256K', input: '$1.20', output: '$5.00', status: 'Live' },
-  { name: 'glm-agentic', provider: 'Zhipu', type: 'Agent', context: '128K', input: '$0.90', output: '$3.60', status: 'Live' },
-  { name: 'deepseek-v4-pro', provider: 'DeepSeek', type: 'Reasoning', context: '128K', input: '$0.80', output: '$3.20', status: 'Live' },
-  { name: 'image-frontier', provider: 'Kiwi Media', type: 'Image', context: 'Prompt', input: '$0.04', output: '$0.08', status: 'Paid' },
-  { name: 'video-frontier', provider: 'Kiwi Media', type: 'Video', context: 'Prompt', input: '$0.20', output: '$1.60', status: 'Paid' },
-]
-
 const modelFilters = ['All', 'Text', 'Code', 'Reasoning', 'Image', 'Video']
 
-const playgroundHistory = [
-  { title: 'Repo map', model: 'claude-sonnet-route', tokens: '18.2K', time: '2 min ago' },
-  { title: 'UI copy pass', model: 'gpt-frontier', tokens: '4.9K', time: '18 min ago' },
-  { title: 'Image prompt draft', model: 'image-frontier', tokens: '1 asset', time: '1 hr ago' },
-]
 
 const docsCodeBlocks = [
   {
@@ -862,16 +825,16 @@ const renderDashboard = () => `
       </div>
 
       <section class="dash-stats" aria-label="Usage summary">
-        ${dashboardStats
+        ${dashboardPlaceholders
           .map(
-            (stat) => `
+            (label) => `
               <article>
                 <div>
-                  <span>${stat.label}</span>
-                  <b>${stat.trend}</b>
+                  <span>${label}</span>
+                  <b>...</b>
                 </div>
-                <strong>${stat.value}</strong>
-                <p>${stat.note}</p>
+                <strong>Loading</strong>
+                <p>Fetching backend data</p>
               </article>
             `,
           )
@@ -887,7 +850,7 @@ const renderDashboard = () => `
             </div>
             <span>4.8M total</span>
           </div>
-          ${barChart(activityBars, 'Tokens per day')}
+          ${barChart([8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8], 'Tokens per day')}
         </article>
 
         <article class="dash-panel">
@@ -898,7 +861,7 @@ const renderDashboard = () => `
             </div>
             <span>1,284</span>
           </div>
-          ${barChart(requestBars, 'Requests per day')}
+          ${barChart([8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8], 'Requests per day')}
         </article>
       </section>
 
@@ -912,20 +875,7 @@ const renderDashboard = () => `
             <span>$17.20</span>
           </div>
           <div class="model-spend-list">
-            ${modelSpend
-              .map(
-                (item) => `
-                  <div>
-                    <header>
-                      <span>${item.model}</span>
-                      <b>${item.spend}</b>
-                    </header>
-                    <p>${item.requests} requests</p>
-                    <i style="--fill:${item.width}%"></i>
-                  </div>
-                `,
-              )
-              .join('')}
+            <p class="empty-state">Loading spend from backend...</p>
           </div>
         </article>
 
@@ -937,20 +887,7 @@ const renderDashboard = () => `
             </div>
             <button type="button">New key</button>
           </div>
-          ${apiKeys
-            .map(
-              (item) => `
-                <div class="key-row">
-                  <div>
-                    <strong>${item.name}</strong>
-                    <code>${item.key}</code>
-                  </div>
-                  <span>${item.scope}</span>
-                  <small>${item.lastUsed}</small>
-                </div>
-              `,
-            )
-            .join('')}
+          <p class="empty-state">Loading keys from backend...</p>
         </article>
       </section>
 
@@ -1099,21 +1036,15 @@ const renderModels = () => `
             <span>Output</span>
             <span>Status</span>
           </div>
-          ${modelCatalog
-            .map(
-              (model) => `
-                <div class="model-row">
-                  <strong>${model.name}</strong>
-                  <span>${model.provider}</span>
-                  <span>${model.type}</span>
-                  <span>${model.context}</span>
-                  <span>${model.input}</span>
-                  <span>${model.output}</span>
-                  <b class="${model.status === 'Paid' ? 'paid' : ''}">${model.status}</b>
-                </div>
-              `,
-            )
-            .join('')}
+          <div class="model-row">
+            <strong>Loading models...</strong>
+            <span>Backend</span>
+            <span>...</span>
+            <span>...</span>
+            <span>...</span>
+            <span>...</span>
+            <b>Live</b>
+          </div>
         </div>
       </section>
     </section>
@@ -1239,17 +1170,7 @@ const renderPlayground = () => `
 
         <aside class="history-panel">
           <h2>Recent runs</h2>
-          ${playgroundHistory
-            .map(
-              (item) => `
-                <div>
-                  <strong>${item.title}</strong>
-                  <span>${item.model}</span>
-                  <small>${item.tokens} · ${item.time}</small>
-                </div>
-              `,
-            )
-            .join('')}
+          <p class="empty-state">No runs loaded yet.</p>
         </aside>
       </section>
     </section>
@@ -1345,8 +1266,20 @@ if (isDashboardPage) {
     stats: Array<{ label: string; value: string; note: string; trend: string }>
     keys: Array<{ name: string; key: string; scope: string; lastUsed: string }>
     usage: {
+      tokenBars: number[]
+      requestBars: number[]
       spendByModel: Array<{ model: string; requests: number; spend: number; width: number }>
     }
+  }
+
+  type ModelPayload = {
+    models: Array<{ id: string; provider: string; type: string; context: string; input: number; output: number; status: string }>
+  }
+
+  const updateBars = (selector: string, values: number[]) => {
+    const bars = document.querySelector<HTMLElement>(selector)
+    if (!bars) return
+    bars.innerHTML = values.map((value) => `<span style="--bar:${value}%"></span>`).join('')
   }
 
   const hydrateDashboard = async () => {
@@ -1363,24 +1296,64 @@ if (isDashboardPage) {
     const keyPanel = document.querySelector<HTMLElement>('.dash-keys')
     if (keyPanel) {
       keyPanel.querySelectorAll('.key-row').forEach((row) => row.remove())
+      keyPanel.querySelector('.empty-state')?.remove()
       keyPanel.insertAdjacentHTML(
         'beforeend',
-        data.keys
-          .map(
-            (item) => `
+        data.keys.length
+          ? data.keys
+              .map(
+                (item) => `
               <div class="key-row">
                 <div><strong>${item.name}</strong><code>${item.key}</code></div>
                 <span>${item.scope}</span>
                 <small>${item.lastUsed}</small>
               </div>
             `,
-          )
-          .join(''),
+              )
+              .join('')
+          : '<p class="empty-state">No keys yet. Create one below to start sending requests.</p>',
       )
+    }
+
+    updateBars('.dash-wide .dash-bars', data.usage.tokenBars)
+    updateBars('.dash-panel:not(.dash-wide) .dash-bars', data.usage.requestBars)
+
+    const spendList = document.querySelector<HTMLElement>('.model-spend-list')
+    if (spendList) {
+      spendList.innerHTML = data.usage.spendByModel.length
+        ? data.usage.spendByModel
+            .map(
+              (item) => `
+                <div>
+                  <header><span>${item.model}</span><b>$${item.spend.toFixed(2)}</b></header>
+                  <p>${item.requests.toLocaleString()} requests</p>
+                  <i style="--fill:${item.width}%"></i>
+                </div>
+              `,
+            )
+            .join('')
+        : '<p class="empty-state">No requests yet. Run the playground or use a key to see model spend.</p>'
     }
   }
 
   hydrateDashboard().catch(console.error)
+
+  api<ModelPayload>('/api/models')
+    .then(({ models }) => {
+      const picker = document.querySelector<HTMLElement>('.model-picker')
+      if (!picker) return
+      picker.innerHTML = models
+        .map(
+          (model, index) => `
+            <label>
+              <input type="checkbox" value="${model.id}" ${index < 5 ? 'checked' : ''} />
+              <span>${model.id}${model.status === 'Paid' ? ' ◆' : ''}</span>
+            </label>
+          `,
+        )
+        .join('')
+    })
+    .catch(console.error)
 
   document.querySelector<HTMLButtonElement>('#redeem-button')?.addEventListener('click', async () => {
     const input = document.querySelector<HTMLInputElement>('#redeem-code')
@@ -1448,6 +1421,31 @@ if (isModelsPage) {
 }
 
 if (isPlaygroundPage) {
+  const hydrateRuns = async () => {
+    const data = await api<{ runs: Array<{ title: string; model: string; tokens: number; createdAt: string }> }>('/api/playground/runs')
+    const panel = document.querySelector<HTMLElement>('.history-panel')
+    if (!panel) return
+    panel.querySelectorAll('div, .empty-state').forEach((item) => item.remove())
+    panel.insertAdjacentHTML(
+      'beforeend',
+      data.runs.length
+        ? data.runs
+            .map(
+              (item) => `
+                <div>
+                  <strong>${item.title}</strong>
+                  <span>${item.model}</span>
+                  <small>${item.tokens.toLocaleString()} tokens · ${new Date(item.createdAt).toLocaleString()}</small>
+                </div>
+              `,
+            )
+            .join('')
+        : '<p class="empty-state">No runs yet. Run a prompt to create the first backend record.</p>',
+    )
+  }
+
+  hydrateRuns().catch(console.error)
+
   document.querySelector<HTMLButtonElement>('#run-playground')?.addEventListener('click', async () => {
     const textareas = document.querySelectorAll<HTMLTextAreaElement>('.prompt-panel textarea')
     const model = document.querySelector<HTMLSelectElement>('.settings-panel select')?.value || 'gpt-frontier'
@@ -1461,6 +1459,7 @@ if (isPlaygroundPage) {
       if (output) {
         output.innerHTML = `<p><b>Run complete</b></p><p>${run.response}</p><p>${run.tokens.toLocaleString()} tokens · $${run.spend.toFixed(4)} estimated spend</p>`
       }
+      await hydrateRuns()
     } catch (error) {
       if (output) output.innerHTML = `<p><b>Run failed</b></p><p>${error instanceof Error ? error.message : 'Could not run prompt.'}</p>`
     }

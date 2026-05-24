@@ -126,8 +126,17 @@ function keyValue() {
   return `${kiwiApiPrefix}_${crypto.randomUUID().replaceAll('-', '').slice(0, 28)}`
 }
 
-function isKiwiKey(value = '') {
-  return value.startsWith(`${kiwiApiPrefix}_`) || value.startsWith('kiwi_sk_')
+async function isKiwiKey(value = '') {
+  if (!value.startsWith(`${kiwiApiPrefix}_`) && !value.startsWith('kiwi_sk_')) {
+    return false
+  }
+
+  if (process.env.KIWI_MASTER_KEY && value === process.env.KIWI_MASTER_KEY) {
+    return true
+  }
+
+  const db = await readDb()
+  return db.keys.some((item) => item.key === value)
 }
 
 function getBearer(req) {
@@ -138,7 +147,7 @@ function getBearer(req) {
 async function proxyWorker(req, res, workerPath) {
   const userKey = getBearer(req) || req.get('x-api-key') || ''
 
-  if (!isKiwiKey(userKey)) {
+  if (!(await isKiwiKey(userKey))) {
     return res.status(401).json({ error: `Missing or invalid ${kiwiApiPrefix} API key.` })
   }
 
@@ -181,6 +190,14 @@ app.get('/api/health', (_req, res) => {
 
 app.get('/api/models', (_req, res) => {
   res.json({ models })
+})
+
+app.get('/api/config', (_req, res) => {
+  res.json({
+    publicBaseUrl: process.env.PUBLIC_BASE_URL || '',
+    workerBaseUrl,
+    keyPrefix: kiwiApiPrefix,
+  })
 })
 
 app.get('/v1/models', (req, res) => {
@@ -258,8 +275,41 @@ app.post('/api/playground/run', async (req, res) => {
   const db = await readDb()
   const model = String(req.body.model || 'gpt-frontier')
   const prompt = String(req.body.prompt || '').slice(0, 2000)
-  const tokens = Math.max(120, Math.round(prompt.length * 1.7))
+  const system = String(req.body.system || '').slice(0, 2000)
+  const tokens = Math.max(120, Math.round((prompt.length + system.length) * 1.7))
   const spend = Number((tokens / 1000000 * 6).toFixed(4))
+  let responseText =
+    'Kiwi routed this simulated request successfully. In production, this endpoint is where you would call your upstream model provider and stream the response back to the client.'
+
+  try {
+    const workerResponse = await fetch(`${workerBaseUrl}/v1/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(workerApiKey ? { Authorization: `Bearer ${workerApiKey}` } : {}),
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          ...(system ? [{ role: 'system', content: system }] : []),
+          { role: 'user', content: prompt || 'Say hello from Kiwi LLM.' },
+        ],
+        stream: false,
+      }),
+    })
+
+    if (workerResponse.ok) {
+      const payload = await workerResponse.json()
+      responseText =
+        payload.choices?.[0]?.message?.content ||
+        payload.choices?.[0]?.text ||
+        payload.response ||
+        responseText
+    }
+  } catch {
+    // Keep the local playground useful even when the upstream worker is unavailable.
+  }
+
   const run = {
     id: crypto.randomUUID(),
     title: prompt.slice(0, 42) || 'Playground run',
@@ -267,8 +317,7 @@ app.post('/api/playground/run', async (req, res) => {
     tokens,
     spend,
     createdAt: new Date().toISOString(),
-    response:
-      'Kiwi routed this simulated request successfully. In production, this endpoint is where you would call your upstream model provider and stream the response back to the client.',
+    response: responseText,
   }
 
   db.runs.unshift(run)
