@@ -74,18 +74,48 @@ const seedDb = {
   runs: [],
 }
 
-async function readDb() {
-  if (!existsSync(dbPath)) {
-    await mkdir(dirname(dbPath), { recursive: true })
-    await writeFile(dbPath, JSON.stringify(seedDb, null, 2))
-  }
+let memoryDb = structuredClone(seedDb)
+let warnedAboutDb = false
 
-  return JSON.parse(await readFile(dbPath, 'utf8'))
+async function readDb() {
+  try {
+    if (!existsSync(dbPath)) {
+      await mkdir(dirname(dbPath), { recursive: true })
+      await writeFile(dbPath, JSON.stringify(seedDb, null, 2))
+    }
+
+    memoryDb = JSON.parse(await readFile(dbPath, 'utf8'))
+    return memoryDb
+  } catch (error) {
+    if (!warnedAboutDb) {
+      console.warn(
+        `Kiwi LLM is using in-memory data because ${dbPath} is not writable: ${
+          error instanceof Error ? error.message : 'unknown error'
+        }`,
+      )
+      warnedAboutDb = true
+    }
+
+    return memoryDb
+  }
 }
 
 async function writeDb(db) {
-  await mkdir(dirname(dbPath), { recursive: true })
-  await writeFile(dbPath, JSON.stringify(db, null, 2))
+  memoryDb = db
+
+  try {
+    await mkdir(dirname(dbPath), { recursive: true })
+    await writeFile(dbPath, JSON.stringify(db, null, 2))
+  } catch (error) {
+    if (!warnedAboutDb) {
+      console.warn(
+        `Kiwi LLM could not persist ${dbPath}; continuing in memory: ${
+          error instanceof Error ? error.message : 'unknown error'
+        }`,
+      )
+      warnedAboutDb = true
+    }
+  }
 }
 
 function publicKey(key) {
