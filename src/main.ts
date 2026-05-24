@@ -1023,8 +1023,14 @@ const renderModels = () => `
 
       <section class="model-table-card">
         <div class="model-table-head">
-          <h2>Available models</h2>
+          <div>
+            <h2>Available models</h2>
+            <p id="model-row-count">Loading live models...</p>
+          </div>
           <a class="button button-light" href="/dashboard">Create key</a>
+        </div>
+        <div class="model-search-row">
+          <input id="model-search" type="search" placeholder="Search models or providers" aria-label="Search models or providers" />
         </div>
         <div class="model-table">
           <div class="model-row model-row-head">
@@ -1423,7 +1429,9 @@ if (isModelsPage) {
   })
   const renderModelRows = (models: ModelPayload['models']) => {
     const table = document.querySelector('.model-table')
+    const rowCount = document.querySelector<HTMLElement>('#model-row-count')
     if (!table) return
+    if (rowCount) rowCount.textContent = `Showing ${models.length.toLocaleString()} live models`
     table.querySelectorAll('.model-row:not(.model-row-head)').forEach((row) => row.remove())
     table.insertAdjacentHTML(
       'beforeend',
@@ -1458,15 +1466,26 @@ if (isModelsPage) {
       if (media) media.textContent = (modelSummary.image + modelSummary.video).toLocaleString()
 
       renderModelRows(models)
+      const search = document.querySelector<HTMLInputElement>('#model-search')
+      const currentFilter = () => document.querySelector<HTMLButtonElement>('.model-filter-row button.active')?.textContent?.trim() || 'All'
+      const filteredModels = () => {
+        const filter = currentFilter()
+        const query = (search?.value || '').trim().toLowerCase()
+        return models.filter((model) => {
+          const matchesFilter = filter === 'All' || model.type === filter
+          const matchesQuery = !query || `${model.id} ${model.provider} ${model.type}`.toLowerCase().includes(query)
+          return matchesFilter && matchesQuery
+        })
+      }
 
       document.querySelectorAll<HTMLButtonElement>('.model-filter-row button').forEach((button) => {
         button.addEventListener('click', () => {
-          const filter = button.textContent?.trim() || 'All'
           document.querySelectorAll<HTMLButtonElement>('.model-filter-row button').forEach((item) => item.classList.remove('active'))
           button.classList.add('active')
-          renderModelRows(filter === 'All' ? models : models.filter((model) => model.type === filter))
+          renderModelRows(filteredModels())
         })
       })
+      search?.addEventListener('input', () => renderModelRows(filteredModels()))
     })
     .catch(console.error)
 }

@@ -1998,6 +1998,27 @@ code b {
   font-size: 24px;
 }
 
+.model-table-head p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.model-search-row {
+  margin-bottom: 14px;
+}
+
+.model-search-row input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.28);
+  font: 14px var(--sans);
+}
+
 .model-table {
   overflow: auto;
 }
