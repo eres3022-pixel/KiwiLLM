@@ -805,7 +805,7 @@ const renderDashboard = () => `
         <a href="/">Home</a>
       </nav>
       <div class="dash-account">
-        <span>ronit@kiwillm.dev</span>
+        <span id="workspace-email">Workspace</span>
         <button type="button">Sign out</button>
       </div>
     </header>
@@ -819,8 +819,8 @@ const renderDashboard = () => `
         </div>
         <div class="dash-hero-card">
           <span>Workspace health</span>
-          <strong>98%</strong>
-          <small>All routes operational</small>
+          <strong id="workspace-health">...</strong>
+          <small id="workspace-health-note">Loading backend status</small>
         </div>
       </div>
 
@@ -848,7 +848,7 @@ const renderDashboard = () => `
               <h2>Tokens per day</h2>
               <p>Daily token volume across all active keys.</p>
             </div>
-            <span>4.8M total</span>
+            <span id="token-total">Loading</span>
           </div>
           ${barChart([8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8], 'Tokens per day')}
         </article>
@@ -859,7 +859,7 @@ const renderDashboard = () => `
               <h2>Requests</h2>
               <p>Last 12 days</p>
             </div>
-            <span>1,284</span>
+            <span id="request-total">Loading</span>
           </div>
           ${barChart([8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8], 'Requests per day')}
         </article>
@@ -872,7 +872,7 @@ const renderDashboard = () => `
               <h2>Spend by model</h2>
               <p>Last 30 days</p>
             </div>
-            <span>$17.20</span>
+            <span id="spend-total">Loading</span>
           </div>
           <div class="model-spend-list">
             <p class="empty-state">Loading spend from backend...</p>
@@ -1016,9 +1016,9 @@ const renderModels = () => `
       </div>
 
       <section class="model-summary-grid">
-        <article><span>Live routes</span><strong>42</strong><p>Text, code, image, and video</p></article>
-        <article><span>Fastest latency</span><strong>82ms</strong><p>Measured from nearest edge</p></article>
-        <article><span>Largest context</span><strong>1M</strong><p>For long repo and docs runs</p></article>
+        <article><span>Live routes</span><strong id="model-total">...</strong><p>Loaded from the active gateway</p></article>
+        <article><span>Text and code</span><strong id="model-text-code">...</strong><p>Chat, coding, and reasoning routes</p></article>
+        <article><span>Media routes</span><strong id="model-media">...</strong><p>Image and video generation routes</p></article>
       </section>
 
       <section class="model-table-card">
@@ -1087,11 +1087,11 @@ const renderPlayground = () => `
           </div>
           <label>
             System
-            <textarea rows="4">You are Kiwi LLM, a concise coding assistant that explains tradeoffs clearly.</textarea>
+            <textarea rows="4" placeholder="Optional system instructions"></textarea>
           </label>
           <label>
             User
-            <textarea rows="8">Review this API wrapper and suggest a cleaner structure for retries, streaming, and usage tracking.</textarea>
+            <textarea rows="8" placeholder="Type your prompt"></textarea>
           </label>
           <div class="prompt-actions">
             <button id="run-playground" class="button button-primary" type="button">Run prompt</button>
@@ -1103,11 +1103,8 @@ const renderPlayground = () => `
           <h2>Run settings</h2>
           <label>
             Model
-            <select>
-              <option>claude-sonnet-route</option>
-              <option>gpt-frontier</option>
-              <option>qwen-coder-fast</option>
-              <option>kimi-reasoner</option>
+            <select id="playground-model">
+              <option>Loading models...</option>
             </select>
           </label>
           <label>
@@ -1133,18 +1130,13 @@ const renderPlayground = () => `
           <div class="dash-panel-head">
             <div>
               <h2>Response preview</h2>
-              <p>Simulated assistant output</p>
+              <p>Live model output</p>
             </div>
-            <span>82ms edge</span>
+            <span id="run-status">Ready</span>
           </div>
           <div id="assistant-output" class="assistant-output">
-            <p><b>Suggested structure</b></p>
-            <p>Split the wrapper into a provider adapter, a retry policy, and a usage meter. Keep streaming as an async iterator so CLI and web clients can share the same response path.</p>
-            <ul>
-              <li>Normalize provider errors before retries.</li>
-              <li>Record prompt, completion, and total tokens per chunk.</li>
-              <li>Expose one OpenAI-compatible surface to downstream tools.</li>
-            </ul>
+            <p><b>No run yet</b></p>
+            <p>Choose a live model and run a prompt to see the real response here.</p>
           </div>
         </article>
 
@@ -1154,18 +1146,9 @@ const renderPlayground = () => `
               <h2>Request JSON</h2>
               <p>Copy this into your app</p>
             </div>
-            <button type="button">Copy</button>
+            <button id="copy-request-json" type="button">Copy</button>
           </div>
-          <pre><code>{
-  "model": "claude-sonnet-route",
-  "stream": true,
-  "temperature": 0.7,
-  "max_tokens": 2048,
-  "messages": [
-    { "role": "system", "content": "You are Kiwi LLM..." },
-    { "role": "user", "content": "Review this API wrapper..." }
-  ]
-}</code></pre>
+          <pre><code id="request-json">{}</code></pre>
         </article>
 
         <aside class="history-panel">
@@ -1263,7 +1246,17 @@ document.querySelectorAll<HTMLButtonElement>('.copy-button').forEach((button) =>
 
 if (isDashboardPage) {
   type DashboardPayload = {
+    workspace: {
+      email: string
+      creditUsd: number
+      credits: number
+      usedUsd30d: number
+      usedCredits30d: number
+      requests30d: number
+      tokens30d: number
+    }
     stats: Array<{ label: string; value: string; note: string; trend: string }>
+    limits?: { plan: string; rpm: number; rpd: number }
     keys: Array<{ name: string; key: string; scope: string; lastUsed: string }>
     usage: {
       tokenBars: number[]
@@ -1273,7 +1266,7 @@ if (isDashboardPage) {
   }
 
   type ModelPayload = {
-    models: Array<{ id: string; provider: string; type: string; context: string; input: number; output: number; status: string }>
+    models: Array<{ id: string; provider: string; type: string; context: string; input: number | null; output: number | null; status: string }>
   }
 
   const updateBars = (selector: string, values: number[]) => {
@@ -1284,6 +1277,21 @@ if (isDashboardPage) {
 
   const hydrateDashboard = async () => {
     const data = await api<DashboardPayload>('/api/dashboard')
+    const workspaceEmail = document.querySelector<HTMLElement>('#workspace-email')
+    const workspaceHealth = document.querySelector<HTMLElement>('#workspace-health')
+    const workspaceHealthNote = document.querySelector<HTMLElement>('#workspace-health-note')
+    const tokenTotal = document.querySelector<HTMLElement>('#token-total')
+    const requestTotal = document.querySelector<HTMLElement>('#request-total')
+    const spendTotal = document.querySelector<HTMLElement>('#spend-total')
+
+    if (workspaceEmail) workspaceEmail.textContent = data.workspace.email || 'Workspace'
+    if (workspaceHealth) workspaceHealth.textContent = 'Live'
+    const limits = data.limits || { plan: 'Free', rpm: 5, rpd: 200 }
+    if (workspaceHealthNote) workspaceHealthNote.textContent = `${limits.plan} plan: ${limits.rpm} RPM / ${limits.rpd} RPD`
+    if (tokenTotal) tokenTotal.textContent = `${data.workspace.tokens30d.toLocaleString()} tokens`
+    if (requestTotal) requestTotal.textContent = `${data.workspace.requests30d.toLocaleString()} requests`
+    if (spendTotal) spendTotal.textContent = `${data.workspace.usedCredits30d.toLocaleString()} credits`
+
     document.querySelectorAll<HTMLElement>('.dash-stats article').forEach((card, index) => {
       const stat = data.stats[index]
       if (!stat) return
@@ -1304,9 +1312,9 @@ if (isDashboardPage) {
               .map(
                 (item) => `
               <div class="key-row">
-                <div><strong>${item.name}</strong><code>${item.key}</code></div>
-                <span>${item.scope}</span>
-                <small>${item.lastUsed}</small>
+                <div><strong>${escapeHtml(item.name)}</strong><code>${escapeHtml(item.key)}</code></div>
+                <span>${escapeHtml(item.scope)}</span>
+                <small>${escapeHtml(item.lastUsed)}</small>
               </div>
             `,
               )
@@ -1325,7 +1333,7 @@ if (isDashboardPage) {
             .map(
               (item) => `
                 <div>
-                  <header><span>${item.model}</span><b>$${item.spend.toFixed(2)}</b></header>
+                  <header><span>${escapeHtml(item.model)}</span><b>$${item.spend.toFixed(2)}</b></header>
                   <p>${item.requests.toLocaleString()} requests</p>
                   <i style="--fill:${item.width}%"></i>
                 </div>
@@ -1336,7 +1344,17 @@ if (isDashboardPage) {
     }
   }
 
-  hydrateDashboard().catch(console.error)
+  hydrateDashboard().catch((error) => {
+    const workspaceHealth = document.querySelector<HTMLElement>('#workspace-health')
+    const workspaceHealthNote = document.querySelector<HTMLElement>('#workspace-health-note')
+    if (workspaceHealth) workspaceHealth.textContent = 'Offline'
+    if (workspaceHealthNote) workspaceHealthNote.textContent = error instanceof Error ? error.message : 'Dashboard API unavailable'
+  })
+
+  const dashboardRefresh = window.setInterval(() => {
+    hydrateDashboard().catch(console.error)
+  }, 5000)
+  window.addEventListener('beforeunload', () => window.clearInterval(dashboardRefresh))
 
   api<ModelPayload>('/api/models')
     .then(({ models }) => {
@@ -1346,8 +1364,8 @@ if (isDashboardPage) {
         .map(
           (model, index) => `
             <label>
-              <input type="checkbox" value="${model.id}" ${index < 5 ? 'checked' : ''} />
-              <span>${model.id}${model.status === 'Paid' ? ' ◆' : ''}</span>
+              <input type="checkbox" value="${escapeHtml(model.id)}" ${index < 5 ? 'checked' : ''} />
+              <span>${escapeHtml(model.id)}${model.status === 'Paid' ? ' ◆' : ''}</span>
             </label>
           `,
         )
@@ -1390,37 +1408,98 @@ if (isDashboardPage) {
 
 if (isModelsPage) {
   type ModelPayload = {
-    models: Array<{ id: string; provider: string; type: string; context: string; input: number; output: number; status: string }>
+    models: Array<{ id: string; provider: string; type: string; context: string; input: number | null; output: number | null; status: string }>
+    summary: { total: number; text: number; code: number; reasoning: number; image: number; video: number }
+  }
+
+  const priceText = (value: number | null) => (typeof value === 'number' ? `$${value.toFixed(2)}` : 'Provider')
+  const renderModelRows = (models: ModelPayload['models']) => {
+    const table = document.querySelector('.model-table')
+    if (!table) return
+    table.querySelectorAll('.model-row:not(.model-row-head)').forEach((row) => row.remove())
+    table.insertAdjacentHTML(
+      'beforeend',
+      models.length
+        ? models
+            .map(
+              (model) => `
+              <div class="model-row" data-type="${escapeHtml(model.type)}">
+                <strong>${escapeHtml(model.id)}</strong>
+                <span>${escapeHtml(model.provider)}</span>
+                <span>${escapeHtml(model.type)}</span>
+                <span>${escapeHtml(model.context)}</span>
+                <span>${priceText(model.input)}</span>
+                <span>${priceText(model.output)}</span>
+                <b class="${model.status === 'Paid' ? 'paid' : ''}">${escapeHtml(model.status)}</b>
+              </div>
+            `,
+            )
+            .join('')
+        : '<div class="model-row"><strong>No models found</strong><span>Gateway</span><span>...</span><span>...</span><span>...</span><span>...</span><b>Empty</b></div>',
+    )
   }
 
   api<ModelPayload>('/api/models')
-    .then(({ models }) => {
-      const table = document.querySelector('.model-table')
-      if (!table) return
-      table.querySelectorAll('.model-row:not(.model-row-head)').forEach((row) => row.remove())
-      table.insertAdjacentHTML(
-        'beforeend',
-        models
-          .map(
-            (model) => `
-              <div class="model-row">
-                <strong>${model.id}</strong>
-                <span>${model.provider}</span>
-                <span>${model.type}</span>
-                <span>${model.context}</span>
-                <span>$${model.input.toFixed(2)}</span>
-                <span>$${model.output.toFixed(2)}</span>
-                <b class="${model.status === 'Paid' ? 'paid' : ''}">${model.status}</b>
-              </div>
-            `,
-          )
-          .join(''),
-      )
+    .then(({ models, summary }) => {
+      const total = document.querySelector<HTMLElement>('#model-total')
+      const textCode = document.querySelector<HTMLElement>('#model-text-code')
+      const media = document.querySelector<HTMLElement>('#model-media')
+      if (total) total.textContent = summary.total.toLocaleString()
+      if (textCode) textCode.textContent = (summary.text + summary.code + summary.reasoning).toLocaleString()
+      if (media) media.textContent = (summary.image + summary.video).toLocaleString()
+
+      renderModelRows(models)
+
+      document.querySelectorAll<HTMLButtonElement>('.model-filter-row button').forEach((button) => {
+        button.addEventListener('click', () => {
+          const filter = button.textContent?.trim() || 'All'
+          document.querySelectorAll<HTMLButtonElement>('.model-filter-row button').forEach((item) => item.classList.remove('active'))
+          button.classList.add('active')
+          renderModelRows(filter === 'All' ? models : models.filter((model) => model.type === filter))
+        })
+      })
     })
     .catch(console.error)
 }
 
 if (isPlaygroundPage) {
+  type ModelPayload = {
+    models: Array<{ id: string; provider: string; type: string; context: string; input: number | null; output: number | null; status: string }>
+  }
+
+  const requestJson = () => {
+    const textareas = document.querySelectorAll<HTMLTextAreaElement>('.prompt-panel textarea')
+    const model = document.querySelector<HTMLSelectElement>('#playground-model')?.value || ''
+    const temperature = Number(document.querySelector<HTMLInputElement>('.settings-panel input[type="range"]')?.value || 0.7)
+    const maxTokens = Number(document.querySelector<HTMLInputElement>('.settings-panel input[type="number"]')?.value || 2048)
+    return {
+      model,
+      stream: false,
+      temperature,
+      max_tokens: maxTokens,
+      messages: [
+        { role: 'system', content: textareas[0]?.value || '' },
+        { role: 'user', content: textareas[1]?.value || '' },
+      ],
+    }
+  }
+
+  const updateRequestJson = () => {
+    const code = document.querySelector<HTMLElement>('#request-json')
+    if (code) code.textContent = JSON.stringify(requestJson(), null, 2)
+  }
+
+  const hydratePlaygroundModels = async () => {
+    const data = await api<ModelPayload>('/api/models')
+    const select = document.querySelector<HTMLSelectElement>('#playground-model')
+    if (!select) return
+    const chatModels = data.models.filter((model) => !['Image', 'Video'].includes(model.type))
+    select.innerHTML = chatModels
+      .map((model) => `<option value="${escapeHtml(model.id)}">${escapeHtml(model.id)} · ${escapeHtml(model.provider)}</option>`)
+      .join('')
+    updateRequestJson()
+  }
+
   const hydrateRuns = async () => {
     const data = await api<{ runs: Array<{ title: string; model: string; tokens: number; createdAt: string }> }>('/api/playground/runs')
     const panel = document.querySelector<HTMLElement>('.history-panel')
@@ -1433,8 +1512,8 @@ if (isPlaygroundPage) {
             .map(
               (item) => `
                 <div>
-                  <strong>${item.title}</strong>
-                  <span>${item.model}</span>
+                  <strong>${escapeHtml(item.title)}</strong>
+                  <span>${escapeHtml(item.model)}</span>
                   <small>${item.tokens.toLocaleString()} tokens · ${new Date(item.createdAt).toLocaleString()}</small>
                 </div>
               `,
@@ -1444,24 +1523,44 @@ if (isPlaygroundPage) {
     )
   }
 
+  hydratePlaygroundModels().catch((error) => {
+    const output = document.querySelector<HTMLElement>('#assistant-output')
+    if (output) output.innerHTML = `<p><b>Could not load models</b></p><p>${escapeHtml(error instanceof Error ? error.message : 'Model list unavailable.')}</p>`
+  })
   hydrateRuns().catch(console.error)
+  updateRequestJson()
+
+  document.querySelectorAll<HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement>('.prompt-panel textarea, .settings-panel input, #playground-model').forEach((input) => {
+    input.addEventListener('input', updateRequestJson)
+    input.addEventListener('change', updateRequestJson)
+  })
+
+  document.querySelector<HTMLButtonElement>('#copy-request-json')?.addEventListener('click', async () => {
+    await navigator.clipboard.writeText(JSON.stringify(requestJson(), null, 2))
+  })
 
   document.querySelector<HTMLButtonElement>('#run-playground')?.addEventListener('click', async () => {
     const textareas = document.querySelectorAll<HTMLTextAreaElement>('.prompt-panel textarea')
-    const model = document.querySelector<HTMLSelectElement>('.settings-panel select')?.value || 'gpt-frontier'
+    const model = document.querySelector<HTMLSelectElement>('#playground-model')?.value || ''
+    const temperature = Number(document.querySelector<HTMLInputElement>('.settings-panel input[type="range"]')?.value || 0.7)
+    const maxTokens = Number(document.querySelector<HTMLInputElement>('.settings-panel input[type="number"]')?.value || 2048)
     const output = document.querySelector<HTMLElement>('#assistant-output')
-    if (output) output.innerHTML = '<p><b>Running...</b></p><p>Kiwi is routing your request.</p>'
+    const status = document.querySelector<HTMLElement>('#run-status')
+    if (output) output.innerHTML = '<p><b>Running...</b></p><p>Kiwi is routing your request to the live model.</p>'
+    if (status) status.textContent = 'Running'
     try {
       const run = await api<{ response: string; tokens: number; spend: number }>('/api/playground/run', {
         method: 'POST',
-        body: JSON.stringify({ model, prompt: textareas[1]?.value || '' }),
+        body: JSON.stringify({ model, system: textareas[0]?.value || '', prompt: textareas[1]?.value || '', temperature, maxTokens }),
       })
       if (output) {
-        output.innerHTML = `<p><b>Run complete</b></p><p>${run.response}</p><p>${run.tokens.toLocaleString()} tokens · $${run.spend.toFixed(4)} estimated spend</p>`
+        output.innerHTML = `<p><b>Run complete</b></p><p>${escapeHtml(run.response)}</p><p>${run.tokens.toLocaleString()} tokens · $${run.spend.toFixed(4)} estimated spend</p>`
       }
+      if (status) status.textContent = 'Complete'
       await hydrateRuns()
     } catch (error) {
-      if (output) output.innerHTML = `<p><b>Run failed</b></p><p>${error instanceof Error ? error.message : 'Could not run prompt.'}</p>`
+      if (output) output.innerHTML = `<p><b>Run failed</b></p><p>${escapeHtml(error instanceof Error ? error.message : 'Could not run prompt.')}</p>`
+      if (status) status.textContent = 'Failed'
     }
   })
 }
