@@ -4,10 +4,12 @@ import { existsSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import pg from 'pg'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express()
 const port = process.env.PORT || 3000
+const databaseUrl = process.env.DATABASE_URL || ''
 const dbPath = process.env.DB_PATH || join(__dirname, 'data', 'db.json')
 const workerBaseUrl = (process.env.UNIFIED_AI_WORKER_URL || 'https://unified-ai-worker.rutv.workers.dev').replace(/\/$/, '')
 const workerApiKey = process.env.UNIFIED_AI_WORKER_API_KEY || ''
@@ -18,6 +20,13 @@ const freeRpdLimit = Number(process.env.KIWI_FREE_RPD || 200)
 
 app.use(cors())
 app.use(express.json({ limit: '1mb' }))
+
+const pgPool = databaseUrl
+  ? new pg.Pool({
+      connectionString: databaseUrl,
+      ssl: databaseUrl.includes('supabase.co') ? { rejectUnauthorized: false } : undefined,
+    })
+  : null
 
 const fallbackModels = [
   { id: 'gpt-frontier', provider: 'OpenAI', type: 'Text', context: '1M', input: 3, output: 12, status: 'Live' },
@@ -55,10 +64,70 @@ const seedDb = {
 
 let memoryDb = structuredClone(seedDb)
 let warnedAboutDb = false
+let postgresReady = false
 const legacyDemoKeyNames = new Set(['Production agents', 'Design playground'])
 const legacyDemoRedemptions = new Set(['KIWI-DEMO-2026', 'KIWI-TEAM-LAUNCH'])
 
+async function ensurePostgres() {
+  if (!pgPool || postgresReady) return
+
+  await pgPool.query(`
+    create table if not exists kiwi_app_state (
+      id text primary key,
+      data jsonb not null,
+      updated_at timestamptz not null default now()
+    )
+  `)
+  postgresReady = true
+}
+
+async function readPostgresDb() {
+  if (!pgPool) return null
+
+  await ensurePostgres()
+  const result = await pgPool.query('select data from kiwi_app_state where id = $1', ['default'])
+  if (!result.rowCount) {
+    await pgPool.query(
+      'insert into kiwi_app_state (id, data) values ($1, $2::jsonb) on conflict (id) do nothing',
+      ['default', JSON.stringify(seedDb)],
+    )
+    return structuredClone(seedDb)
+  }
+
+  return normalizeDb(result.rows[0].data)
+}
+
+async function writePostgresDb(db) {
+  if (!pgPool) return false
+
+  await ensurePostgres()
+  await pgPool.query(
+    `
+      insert into kiwi_app_state (id, data, updated_at)
+      values ($1, $2::jsonb, now())
+      on conflict (id)
+      do update set data = excluded.data, updated_at = now()
+    `,
+    ['default', JSON.stringify(db)],
+  )
+  return true
+}
+
 async function readDb() {
+  if (pgPool) {
+    try {
+      memoryDb = await readPostgresDb()
+      return memoryDb
+    } catch (error) {
+      if (!warnedAboutDb) {
+        console.warn(`Kiwi LLM could not read Supabase Postgres; falling back locally: ${
+          error instanceof Error ? error.message : 'unknown error'
+        }`)
+        warnedAboutDb = true
+      }
+    }
+  }
+
   try {
     if (!existsSync(dbPath)) {
       await mkdir(dirname(dbPath), { recursive: true })
@@ -122,6 +191,20 @@ function normalizeDb(db) {
 
 async function writeDb(db) {
   memoryDb = db
+
+  if (pgPool) {
+    try {
+      await writePostgresDb(db)
+      return
+    } catch (error) {
+      if (!warnedAboutDb) {
+        console.warn(`Kiwi LLM could not write Supabase Postgres; falling back locally: ${
+          error instanceof Error ? error.message : 'unknown error'
+        }`)
+        warnedAboutDb = true
+      }
+    }
+  }
 
   try {
     await mkdir(dirname(dbPath), { recursive: true })
