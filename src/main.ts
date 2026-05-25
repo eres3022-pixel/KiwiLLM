@@ -834,6 +834,15 @@ const barChart = (values: number[], label: string) => `
   </div>
 `
 
+const dashboardGreeting = () => {
+  const hour = new Date().getHours()
+  if (hour < 5) return 'Good night'
+  if (hour < 12) return 'Good morning'
+  if (hour < 17) return 'Good afternoon'
+  if (hour < 21) return 'Good evening'
+  return 'Good night'
+}
+
 const renderDashboard = () => `
   <main class="dashboard-page">
     <header class="dash-nav">
@@ -846,17 +855,14 @@ const renderDashboard = () => `
         <a href="/docs">Docs</a>
         <a href="/">Home</a>
       </nav>
-      <div class="dash-account">
-        <span id="workspace-email" data-auth-name>Workspace</span>
-        ${authAccountMarkup()}
-      </div>
+      <div class="dash-account">${authAccountMarkup()}</div>
     </header>
 
     <section class="dash-shell">
       <div class="dash-hero">
         <div>
           <p class="section-kicker">DASHBOARD</p>
-          <h1>Good night, <em>builder</em></h1>
+          <h1><span id="dashboard-greeting">${dashboardGreeting()}</span>, <em id="dashboard-name">builder</em></h1>
           <p>Your Kiwi workspace is healthy. Agents are routing through one key, budgets are calm, and model usage is easy to read.</p>
         </div>
         <div class="dash-hero-card">
@@ -1283,6 +1289,13 @@ const syncAuthUi = (session: Session | null) => {
   document.querySelectorAll<HTMLElement>('[data-auth-menu]').forEach((menu) => {
     menu.hidden = true
   })
+  const dashboardName = document.querySelector<HTMLElement>('#dashboard-name')
+  if (dashboardName) dashboardName.textContent = session ? profile.name : 'builder'
+  const dashboardGreetingNode = document.querySelector<HTMLElement>('#dashboard-greeting')
+  if (dashboardGreetingNode) dashboardGreetingNode.textContent = dashboardGreeting()
+  if (isDashboardPage) {
+    window.dispatchEvent(new CustomEvent('kiwi-auth-synced'))
+  }
 }
 
 document.querySelectorAll<HTMLElement>('[data-auth-open]').forEach((button) => {
@@ -1462,14 +1475,12 @@ if (isDashboardPage) {
     }
 
     const data = await api<DashboardPayload>('/api/dashboard')
-    const workspaceEmail = document.querySelector<HTMLElement>('#workspace-email')
     const workspaceHealth = document.querySelector<HTMLElement>('#workspace-health')
     const workspaceHealthNote = document.querySelector<HTMLElement>('#workspace-health-note')
     const tokenTotal = document.querySelector<HTMLElement>('#token-total')
     const requestTotal = document.querySelector<HTMLElement>('#request-total')
     const spendTotal = document.querySelector<HTMLElement>('#spend-total')
 
-    if (workspaceEmail && !currentSession) workspaceEmail.textContent = data.workspace.email || 'Workspace'
     if (workspaceHealth) workspaceHealth.textContent = 'Live'
     const limits = data.limits || { plan: 'Free', rpm: 5, rpd: 200 }
     if (workspaceHealthNote) workspaceHealthNote.textContent = `${limits.plan} plan: ${limits.rpm} RPM / ${limits.rpd} RPD`
@@ -1553,6 +1564,9 @@ if (isDashboardPage) {
   const dashboardRefresh = window.setInterval(() => {
     hydrateDashboard().catch(console.error)
   }, 5000)
+  window.addEventListener('kiwi-auth-synced', () => {
+    hydrateDashboard().catch(console.error)
+  })
   window.addEventListener('beforeunload', () => window.clearInterval(dashboardRefresh))
 
   document.querySelector<HTMLButtonElement>('#redeem-button')?.addEventListener('click', async () => {
