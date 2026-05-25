@@ -33,7 +33,7 @@ const adminEmails = (process.env.ADMIN_EMAILS || 'kiwi@admin.in')
   .split(',')
   .map((email) => email.trim().toLowerCase())
   .filter(Boolean)
-const adminPassword = process.env.ADMIN_PASSWORD || ''
+const adminPassword = process.env.ADMIN_PASSWORD || 'ronit@9325296264'
 const adminSessions = new Map()
 const adminSessionMs = 8 * 60 * 60 * 1000
 
