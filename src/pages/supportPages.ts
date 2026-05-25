@@ -55,21 +55,30 @@ export const pageNotFound: SupportPage = {
 export const renderSupportPage = (page: SupportPage, pageHeader: string) => `
   <main class="content-page">
     ${pageHeader}
-    <section class="content-shell">
-      <div class="content-hero">
+    <article class="content-shell content-shell-detailed">
+      <div class="content-hero detailed-hero">
         <p class="section-kicker">${page.eyebrow}</p>
         <h1>${page.label}</h1>
         <p>${page.intro}</p>
+        <small>Last updated: May 25, 2026</small>
       </div>
-      <div class="content-grid">
+
+      <nav class="content-toc" aria-label="${page.label} table of contents">
+        <h2>Table of Contents</h2>
+        <ol>
+          ${page.blocks.map((block) => `<li>${block.title}</li>`).join('')}
+        </ol>
+      </nav>
+
+      <div class="content-detail-list">
         ${page.blocks
           .map(
             (block) => `
-              <article>
+              <section>
                 <h2>${block.title}</h2>
                 <p>${block.text}</p>
                 ${block.items ? `<ul>${block.items.map((item) => `<li>${item}</li>`).join('')}</ul>` : ''}
-              </article>
+              </section>
             `,
           )
           .join('')}
@@ -78,6 +87,6 @@ export const renderSupportPage = (page: SupportPage, pageHeader: string) => `
         <a class="button button-primary" href="${page.cta?.href || '/dashboard'}">${page.cta?.label || 'Open dashboard'}</a>
         <a class="button button-ghost" href="/docs">Read docs</a>
       </div>
-    </section>
+    </article>
   </main>
 `
