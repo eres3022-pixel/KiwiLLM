@@ -383,6 +383,7 @@ const authReady = new Promise<void>((resolve) => {
 const protectedApiPaths = new Set(['/api/dashboard', '/api/redeem', '/api/keys', '/api/playground/run', '/api/playground/runs', '/api/admin/overview'])
 
 const isProtectedApiPath = (path: string) => protectedApiPaths.has(path) || /^\/api\/keys\/[^/]+\/revoke$/.test(path)
+const adminToken = () => window.sessionStorage.getItem('kiwi_admin_token') || ''
 
 const getAuthProfile = (user?: User | null): AuthProfile => {
   const metadata = user?.user_metadata || {}
@@ -430,7 +431,9 @@ const api = async <T>(path: string, options?: RequestInit): Promise<T> => {
   if (needsAuth) await authReady
   const headers = new Headers(options?.headers)
   headers.set('Content-Type', 'application/json')
-  if (needsAuth && currentSession?.access_token) {
+  if (path === '/api/admin/overview' && adminToken()) {
+    headers.set('Authorization', `Bearer ${adminToken()}`)
+  } else if (needsAuth && currentSession?.access_token) {
     headers.set('Authorization', `Bearer ${currentSession.access_token}`)
   }
   const response = await fetch(path, {
@@ -1222,7 +1225,7 @@ const renderAdmin = () => `
           <input id="admin-email" type="email" value="kiwi@admin.in" autocomplete="username" aria-label="Admin email" />
           <input id="admin-password" type="password" placeholder="Password" autocomplete="current-password" aria-label="Admin password" />
           <button class="button button-primary" type="submit">Sign in</button>
-          <p id="admin-login-message">Use the admin Supabase account to unlock this page.</p>
+          <p id="admin-login-message">Use the temporary admin credentials to unlock this page.</p>
         </form>
       </div>
 
@@ -1231,7 +1234,7 @@ const renderAdmin = () => `
           <span>Access</span>
           <strong id="admin-access-state">Checking session</strong>
         </div>
-        <p id="admin-access-note">Admin data is only loaded after the backend verifies your Supabase user.</p>
+      <p id="admin-access-note">Admin data is only loaded after the backend verifies your admin session.</p>
       </section>
 
       <section class="dash-stats admin-stats" aria-label="Admin statistics">
@@ -1819,7 +1822,7 @@ if (isAdminPage) {
   }
 
   const hydrateAdmin = async () => {
-    if (!currentSession) {
+    if (!currentSession && !adminToken()) {
       setAdminStatus('Sign in required', 'Sign in with kiwi@admin.in to load admin data.')
       adminListEmpty('#admin-model-usage', 'Admin data is locked.')
       adminListEmpty('#admin-keys', 'Admin data is locked.')
@@ -1830,7 +1833,8 @@ if (isAdminPage) {
 
     try {
       const data = await api<AdminPayload>('/api/admin/overview')
-      setAdminStatus('Verified admin', `${currentSession.user.email} has backend admin access.`)
+      const adminEmail = currentSession?.user.email || document.querySelector<HTMLInputElement>('#admin-email')?.value || 'admin'
+      setAdminStatus('Verified admin', `${adminEmail} has backend admin access.`)
       const statMap: Record<string, string> = {
         Workspaces: data.summary.workspaces.toLocaleString(),
         Users: data.summary.users.toLocaleString(),
@@ -1932,18 +1936,19 @@ if (isAdminPage) {
     const message = document.querySelector<HTMLElement>('#admin-login-message')
     const email = document.querySelector<HTMLInputElement>('#admin-email')?.value.trim() || 'kiwi@admin.in'
     const password = document.querySelector<HTMLInputElement>('#admin-password')?.value || ''
-    if (!supabase) {
-      if (message) message.textContent = 'Supabase auth is not configured.'
-      return
-    }
     if (message) message.textContent = 'Signing in...'
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      if (message) message.textContent = error.message
+    try {
+      const result = await api<{ ok: boolean; token: string; email: string; expiresIn: number }>('/api/admin/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      })
+      window.sessionStorage.setItem('kiwi_admin_token', result.token)
+      if (message) message.textContent = `Signed in as ${result.email}. Loading admin data...`
+      await hydrateAdmin()
+    } catch (error) {
+      if (message) message.textContent = error instanceof Error ? error.message : 'Admin sign in failed.'
       return
     }
-    if (message) message.textContent = 'Signed in. Loading admin data...'
-    await hydrateAdmin()
   })
 
   window.addEventListener('kiwi-auth-synced', () => {

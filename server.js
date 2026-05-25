@@ -33,6 +33,9 @@ const adminEmails = (process.env.ADMIN_EMAILS || 'kiwi@admin.in')
   .split(',')
   .map((email) => email.trim().toLowerCase())
   .filter(Boolean)
+const adminPassword = process.env.ADMIN_PASSWORD || ''
+const adminSessions = new Map()
+const adminSessionMs = 8 * 60 * 60 * 1000
 
 app.disable('x-powered-by')
 app.use((req, res, next) => {
@@ -146,6 +149,14 @@ async function requireAuth(req, res, next) {
 }
 
 async function requireAdmin(req, res, next) {
+  const token = getBearer(req)
+  const adminSession = token ? adminSessions.get(token) : null
+  if (adminSession && adminSession.expiresAt > Date.now()) {
+    req.authUser = { email: adminSession.email, user_metadata: { name: 'Kiwi Admin' } }
+    return next()
+  }
+  if (adminSession) adminSessions.delete(token)
+
   await requireAuth(req, res, () => {
     const email = String(req.authUser?.email || '').toLowerCase()
     if (!email || !adminEmails.includes(email)) {
@@ -153,6 +164,15 @@ async function requireAdmin(req, res, next) {
     }
     return next()
   })
+}
+
+function createAdminSession(email) {
+  const token = crypto.randomUUID() + crypto.randomUUID().replaceAll('-', '')
+  adminSessions.set(token, {
+    email,
+    expiresAt: Date.now() + adminSessionMs,
+  })
+  return token
 }
 
 function pgWorkspaceToPayload(workspace, totals = {}) {
@@ -1137,6 +1157,26 @@ app.get('/api/config', (_req, res) => {
     publicBaseUrl: process.env.PUBLIC_BASE_URL || '',
     workerBaseUrl,
     keyPrefix: kiwiApiPrefix,
+  })
+})
+
+app.post('/api/admin/login', (req, res) => {
+  const email = String(req.body.email || '').trim().toLowerCase()
+  const password = String(req.body.password || '')
+
+  if (!adminPassword) {
+    return res.status(503).json({ error: 'Admin password is not configured.' })
+  }
+
+  if (!adminEmails.includes(email) || password !== adminPassword) {
+    return res.status(401).json({ error: 'Invalid admin credentials.' })
+  }
+
+  res.json({
+    ok: true,
+    email,
+    token: createAdminSession(email),
+    expiresIn: Math.floor(adminSessionMs / 1000),
   })
 })
 
