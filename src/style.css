@@ -7,8 +7,8 @@
   --text: #f7f7f2;
   --muted: #aeb4ad;
   --soft: #737a75;
-  --kiwi: #b8ff58;
-  --kiwi-deep: #407b2c;
+  --kiwi: #caff1f;
+  --kiwi-deep: #6b7f2a;
   --mint: #c9ffe9;
   --amber: #ffd88a;
   --shadow: 0 24px 80px rgba(0, 0, 0, 0.52);
@@ -135,22 +135,18 @@ a {
   white-space: nowrap;
 }
 
-.brand-orb {
-  display: grid;
-  width: 28px;
-  height: 28px;
-  place-items: center;
-  border: 1px solid rgba(184, 255, 88, 0.54);
+.brand-logo {
+  display: block;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(202, 255, 31, 0.46);
   border-radius: 50%;
-  color: #10140b;
-  font-family: var(--sans);
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 900;
-  background:
-    radial-gradient(circle at 35% 30%, #f7ffd6 0 8%, transparent 9%),
-    radial-gradient(circle at 62% 58%, #5f8a37 0 8%, transparent 9%),
-    linear-gradient(135deg, var(--kiwi), #f5ffe1 48%, var(--amber));
+  object-fit: cover;
+  object-position: center;
+  box-shadow:
+    0 0 0 2px rgba(202, 255, 31, 0.05),
+    0 0 24px rgba(202, 255, 31, 0.14);
 }
 
 .nav-links {
@@ -230,8 +226,9 @@ a {
 
 .auth-avatar-fallback {
   background-image:
-    radial-gradient(circle at 35% 30%, #f7ffd6 0 10%, transparent 11%),
+    url("/kiwi-logo-192.png"),
     linear-gradient(135deg, var(--kiwi), var(--mint));
+  background-size: cover;
 }
 
 .auth-name {
@@ -367,14 +364,16 @@ a {
 }
 
 .auth-dialog-mark {
-  display: grid;
-  width: 46px;
-  height: 46px;
-  place-items: center;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
   border-radius: 50%;
-  color: #071007;
-  background: linear-gradient(135deg, var(--kiwi), var(--mint));
-  font-weight: 950;
+  box-shadow: 0 0 34px rgba(202, 255, 31, 0.16);
+}
+
+.auth-dialog-mark .brand-logo {
+  width: 100%;
+  height: 100%;
 }
 
 .auth-kicker {
@@ -499,6 +498,22 @@ a {
   flex-direction: column;
   align-items: center;
   text-align: center;
+}
+
+.hero-section::before {
+  position: absolute;
+  top: 16vh;
+  left: 50%;
+  z-index: -1;
+  width: min(360px, 74vw);
+  aspect-ratio: 16 / 10;
+  content: "";
+  background: url("/kiwi-logo-512.png") center / cover no-repeat;
+  border-radius: 44%;
+  filter: blur(2px);
+  opacity: 0.11;
+  transform: translateX(-50%) rotate(-4deg);
+  pointer-events: none;
 }
 
 .hero-glow {
@@ -1442,6 +1457,9 @@ code b {
 }
 
 .docs-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   font-family: var(--serif);
   font-size: 20px;
   font-style: italic;

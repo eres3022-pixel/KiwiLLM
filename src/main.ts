@@ -400,10 +400,12 @@ const initialsFor = (name: string) =>
     .map((part) => part[0]?.toUpperCase())
     .join('') || 'K'
 
+const brandMark = '<img class="brand-logo" src="/kiwi-logo-192.png" alt="" />'
+
 const authAccountMarkup = (compact = false) => `
   <div class="auth-account ${compact ? 'auth-account-compact' : ''}" data-auth-account>
     <button class="auth-trigger" type="button" aria-haspopup="menu" aria-expanded="false" data-auth-open>
-      <span class="auth-avatar auth-avatar-fallback" data-auth-avatar>${compact ? 'K' : 'Sign in'}</span>
+      <span class="auth-avatar auth-avatar-fallback" data-auth-avatar></span>
       <span class="auth-name" data-auth-name>${compact ? 'Account' : 'Sign in'}</span>
     </button>
     <div class="auth-menu" role="menu" data-auth-menu hidden>
@@ -448,7 +450,7 @@ const renderHome = () => `
   <main class="site-shell">
     <nav class="topbar" aria-label="Primary navigation">
       <a class="brand" href="/" aria-label="Kiwi LLM home">
-        <span class="brand-orb" aria-hidden="true">K</span>
+        ${brandMark}
         <span>Kiwi LLM</span>
       </a>
       <div class="nav-links" aria-label="Product sections">
@@ -706,7 +708,7 @@ const renderHome = () => `
 
       <div class="footer-bottom reveal-item">
         <a class="footer-brand" href="/" aria-label="Kiwi LLM home">
-          <span class="brand-orb" aria-hidden="true">K</span>
+          ${brandMark}
           <span>Kiwi LLM</span>
         </a>
         <div>
@@ -723,7 +725,7 @@ const renderHome = () => `
 const renderDocs = () => `
   <main class="docs-page">
     <header class="docs-nav">
-      <a class="docs-logo" href="/">Kiwi LLM</a>
+      <a class="docs-logo" href="/">${brandMark}<span>Kiwi LLM</span></a>
       <span>Docs</span>
       <nav>
         <a href="/playground">Playground</a>
@@ -836,7 +838,7 @@ const renderDashboard = () => `
   <main class="dashboard-page">
     <header class="dash-nav">
       <a class="footer-brand" href="/" aria-label="Kiwi LLM home">
-        <span class="brand-orb" aria-hidden="true">K</span>
+        ${brandMark}
         <span>Kiwi LLM</span>
       </a>
       <nav>
@@ -1011,7 +1013,7 @@ const renderModels = () => `
   <main class="models-page">
     <header class="dash-nav">
       <a class="footer-brand" href="/" aria-label="Kiwi LLM home">
-        <span class="brand-orb" aria-hidden="true">K</span>
+        ${brandMark}
         <span>Kiwi LLM</span>
       </a>
       <nav>
@@ -1080,7 +1082,7 @@ const renderPlayground = () => `
   <main class="playground-page">
     <header class="dash-nav">
       <a class="footer-brand" href="/" aria-label="Kiwi LLM home">
-        <span class="brand-orb" aria-hidden="true">K</span>
+        ${brandMark}
         <span>Kiwi LLM</span>
       </a>
       <nav>
@@ -1217,7 +1219,7 @@ document.body.insertAdjacentHTML(
       <button class="auth-backdrop" type="button" aria-label="Close sign in" data-auth-close></button>
       <section class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title">
         <button class="auth-close" type="button" aria-label="Close sign in" data-auth-close>×</button>
-        <div class="auth-dialog-mark" aria-hidden="true">K</div>
+        <div class="auth-dialog-mark" aria-hidden="true">${brandMark}</div>
         <p class="auth-kicker">Kiwi account</p>
         <h2 id="auth-title">Continue with your workspace</h2>
         <p>Use Google or GitHub to sync your profile, avatar, and dashboard identity across Kiwi LLM.</p>
@@ -1275,7 +1277,7 @@ const syncAuthUi = (session: Session | null) => {
   })
   document.querySelectorAll<HTMLElement>('[data-auth-avatar]').forEach((avatar) => {
     avatar.classList.toggle('auth-avatar-fallback', !profile.avatarUrl || !session)
-    avatar.textContent = profile.avatarUrl && session ? '' : initialsFor(session ? profile.name : 'Kiwi')
+    avatar.textContent = session && !profile.avatarUrl ? initialsFor(profile.name) : ''
     avatar.style.backgroundImage = profile.avatarUrl && session ? `url("${profile.avatarUrl}")` : ''
   })
   document.querySelectorAll<HTMLElement>('[data-auth-menu]').forEach((menu) => {
