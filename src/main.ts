@@ -451,7 +451,6 @@ const renderHome = () => `
       </div>
       <div class="nav-actions">
         ${authAccountMarkup(true)}
-        <a class="button button-light" href="/dashboard" data-guest-cta>Get started</a>
       </div>
     </nav>
 
@@ -1268,9 +1267,6 @@ const syncAuthUi = (session: Session | null) => {
   })
   document.querySelectorAll<HTMLElement>('[data-auth-menu]').forEach((menu) => {
     menu.hidden = true
-  })
-  document.querySelectorAll<HTMLElement>('[data-guest-cta]').forEach((cta) => {
-    cta.hidden = Boolean(session)
   })
 }
 
