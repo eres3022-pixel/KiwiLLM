@@ -391,7 +391,12 @@ const protectedApiPaths = new Set([
 ])
 
 const isProtectedApiPath = (path: string) => protectedApiPaths.has(path) || /^\/api\/keys\/[^/]+\/revoke$/.test(path)
+const isAdminApiPath = (path: string) => path.startsWith('/api/admin/')
 const adminToken = () => window.sessionStorage.getItem('kiwi_admin_token') || ''
+const productionApiOrigin =
+  window.location.hostname === 'kiwillm.in' || window.location.hostname === 'www.kiwillm.in' ? 'https://api.kiwillm.in' : ''
+const apiOrigin = import.meta.env.VITE_KIWI_API_URL || import.meta.env.NEXT_PUBLIC_KIWI_API_URL || productionApiOrigin
+const apiUrl = (path: string) => (path.startsWith('/api/') && apiOrigin ? `${apiOrigin}${path}` : path)
 
 const getAuthProfile = (user?: User | null): AuthProfile => {
   const metadata = user?.user_metadata || {}
@@ -439,12 +444,12 @@ const api = async <T>(path: string, options?: RequestInit): Promise<T> => {
   if (needsAuth) await authReady
   const headers = new Headers(options?.headers)
   headers.set('Content-Type', 'application/json')
-  if (path === '/api/admin/overview' && adminToken()) {
+  if (isAdminApiPath(path) && adminToken()) {
     headers.set('Authorization', `Bearer ${adminToken()}`)
   } else if (needsAuth && currentSession?.access_token) {
     headers.set('Authorization', `Bearer ${currentSession.access_token}`)
   }
-  const response = await fetch(path, {
+  const response = await fetch(apiUrl(path), {
     ...options,
     headers,
   })
@@ -1305,7 +1310,21 @@ const renderAdmin = () => `
             </label>
             <label>
               Expiry
-              <input id="admin-code-expiry" type="datetime-local" />
+              <select id="admin-code-expiry-mode">
+                <option value="never">Never</option>
+                <option value="24h">24 hours</option>
+                <option value="7d">7 days</option>
+                <option value="30d">30 days</option>
+                <option value="custom">Custom</option>
+              </select>
+            </label>
+            <label class="admin-code-custom-expiry" hidden>
+              Date
+              <input id="admin-code-expiry-date" type="date" />
+            </label>
+            <label class="admin-code-custom-expiry" hidden>
+              Time
+              <input id="admin-code-expiry-time" type="time" value="23:59" />
             </label>
             <button class="button button-primary" type="submit">Create code</button>
             <p id="admin-code-message">Create invite, promo, or manual credit codes.</p>
@@ -2018,15 +2037,32 @@ if (isAdminPage) {
     const codeInput = document.querySelector<HTMLInputElement>('#admin-code')
     const credits = Number(document.querySelector<HTMLInputElement>('#admin-code-credits')?.value || 0)
     const maxRedemptions = Number(document.querySelector<HTMLInputElement>('#admin-code-max')?.value || 1)
-    const expiresAt = document.querySelector<HTMLInputElement>('#admin-code-expiry')?.value || ''
+    const expiryMode = document.querySelector<HTMLSelectElement>('#admin-code-expiry-mode')?.value || 'never'
+    const expiryDate = document.querySelector<HTMLInputElement>('#admin-code-expiry-date')?.value || ''
+    const expiryTime = document.querySelector<HTMLInputElement>('#admin-code-expiry-time')?.value || '23:59'
     try {
+      const expiresAt = (() => {
+        if (expiryMode === 'never') return null
+        const date = new Date()
+        if (expiryMode === '24h') date.setHours(date.getHours() + 24)
+        if (expiryMode === '7d') date.setDate(date.getDate() + 7)
+        if (expiryMode === '30d') date.setDate(date.getDate() + 30)
+        if (expiryMode === 'custom') {
+          if (!expiryDate) throw new Error('Choose an expiry date or set expiry to Never.')
+          const custom = new Date(`${expiryDate}T${expiryTime || '23:59'}`)
+          if (Number.isNaN(custom.getTime())) throw new Error('Choose a valid expiry date and time.')
+          if (custom.getTime() <= Date.now()) throw new Error('Expiry must be in the future.')
+          return custom.toISOString()
+        }
+        return date.toISOString()
+      })()
       const created = await api<{ code: string; credits: number; maxRedemptions: number }>('/api/admin/redemption-codes', {
         method: 'POST',
         body: JSON.stringify({
           code: codeInput?.value,
           credits,
           maxRedemptions,
-          expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
+          expiresAt,
         }),
       })
       if (message) message.textContent = `Created ${created.code} for ${created.credits.toLocaleString()} credits.`
@@ -2036,6 +2072,15 @@ if (isAdminPage) {
       if (message) message.textContent = error instanceof Error ? error.message : 'Could not create code.'
     }
   })
+
+  const toggleCodeExpiryFields = () => {
+    const isCustom = document.querySelector<HTMLSelectElement>('#admin-code-expiry-mode')?.value === 'custom'
+    document.querySelectorAll<HTMLElement>('.admin-code-custom-expiry').forEach((field) => {
+      field.hidden = !isCustom
+    })
+  }
+  document.querySelector<HTMLSelectElement>('#admin-code-expiry-mode')?.addEventListener('change', toggleCodeExpiryFields)
+  toggleCodeExpiryFields()
 
   window.addEventListener('kiwi-auth-synced', () => {
     hydrateAdmin().catch(console.error)

@@ -528,14 +528,20 @@ async function getAdminOverview() {
       usageByModel: db.usage.spendByModel || [],
       audit: [],
       runs: db.runs.slice(0, 20),
-      redemptionCodes: Object.entries(db.redemptions || {}).map(([code, credits]) => ({
-        code,
-        credits,
-        maxRedemptions: 1,
-        redeemedCount: 0,
-        expiresAt: null,
-        createdAt: null,
-      })),
+      redemptionCodes: Object.entries(db.redemptions || {}).map(([code, redemption]) => {
+        const item =
+          redemption && typeof redemption === 'object'
+            ? redemption
+            : { credits: Number(redemption || 0), maxRedemptions: 1, redeemedCount: 0, expiresAt: null, createdAt: null }
+        return {
+          code,
+          credits: Number(item.credits || 0),
+          maxRedemptions: Number(item.maxRedemptions || 1),
+          redeemedCount: Number(item.redeemedCount || 0),
+          expiresAt: item.expiresAt || null,
+          createdAt: item.createdAt || null,
+        }
+      }),
     }
   }
 
@@ -1281,9 +1287,22 @@ app.post('/api/admin/redemption-codes', requireAdmin, async (req, res) => {
 
   const db = await readDb()
   if (db.redemptions[code]) return res.status(409).json({ error: 'Code already exists.' })
-  db.redemptions[code] = credits
+  db.redemptions[code] = {
+    credits,
+    maxRedemptions,
+    redeemedCount: 0,
+    expiresAt: expiresAt ? expiresAt.toISOString() : null,
+    createdAt: new Date().toISOString(),
+  }
   await writeDb(db)
-  res.status(201).json({ code, credits, maxRedemptions: 1, redeemedCount: 0, expiresAt: null, createdAt: new Date().toISOString() })
+  res.status(201).json({
+    code,
+    credits,
+    maxRedemptions,
+    redeemedCount: 0,
+    expiresAt: expiresAt ? expiresAt.toISOString() : null,
+    createdAt: db.redemptions[code].createdAt,
+  })
 })
 
 app.get('/v1/models', (req, res) => {
@@ -1389,13 +1408,25 @@ app.post('/api/redeem', requireAuth, async (req, res) => {
   }
 
   const db = await readDb()
-  const credits = db.redemptions[code]
+  const redemption = db.redemptions[code]
+  const redemptionItem =
+    redemption && typeof redemption === 'object'
+      ? redemption
+      : { credits: Number(redemption || 0), maxRedemptions: 1, redeemedCount: 0, expiresAt: null }
+  const credits = Number(redemptionItem.credits || 0)
+  const redeemedCount = Number(redemptionItem.redeemedCount || 0)
+  const maxRedemptions = Number(redemptionItem.maxRedemptions || 1)
+  const isExpired = redemptionItem.expiresAt ? new Date(redemptionItem.expiresAt).getTime() <= Date.now() : false
 
-  if (!credits) {
+  if (!credits || redeemedCount >= maxRedemptions || isExpired) {
     return res.status(404).json({ error: 'Invalid or already used Kiwi code.' })
   }
 
-  delete db.redemptions[code]
+  if (redemption && typeof redemption === 'object') {
+    db.redemptions[code] = { ...redemptionItem, redeemedCount: redeemedCount + 1 }
+  } else {
+    delete db.redemptions[code]
+  }
   db.workspace.credits += credits
   db.workspace.creditUsd = Number((db.workspace.creditUsd + credits / 50).toFixed(2))
   await writeDb(db)
