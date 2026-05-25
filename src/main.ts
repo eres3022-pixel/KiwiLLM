@@ -369,14 +369,18 @@ type AuthProfile = {
   avatarUrl: string
 }
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL || 'https://uwoxjlllsvqlsxjbqmec.supabase.co'
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseKey =
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-  import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-  'sb_publishable_9pHrDnoK9yT8_Mma4mThQA_9k6jVBhC'
+  import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 const supabase: SupabaseClient | null = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
 
 let currentSession: Session | null = null
+let resolveAuthReady: () => void = () => {}
+const authReady = new Promise<void>((resolve) => {
+  resolveAuthReady = resolve
+})
+const protectedApiPaths = new Set(['/api/dashboard', '/api/redeem', '/api/keys', '/api/playground/run', '/api/playground/runs'])
 
 const getAuthProfile = (user?: User | null): AuthProfile => {
   const metadata = user?.user_metadata || {}
@@ -418,9 +422,15 @@ const codePanel = (title: string, code: string) => `
 `
 
 const api = async <T>(path: string, options?: RequestInit): Promise<T> => {
+  if (protectedApiPaths.has(path)) await authReady
+  const headers = new Headers(options?.headers)
+  headers.set('Content-Type', 'application/json')
+  if (protectedApiPaths.has(path) && currentSession?.access_token) {
+    headers.set('Authorization', `Bearer ${currentSession.access_token}`)
+  }
   const response = await fetch(path, {
-    headers: { 'Content-Type': 'application/json', ...(options?.headers || {}) },
     ...options,
+    headers,
   })
 
   if (!response.ok) {
@@ -1331,13 +1341,18 @@ document.addEventListener('keydown', (event) => {
 })
 
 if (supabase) {
-  supabase.auth.getSession().then(({ data }) => syncAuthUi(data.session)).catch(console.error)
+  supabase.auth
+    .getSession()
+    .then(({ data }) => syncAuthUi(data.session))
+    .catch(console.error)
+    .finally(resolveAuthReady)
   supabase.auth.onAuthStateChange((_event, session) => {
     syncAuthUi(session)
     if (session) closeAuthModal()
   })
 } else {
   syncAuthUi(null)
+  resolveAuthReady()
 }
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches

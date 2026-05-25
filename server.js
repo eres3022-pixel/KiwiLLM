@@ -19,8 +19,39 @@ const kiwiApiPrefix = process.env.KIWI_API_KEY_PREFIX || 'Kiwi'
 const workspaceEmail = process.env.KIWI_WORKSPACE_EMAIL || 'workspace@kiwillm.dev'
 const freeRpmLimit = Number(process.env.KIWI_FREE_RPM || 5)
 const freeRpdLimit = Number(process.env.KIWI_FREE_RPD || 200)
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabasePublishableKey =
+  process.env.SUPABASE_PUBLISHABLE_KEY ||
+  process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  ''
+const allowedOrigins = (process.env.CORS_ORIGINS || 'https://kiwillm.in,https://www.kiwillm.in,http://localhost:5173,http://127.0.0.1:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
 
-app.use(cors())
+app.disable('x-powered-by')
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  res.setHeader('X-Frame-Options', 'DENY')
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  if (req.secure || req.get('x-forwarded-proto') === 'https') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
+  }
+  next()
+})
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) return callback(null, true)
+      return callback(new Error('CORS origin not allowed'))
+    },
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Authorization', 'Content-Type', 'x-api-key', 'anthropic-version'],
+    maxAge: 86400,
+  }),
+)
 app.use(express.json({ limit: '1mb' }))
 
 const pgPool = databaseUrl
@@ -66,11 +97,48 @@ const seedDb = {
 let memoryDb = structuredClone(seedDb)
 let warnedAboutDb = false
 let postgresReady = false
+let auditReady = false
 const legacyDemoKeyNames = new Set(['Production agents', 'Design playground'])
 const legacyDemoRedemptions = new Set(['KIWI-DEMO-2026', 'KIWI-TEAM-LAUNCH'])
 
 function keyHash(value) {
   return createHash('sha256').update(value).digest('hex')
+}
+
+function authName(user = {}) {
+  const metadata = user.user_metadata || {}
+  return metadata.full_name || metadata.name || metadata.user_name || user.email?.split('@')[0] || 'Kiwi User'
+}
+
+async function verifySupabaseUser(token = '') {
+  if (!supabaseUrl || !supabasePublishableKey) {
+    throw Object.assign(new Error('Supabase auth is not configured on the API.'), { status: 503 })
+  }
+
+  const response = await fetch(`${supabaseUrl.replace(/\/$/, '')}/auth/v1/user`, {
+    headers: {
+      apikey: supabasePublishableKey,
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  if (!response.ok) {
+    throw Object.assign(new Error('Authentication required.'), { status: 401 })
+  }
+
+  return response.json()
+}
+
+async function requireAuth(req, res, next) {
+  try {
+    const token = getBearer(req)
+    if (!token) return res.status(401).json({ error: 'Authentication required.' })
+    req.authUser = await verifySupabaseUser(token)
+    return next()
+  } catch (error) {
+    const status = Number(error.status || 401)
+    return res.status(status).json({ error: error instanceof Error ? error.message : 'Authentication required.' })
+  }
 }
 
 function pgWorkspaceToPayload(workspace, totals = {}) {
@@ -88,8 +156,33 @@ function pgWorkspaceToPayload(workspace, totals = {}) {
   }
 }
 
-async function getDefaultWorkspace(client = pgPool) {
+async function getDefaultWorkspace(client = pgPool, authUser = null) {
   if (!client) return null
+
+  if (authUser?.email) {
+    const userResult = await client.query(
+      `
+        insert into app_users (email, name, role)
+        values ($1, $2, 'user')
+        on conflict (email) do update set name = excluded.name
+        returning *
+      `,
+      [authUser.email, authName(authUser)],
+    )
+    const appUser = userResult.rows[0]
+    let workspaceResult = await client.query('select * from workspaces where owner_user_id = $1 order by created_at asc limit 1', [appUser.id])
+    if (workspaceResult.rowCount) return workspaceResult.rows[0]
+
+    workspaceResult = await client.query(
+      `
+        insert into workspaces (name, email, owner_user_id, plan, free_rpm_limit, free_rpd_limit)
+        values ($1, $2, $3, 'free', $4, $5)
+        returning *
+      `,
+      [`${authName(authUser)} Workspace`, authUser.email, appUser.id, freeRpmLimit, freeRpdLimit],
+    )
+    return workspaceResult.rows[0]
+  }
 
   let result = await client.query('select * from workspaces order by created_at asc limit 1')
   if (result.rowCount) return result.rows[0]
@@ -147,8 +240,8 @@ async function findPgKey(value = '') {
   return result.rows[0] || null
 }
 
-async function createPgKey({ name, selectedModels }) {
-  const workspace = await getDefaultWorkspace()
+async function createPgKey({ name, selectedModels, authUser }) {
+  const workspace = await getDefaultWorkspace(pgPool, authUser)
   const key = keyValue()
   const scope = selectedModels.length > 3 ? `${selectedModels.length} models` : selectedModels.length ? selectedModels.join(', ') : 'All live models'
   const result = await pgPool.query(
@@ -250,8 +343,8 @@ async function recordPgUsage({ key, model, endpoint, usage, statusCode = 200 }) 
   }
 }
 
-async function getPgDashboard() {
-  const workspace = await getDefaultWorkspace()
+async function getPgDashboard(authUser = null) {
+  const workspace = await getDefaultWorkspace(pgPool, authUser)
   const totalsResult = await pgPool.query(
     `
       select
@@ -312,13 +405,41 @@ async function getPgDashboard() {
   }
 }
 
-async function getPgRuns() {
-  const workspace = await getDefaultWorkspace()
+async function getPgRuns(authUser = null) {
+  const workspace = await getDefaultWorkspace(pgPool, authUser)
   const result = await pgPool.query(
     'select title, model, total_tokens as tokens, created_at from playground_runs where workspace_id = $1 order by created_at desc limit 20',
     [workspace.id],
   )
   return result.rows
+}
+
+async function ensureAuditTable() {
+  if (!pgPool || auditReady) return
+  await pgPool.query(`
+    create table if not exists audit_events (
+      id text primary key,
+      workspace_id uuid,
+      actor_email text,
+      action text not null,
+      metadata jsonb not null default '{}'::jsonb,
+      created_at timestamptz not null default now()
+    )
+  `)
+  auditReady = true
+}
+
+async function recordAuditEvent({ workspace, authUser, action, metadata = {} }) {
+  if (!pgPool) return
+  try {
+    await ensureAuditTable()
+    await pgPool.query(
+      'insert into audit_events (id, workspace_id, actor_email, action, metadata) values ($1, $2, $3, $4, $5::jsonb)',
+      [crypto.randomUUID(), workspace?.id || null, authUser?.email || null, action, JSON.stringify(metadata)],
+    )
+  } catch (error) {
+    console.warn(`Could not write audit event: ${error instanceof Error ? error.message : 'unknown error'}`)
+  }
 }
 
 async function ensurePostgres() {
@@ -909,9 +1030,9 @@ app.post('/v1/video/generations', (req, res) => {
   proxyWorker(req, res, '/v1/video/generations')
 })
 
-app.get('/api/dashboard', async (_req, res) => {
+app.get('/api/dashboard', requireAuth, async (req, res) => {
   if (pgPool) {
-    const data = await getPgDashboard()
+    const data = await getPgDashboard(req.authUser)
     return res.json({
       ...data,
       stats: [
@@ -944,10 +1065,10 @@ app.get('/api/dashboard', async (_req, res) => {
   })
 })
 
-app.post('/api/redeem', async (req, res) => {
+app.post('/api/redeem', requireAuth, async (req, res) => {
   const code = String(req.body.code || '').trim().toUpperCase()
   if (pgPool) {
-    const workspace = await getDefaultWorkspace()
+    const workspace = await getDefaultWorkspace(pgPool, req.authUser)
     const result = await pgPool.query(
       `
         select * from redemption_codes
@@ -974,6 +1095,12 @@ app.post('/api/redeem', async (req, res) => {
         [Number(redemption.credits), Number(redemption.credits) / 50, workspace.id],
       )
       await pgPool.query('commit')
+      await recordAuditEvent({
+        workspace,
+        authUser: req.authUser,
+        action: 'redeem_code',
+        metadata: { code, credits: Number(redemption.credits) },
+      })
       return res.json({ ok: true, creditsAdded: Number(redemption.credits) })
     } catch (error) {
       await pgPool.query('rollback')
@@ -995,12 +1122,19 @@ app.post('/api/redeem', async (req, res) => {
   res.json({ ok: true, creditsAdded: credits, workspace: db.workspace })
 })
 
-app.post('/api/keys', async (req, res) => {
+app.post('/api/keys', requireAuth, async (req, res) => {
   const name = String(req.body.name || 'Untitled key').trim().slice(0, 80)
   const selectedModels = Array.isArray(req.body.models) && req.body.models.length ? req.body.models : []
 
   if (pgPool) {
-    const item = await createPgKey({ name, selectedModels })
+    const item = await createPgKey({ name, selectedModels, authUser: req.authUser })
+    const workspace = await getDefaultWorkspace(pgPool, req.authUser)
+    await recordAuditEvent({
+      workspace,
+      authUser: req.authUser,
+      action: 'create_api_key',
+      metadata: { name, selectedModels, keyPreview: publicKey(item.key) },
+    })
     return res.status(201).json({ ...item, displayKey: publicKey(item.key) })
   }
 
@@ -1022,7 +1156,7 @@ app.post('/api/keys', async (req, res) => {
   res.status(201).json({ ...item, key, displayKey: publicKey(key) })
 })
 
-app.post('/api/playground/run', async (req, res) => {
+app.post('/api/playground/run', requireAuth, async (req, res) => {
   const model = String(req.body.model || 'llama-3.2-1b')
   const prompt = String(req.body.prompt || '').slice(0, 2000)
   const system = String(req.body.system || '').slice(0, 2000)
@@ -1073,7 +1207,7 @@ app.post('/api/playground/run', async (req, res) => {
     }
 
     if (pgPool) {
-      const workspace = await getDefaultWorkspace()
+      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
       await pgPool.query(
         `
           insert into playground_runs (workspace_id, model, title, prompt, system_prompt, response, total_tokens, usd_estimate)
@@ -1087,6 +1221,12 @@ app.post('/api/playground/run', async (req, res) => {
         endpoint: '/api/playground/run',
         usage,
         statusCode: 200,
+      })
+      await recordAuditEvent({
+        workspace,
+        authUser: req.authUser,
+        action: 'playground_run',
+        metadata: { model, tokens: usage.totalTokens, title: run.title },
       })
     } else {
       const db = await readDb()
@@ -1103,13 +1243,20 @@ app.post('/api/playground/run', async (req, res) => {
   }
 })
 
-app.get('/api/playground/runs', async (_req, res) => {
+app.get('/api/playground/runs', requireAuth, async (req, res) => {
   if (pgPool) {
-    return res.json({ runs: await getPgRuns() })
+    return res.json({ runs: await getPgRuns(req.authUser) })
   }
 
   const db = await readDb()
   res.json({ runs: db.runs })
+})
+
+app.use((error, _req, res, next) => {
+  if (error?.message === 'CORS origin not allowed') {
+    return res.status(403).json({ error: 'CORS origin not allowed.' })
+  }
+  return next(error)
 })
 
 const distPath = resolve(__dirname, 'dist')
