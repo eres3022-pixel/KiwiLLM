@@ -893,6 +893,10 @@ app.post('/v1/chat/completions', (req, res) => {
   proxyWorker(req, res, '/v1/chat/completions')
 })
 
+app.post('/v1/messages', (req, res) => {
+  proxyWorker(req, res, '/v1/messages')
+})
+
 app.post('/v1/images/generations', (req, res) => {
   proxyWorker(req, res, '/v1/images/generations')
 })
