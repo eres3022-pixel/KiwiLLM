@@ -13,7 +13,7 @@ const features = [
   {
     eyebrow: '02',
     title: 'Made for long agent runs',
-    text: 'Reliable streaming, retries, traces, and budgets help coding agents keep moving without surprise spend.',
+    text: 'Reliable routing, retries, traces, and budgets help coding agents keep moving without surprise spend.',
   },
   {
     eyebrow: '03',
@@ -28,7 +28,7 @@ const modelCards = [
     mark: 'A',
     title: 'Claude without key juggling',
     chips: ['Opus route', 'Sonnet route', 'Haiku route'],
-    text: 'Use native-style streaming and messages support through Kiwi, then swap model tiers without changing your client setup.',
+    text: 'Use native-style messages support through Kiwi, then swap model tiers without changing your client setup.',
   },
   {
     label: 'OPENAI',
@@ -73,7 +73,7 @@ const docExamples = [
   },
   {
     title: 'OpenAI SDK',
-    note: 'Streaming and tools ready',
+    note: 'OpenAI-compatible route',
     code: [
       'from openai import OpenAI',
       'client = OpenAI(',
@@ -107,7 +107,7 @@ const docExamples = [
 const docFeatures = [
   {
     title: 'OpenAI-compatible',
-    text: 'Use chat completions and messages-style routes with streaming, tool calls, and stop sequences supported.',
+    text: 'Use chat completions and messages-style routes through one authenticated Kiwi endpoint.',
   },
   {
     title: 'Route-level model control',
@@ -382,6 +382,8 @@ const authReady = new Promise<void>((resolve) => {
 })
 const protectedApiPaths = new Set(['/api/dashboard', '/api/redeem', '/api/keys', '/api/playground/run', '/api/playground/runs'])
 
+const isProtectedApiPath = (path: string) => protectedApiPaths.has(path) || /^\/api\/keys\/[^/]+\/revoke$/.test(path)
+
 const getAuthProfile = (user?: User | null): AuthProfile => {
   const metadata = user?.user_metadata || {}
   const email = user?.email || ''
@@ -422,10 +424,11 @@ const codePanel = (title: string, code: string) => `
 `
 
 const api = async <T>(path: string, options?: RequestInit): Promise<T> => {
-  if (protectedApiPaths.has(path)) await authReady
+  const needsAuth = isProtectedApiPath(path)
+  if (needsAuth) await authReady
   const headers = new Headers(options?.headers)
   headers.set('Content-Type', 'application/json')
-  if (protectedApiPaths.has(path) && currentSession?.access_token) {
+  if (needsAuth && currentSession?.access_token) {
     headers.set('Authorization', `Bearer ${currentSession.access_token}`)
   }
   const response = await fetch(path, {
@@ -812,7 +815,7 @@ const renderDocs = () => `
           <p><b>403 model not allowed</b> — your workspace route may not include that model yet.</p>
           <p><b>404 model not available</b> — call <code>/models</code> to see the live list.</p>
           <p><b>Modality mismatch</b> — chat models use chat/messages, image models use images, and video models use videos.</p>
-          <p><b>Streaming hangs</b> — send <code>"stream": true</code> and read event-stream chunks line by line.</p>
+          <p><b>Long responses</b> — raise <code>max_tokens</code> and keep prompts compact when a provider truncates output.</p>
         </div>
       </section>
 
@@ -1428,7 +1431,7 @@ if (isDashboardPage) {
     }
     stats: Array<{ label: string; value: string; note: string; trend: string }>
     limits?: { plan: string; rpm: number; rpd: number }
-    keys: Array<{ name: string; key: string; scope: string; lastUsed: string }>
+    keys: Array<{ id: string; name: string; key: string; scope: string; lastUsed: string }>
     usage: {
       tokenBars: number[]
       requestBars: number[]
@@ -1443,6 +1446,19 @@ if (isDashboardPage) {
   }
 
   const hydrateDashboard = async () => {
+    if (!currentSession) {
+      const workspaceHealth = document.querySelector<HTMLElement>('#workspace-health')
+      const workspaceHealthNote = document.querySelector<HTMLElement>('#workspace-health-note')
+      if (workspaceHealth) workspaceHealth.textContent = 'Sign in'
+      if (workspaceHealthNote) workspaceHealthNote.textContent = 'Use Google or GitHub to open your Kiwi workspace.'
+      const keyPanel = document.querySelector<HTMLElement>('.dash-keys')
+      if (keyPanel && !keyPanel.querySelector('[data-auth-empty]')) {
+        keyPanel.querySelectorAll('.key-row, .empty-state').forEach((item) => item.remove())
+        keyPanel.insertAdjacentHTML('beforeend', '<p class="empty-state" data-auth-empty>Sign in from the account button to manage API keys.</p>')
+      }
+      return
+    }
+
     const data = await api<DashboardPayload>('/api/dashboard')
     const workspaceEmail = document.querySelector<HTMLElement>('#workspace-email')
     const workspaceHealth = document.querySelector<HTMLElement>('#workspace-health')
@@ -1478,10 +1494,11 @@ if (isDashboardPage) {
           ? data.keys
               .map(
                 (item) => `
-              <div class="key-row">
+              <div class="key-row" data-key-id="${escapeHtml(item.id)}">
                 <div><strong>${escapeHtml(item.name)}</strong><code>${escapeHtml(item.key)}</code></div>
                 <span>${escapeHtml(item.scope)}</span>
                 <small>${escapeHtml(item.lastUsed)}</small>
+                <button class="revoke-key-button" type="button" data-revoke-key="${escapeHtml(item.id)}">Revoke</button>
               </div>
             `,
               )
@@ -1489,6 +1506,19 @@ if (isDashboardPage) {
           : '<p class="empty-state">No keys yet. Create one below to start sending requests.</p>',
       )
     }
+
+    document.querySelectorAll<HTMLButtonElement>('[data-revoke-key]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        button.disabled = true
+        try {
+          await api<{ ok: boolean }>(`/api/keys/${button.dataset.revokeKey}/revoke`, { method: 'POST' })
+          await hydrateDashboard()
+        } catch (error) {
+          button.disabled = false
+          button.textContent = error instanceof Error ? error.message : 'Could not revoke'
+        }
+      })
+    })
 
     updateBars('.dash-wide .dash-bars', data.usage.tokenBars)
     updateBars('.dash-panel:not(.dash-wide) .dash-bars', data.usage.requestBars)

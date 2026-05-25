@@ -1156,6 +1156,37 @@ app.post('/api/keys', requireAuth, async (req, res) => {
   res.status(201).json({ ...item, key, displayKey: publicKey(key) })
 })
 
+app.post('/api/keys/:id/revoke', requireAuth, async (req, res) => {
+  const keyId = String(req.params.id || '')
+  if (pgPool) {
+    const workspace = await getDefaultWorkspace(pgPool, req.authUser)
+    const result = await pgPool.query(
+      `
+        update api_keys
+        set revoked_at = now()
+        where id = $1 and workspace_id = $2 and revoked_at is null
+        returning id, name, key_preview
+      `,
+      [keyId, workspace.id],
+    )
+    if (!result.rowCount) return res.status(404).json({ error: 'API key not found.' })
+    await recordAuditEvent({
+      workspace,
+      authUser: req.authUser,
+      action: 'revoke_api_key',
+      metadata: { id: result.rows[0].id, name: result.rows[0].name, keyPreview: result.rows[0].key_preview },
+    })
+    return res.json({ ok: true })
+  }
+
+  const db = await readDb()
+  const before = db.keys.length
+  db.keys = db.keys.filter((item) => item.id !== keyId)
+  if (db.keys.length === before) return res.status(404).json({ error: 'API key not found.' })
+  await writeDb(db)
+  res.json({ ok: true })
+})
+
 app.post('/api/playground/run', requireAuth, async (req, res) => {
   const model = String(req.body.model || 'llama-3.2-1b')
   const prompt = String(req.body.prompt || '').slice(0, 2000)
