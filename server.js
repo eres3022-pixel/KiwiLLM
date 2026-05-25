@@ -48,17 +48,16 @@ app.use((req, res, next) => {
   }
   next()
 })
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) return callback(null, true)
-      return callback(new Error('CORS origin not allowed'))
-    },
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Authorization', 'Content-Type', 'x-api-key', 'anthropic-version'],
-    maxAge: 86400,
-  }),
-)
+const corsMiddleware = cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true)
+    return callback(new Error('CORS origin not allowed'))
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Authorization', 'Content-Type', 'x-api-key', 'anthropic-version'],
+  maxAge: 86400,
+})
+app.use(['/api', '/v1'], corsMiddleware)
 app.use(express.json({ limit: '1mb' }))
 
 const pgPool = databaseUrl

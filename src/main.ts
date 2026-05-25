@@ -158,17 +158,185 @@ const pricingPlans = [
 const footerColumns = [
   {
     title: 'Build',
-    links: ['Docs', 'Playground', 'SDKs', 'Status'],
+    links: [
+      { label: 'Docs', href: '/docs' },
+      { label: 'Playground', href: '/playground' },
+      { label: 'SDKs', href: '/sdks' },
+      { label: 'Status', href: '/status' },
+    ],
   },
   {
     title: 'Company',
-    links: ['Blog', 'Pricing', 'Roadmap', 'Changelog'],
+    links: [
+      { label: 'Blog', href: '/blog' },
+      { label: 'Pricing', href: '/top-up' },
+      { label: 'Roadmap', href: '/roadmap' },
+      { label: 'Changelog', href: '/changelog' },
+    ],
   },
   {
     title: 'Connect',
-    links: ['Discord', 'Telegram', 'X / Twitter', 'GitHub'],
+    links: [
+      { label: 'Discord', href: '/community' },
+      { label: 'Telegram', href: 'https://t.me/KIWILLM' },
+      { label: 'X / Twitter', href: 'https://x.com/KIWILLM' },
+      { label: 'GitHub', href: '/github' },
+    ],
   },
 ]
+
+const pageLinks = [
+  { label: 'Docs', href: '/docs' },
+  { label: 'Models', href: '/models' },
+  { label: 'Playground', href: '/playground' },
+  { label: 'Top up', href: '/top-up' },
+]
+
+const supportPages: Record<
+  string,
+  {
+    title: string
+    label: string
+    eyebrow: string
+    intro: string
+    blocks: Array<{ title: string; text: string; items?: string[] }>
+    cta?: { label: string; href: string }
+  }
+> = {
+  '/privacy': {
+    title: 'Privacy - Kiwi LLM',
+    label: 'Privacy',
+    eyebrow: 'TRUST',
+    intro: 'Kiwi keeps workspace, auth, usage, and billing data limited to what is needed to run the gateway and support your account.',
+    blocks: [
+      {
+        title: 'Data we use',
+        text: 'We store account identity, workspace metadata, API key previews, credit balances, request usage, and operational logs needed for routing, metering, fraud prevention, and support.',
+        items: ['We never show full API keys after creation.', 'Prompts and responses are only retained for features that need history, such as playground runs.', 'Payment records should live with the payment provider, not inside the public app.'],
+      },
+      {
+        title: 'Control',
+        text: 'Workspace owners can revoke keys, rotate credentials, and request account or usage export through support channels.',
+      },
+    ],
+  },
+  '/terms': {
+    title: 'Terms - Kiwi LLM',
+    label: 'Terms',
+    eyebrow: 'LEGAL',
+    intro: 'These production-facing terms set expectations for acceptable use, credits, API access, and service availability.',
+    blocks: [
+      {
+        title: 'Use of service',
+        text: 'Use Kiwi for lawful development and production workloads. Do not abuse upstream providers, bypass rate limits, resell access without permission, or send content that violates provider policies.',
+      },
+      {
+        title: 'Credits and access',
+        text: 'Credits are prepaid usage units. Model availability, pricing, and routing may change as upstream providers change.',
+        items: ['Keep your Kiwi keys private.', 'You are responsible for traffic sent with keys issued to your workspace.', 'Revoked or expired keys stop working immediately.'],
+      },
+    ],
+  },
+  '/security': {
+    title: 'Security - Kiwi LLM',
+    label: 'Security',
+    eyebrow: 'SECURITY',
+    intro: 'Kiwi is designed around short secrets, revocable keys, strict CORS, metered routing, and clear workspace controls.',
+    blocks: [
+      {
+        title: 'Current safeguards',
+        text: 'The API disables framework fingerprinting, sets common browser security headers, verifies Supabase sessions for protected actions, and stores key hashes for gateway authentication.',
+        items: ['Use HTTPS in production.', 'Set explicit CORS origins.', 'Keep admin credentials and worker keys only in server env vars.'],
+      },
+      {
+        title: 'Reporting',
+        text: 'Send security reports with reproduction steps, affected endpoint, and impact. We prioritize issues affecting key leakage, auth bypass, credit abuse, or cross-workspace access.',
+      },
+    ],
+  },
+  '/status': {
+    title: 'Status - Kiwi LLM',
+    label: 'Status',
+    eyebrow: 'STATUS',
+    intro: 'Live production status should be backed by monitoring. This page gives users the right place to check gateway, auth, billing, and upstream model health.',
+    blocks: [
+      { title: 'Gateway', text: 'API health is exposed at /api/health and readiness at /api/ready for uptime monitors.' },
+      { title: 'Provider routes', text: 'Model availability is loaded from the active worker, with fallback routes shown if the upstream list cannot be reached.' },
+    ],
+    cta: { label: 'View models', href: '/models' },
+  },
+  '/sdks': {
+    title: 'SDKs - Kiwi LLM',
+    label: 'SDKs',
+    eyebrow: 'BUILD',
+    intro: 'Kiwi works with existing OpenAI-compatible and Anthropic-compatible clients, so you can start without waiting for a custom SDK.',
+    blocks: [
+      {
+        title: 'Supported clients',
+        text: 'Use the OpenAI SDK, Anthropic-compatible CLIs, Cursor, Cline, Roo Code, Continue, Codex, and custom fetch clients.',
+        items: ['Base URL: https://api.kiwillm.in/v1', 'Auth: Authorization: Bearer YOUR_KIWI_KEY', 'Models: choose any live route from /models'],
+      },
+      { title: 'Examples', text: 'Full cURL, Python, Node, CLI, image, and video examples are available in the docs.' },
+    ],
+    cta: { label: 'Open docs', href: '/docs' },
+  },
+  '/blog': {
+    title: 'Blog - Kiwi LLM',
+    label: 'Blog',
+    eyebrow: 'NOTES',
+    intro: 'A place for release stories, routing notes, model comparisons, and practical guides for agent-heavy teams.',
+    blocks: [
+      { title: 'Launch notes', text: 'Kiwi brings model routing, key management, usage metering, playground runs, and admin credit tools into one app.' },
+      { title: 'Coming articles', text: 'Planned posts include Codex setup, Claude CLI routing, credit planning, and provider fallback strategy.' },
+    ],
+  },
+  '/roadmap': {
+    title: 'Roadmap - Kiwi LLM',
+    label: 'Roadmap',
+    eyebrow: 'ROADMAP',
+    intro: 'The next production milestones focus on payments, monitoring, workspace controls, and deeper client integrations.',
+    blocks: [
+      {
+        title: 'Near term',
+        text: 'Wire live top-ups, add account-level billing history, publish status monitoring, and expand model route metadata.',
+        items: ['Card and UPI checkout', 'USDT payment confirmation', 'Per-key budget controls', 'Public incident history'],
+      },
+      { title: 'Later', text: 'Team invites, route policies, custom providers, webhooks, and organization audit exports.' },
+    ],
+  },
+  '/changelog': {
+    title: 'Changelog - Kiwi LLM',
+    label: 'Changelog',
+    eyebrow: 'RELEASES',
+    intro: 'Track production changes across the app, gateway, model routing, and dashboard surfaces.',
+    blocks: [
+      { title: 'May 2026', text: 'Added dashboard, model browser, docs, playground, admin overview, redemption codes, and API key creation.' },
+      { title: 'Next', text: 'Top-up checkout, legal pages, public status, and production monitoring polish.' },
+    ],
+  },
+  '/community': {
+    title: 'Community - Kiwi LLM',
+    label: 'Community',
+    eyebrow: 'CONNECT',
+    intro: 'Find product updates, setup help, and launch announcements for Kiwi builders.',
+    blocks: [
+      { title: 'Telegram', text: 'Join the public Telegram channel for announcements and quick support.' },
+      { title: 'Discord', text: 'Discord can be linked here when the community server is ready.' },
+    ],
+    cta: { label: 'Open Telegram', href: 'https://t.me/KIWILLM' },
+  },
+  '/github': {
+    title: 'GitHub - Kiwi LLM',
+    label: 'GitHub',
+    eyebrow: 'SOURCE',
+    intro: 'Use this page as the stable footer destination until the public GitHub organization or repository is ready.',
+    blocks: [
+      { title: 'Repository', text: 'Add the production GitHub URL here when source packages, SDK examples, or issue templates are published.' },
+      { title: 'For now', text: 'Docs include the integration examples needed to connect Kiwi to existing clients.' },
+    ],
+    cta: { label: 'Open docs', href: '/docs' },
+  },
+}
 
 const dashboardPlaceholders = ['Credit balance', 'Requests', 'Tokens', 'Credits used']
 
@@ -691,7 +859,7 @@ const renderHome = () => `
       </div>
 
       <div class="pricing-actions reveal-item">
-        <a class="button button-primary" href="/dashboard"><span aria-hidden="true">↗</span> Buy credits</a>
+        <a class="button button-primary" href="/top-up"><span aria-hidden="true">↗</span> Buy credits</a>
         <a class="button button-ghost" href="/dashboard">Claim starter credits →</a>
       </div>
 
@@ -713,7 +881,7 @@ const renderHome = () => `
             (column) => `
               <nav aria-label="${column.title}">
                 <h3>${column.title}</h3>
-                ${column.links.map((link) => `<a href="${link === 'Docs' ? '/docs' : '#'}">${link}</a>`).join('')}
+                ${column.links.map((link) => `<a href="${link.href}">${link.label}</a>`).join('')}
               </nav>
             `,
           )
@@ -728,9 +896,9 @@ const renderHome = () => `
           <span>Kiwi LLM</span>
         </a>
         <div>
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Security</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+          <a href="/security">Security</a>
         </div>
         <p>© 2026 Kiwi LLM</p>
       </div>
@@ -844,6 +1012,105 @@ const renderDocs = () => `
   </main>
 `
 
+const pageHeader = () => `
+  <header class="dash-nav">
+    <a class="footer-brand" href="/" aria-label="Kiwi LLM home">
+      ${brandMark}
+      <span>Kiwi LLM</span>
+    </a>
+    <nav>
+      ${pageLinks.map((link) => `<a href="${link.href}">${link.label}</a>`).join('')}
+    </nav>
+    ${authAccountMarkup(true)}
+  </header>
+`
+
+const renderTopUp = () => `
+  <main class="topup-page">
+    ${pageHeader()}
+    <section class="content-shell">
+      <div class="content-hero">
+        <p class="section-kicker">CREDITS</p>
+        <h1>Top up one Kiwi balance for every model route.</h1>
+        <p>Add credits to your workspace, then spend them across text, code, image, and video models without juggling provider balances.</p>
+      </div>
+
+      <section class="topup-checkout">
+        <div class="topup-grid topup-grid-large">
+          ${topUpPlans
+            .map(
+              (plan, index) => `
+                <article class="${index === 3 ? 'is-featured' : ''}">
+                  <span>${index === 3 ? 'Best value' : 'Workspace pack'}</span>
+                  <h3>${plan.price} · ${plan.name}</h3>
+                  <p>${plan.credits}</p>
+                  <a href="/dashboard">Open dashboard checkout</a>
+                </article>
+              `,
+            )
+            .join('')}
+        </div>
+        <aside>
+          <h2>Payment setup</h2>
+          <p>Connect your production payment provider before launch. This page is wired for users to choose a pack and continue from the dashboard checkout surface.</p>
+          <div>
+            <b>Supported methods</b>
+            <span>Card, UPI, and USDT can be enabled by region.</span>
+          </div>
+          <div>
+            <b>After payment</b>
+            <span>Credits should be added through a signed backend confirmation, not client-only state.</span>
+          </div>
+          <a class="button button-primary" href="/dashboard">Go to dashboard</a>
+        </aside>
+      </section>
+    </section>
+  </main>
+`
+
+const renderSupportPage = (path: string) => {
+  const page = supportPages[path] || {
+    title: 'Page not found - Kiwi LLM',
+    label: 'Not found',
+    eyebrow: '404',
+    intro: 'This Kiwi page is not available yet. Use the navigation below to get back to a live production surface.',
+    blocks: [
+      { title: 'Available pages', text: 'Docs, models, playground, top-up, dashboard, and the production policy pages are ready to browse.' },
+    ],
+    cta: { label: 'Back home', href: '/' },
+  }
+
+  return `
+    <main class="content-page">
+      ${pageHeader()}
+      <section class="content-shell">
+        <div class="content-hero">
+          <p class="section-kicker">${page.eyebrow}</p>
+          <h1>${page.label}</h1>
+          <p>${page.intro}</p>
+        </div>
+        <div class="content-grid">
+          ${page.blocks
+            .map(
+              (block) => `
+                <article>
+                  <h2>${block.title}</h2>
+                  <p>${block.text}</p>
+                  ${block.items ? `<ul>${block.items.map((item) => `<li>${item}</li>`).join('')}</ul>` : ''}
+                </article>
+              `,
+            )
+            .join('')}
+        </div>
+        <div class="content-actions">
+          <a class="button button-primary" href="${page.cta?.href || '/dashboard'}">${page.cta?.label || 'Open dashboard'}</a>
+          <a class="button button-ghost" href="/docs">Read docs</a>
+        </div>
+      </section>
+    </main>
+  `
+}
+
 const barChart = (values: number[], label: string) => `
   <div class="dash-bars" aria-label="${label}">
     ${values.map((value) => `<span style="--bar:${value}%"></span>`).join('')}
@@ -949,7 +1216,7 @@ const renderDashboard = () => `
               <h2>API keys</h2>
               <p>Scoped keys for teams and clients.</p>
             </div>
-            <button type="button">New key</button>
+            <a href="#create-api-key">New key</a>
           </div>
           <p class="empty-state">Loading keys from backend...</p>
         </article>
@@ -995,7 +1262,7 @@ const renderDashboard = () => `
                 <article>
                   <h3>${plan.price} · ${plan.name}</h3>
                   <p>${plan.credits}</p>
-                  <a href="#">Top up with USDT →</a>
+                  <a href="/top-up">Top up with USDT →</a>
                 </article>
               `,
             )
@@ -1008,7 +1275,7 @@ const renderDashboard = () => `
         <small>Payment methods can vary by workspace region. Balance updates after payment confirmation.</small>
       </section>
 
-      <section class="key-builder-panel">
+      <section class="key-builder-panel" id="create-api-key">
         <div class="dash-panel-head">
           <div>
             <h2>Create an API key</h2>
@@ -1145,7 +1412,7 @@ const renderPlayground = () => `
           </label>
           <div class="prompt-actions">
             <button id="run-playground" class="button button-primary" type="button">Run prompt</button>
-            <button class="button button-ghost" type="button">Save preset</button>
+            <button id="save-preset" class="button button-ghost" type="button">Save preset</button>
           </div>
         </article>
 
@@ -1364,6 +1631,8 @@ const isDashboardPage = window.location.pathname === '/dashboard'
 const isModelsPage = window.location.pathname === '/models'
 const isPlaygroundPage = window.location.pathname === '/playground'
 const isAdminPage = window.location.pathname === '/admin'
+const isTopUpPage = window.location.pathname === '/top-up'
+const supportPage = supportPages[window.location.pathname]
 document.title = isDocsPage
   ? 'Docs - Kiwi LLM'
   : isDashboardPage
@@ -1374,7 +1643,13 @@ document.title = isDocsPage
         ? 'Playground - Kiwi LLM'
         : isAdminPage
           ? 'Admin - Kiwi LLM'
-          : 'Kiwi LLM'
+          : isTopUpPage
+            ? 'Top up - Kiwi LLM'
+            : supportPage
+              ? supportPage.title
+              : window.location.pathname === '/'
+                ? 'Kiwi LLM'
+                : 'Page not found - Kiwi LLM'
 app.innerHTML = isDocsPage
   ? renderDocs()
   : isDashboardPage
@@ -1385,7 +1660,11 @@ app.innerHTML = isDocsPage
         ? renderPlayground()
         : isAdminPage
           ? renderAdmin()
-          : renderHome()
+          : isTopUpPage
+            ? renderTopUp()
+            : supportPage || window.location.pathname !== '/'
+              ? renderSupportPage(window.location.pathname)
+              : renderHome()
 
 document.body.insertAdjacentHTML(
   'beforeend',
@@ -1561,7 +1840,7 @@ if (!prefersReducedMotion) {
   requestAnimationFrame(raf)
 }
 
-if (!isDocsPage && !isDashboardPage && !isModelsPage && !isPlaygroundPage && !isAdminPage) {
+if (!isDocsPage && !isDashboardPage && !isModelsPage && !isPlaygroundPage && !isAdminPage && !isTopUpPage && !supportPage && window.location.pathname === '/') {
   const revealItems = [...document.querySelectorAll<HTMLElement>('.reveal-item')]
 
   revealItems.forEach((item, index) => {
@@ -2162,6 +2441,12 @@ if (isPlaygroundPage) {
 
   document.querySelector<HTMLButtonElement>('#copy-request-json')?.addEventListener('click', async () => {
     await navigator.clipboard.writeText(JSON.stringify(requestJson(), null, 2))
+  })
+
+  document.querySelector<HTMLButtonElement>('#save-preset')?.addEventListener('click', () => {
+    const status = document.querySelector<HTMLElement>('#run-status')
+    window.localStorage.setItem('kiwi_playground_preset', JSON.stringify(requestJson()))
+    if (status) status.textContent = 'Preset saved'
   })
 
   document.querySelector<HTMLButtonElement>('#run-playground')?.addEventListener('click', async () => {
