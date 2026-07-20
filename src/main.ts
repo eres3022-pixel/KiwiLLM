@@ -339,6 +339,7 @@ if (isDashboardPage) {
     }
 
     try {
+      document.querySelectorAll('.dash-keys [data-auth-empty]').forEach((el) => el.remove())
       const data = await api<DashboardPayload>('/api/dashboard')
       const workspaceHealth = document.querySelector<HTMLElement>('#workspace-health')
       const workspaceHealthNote = document.querySelector<HTMLElement>('#workspace-health-note')
