@@ -14,6 +14,9 @@ import {
 
 export const router = express.Router()
 
+router.get('/health', (_req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Server is healthy' })
+})
 router.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'Kiwi LLM API', version: 'worker-proxy-db-fallback' })
 })
