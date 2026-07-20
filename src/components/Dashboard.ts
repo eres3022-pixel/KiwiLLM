@@ -10,6 +10,8 @@ export const renderDashboard = () => `
         <span>Kiwi LLM</span>
       </a>
       <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/usage">Usage</a>
         <a href="/playground">Playground</a>
         <a href="/docs">Docs</a>
         <a href="/">Home</a>

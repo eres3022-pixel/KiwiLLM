@@ -464,3 +464,110 @@ router.get('/api/playground/runs', requireAuth, async (req, res) => {
   const db = await readDb()
   res.json({ runs: db.runs })
 })
+
+router.get('/api/usage-logs', requireAuth, async (req, res) => {
+  const page = Math.max(1, parseInt(String(req.query.page || '1'), 10))
+  const limit = Math.min(100, Math.max(1, parseInt(String(req.query.limit || '50'), 10)))
+  const offset = (page - 1) * limit
+  const days = req.query.days === 'all' ? null : Math.max(1, parseInt(String(req.query.days || '30'), 10))
+
+  try {
+    if (pgPool) {
+      try {
+        // Try request_logs table first
+        const since = days ? new Date(Date.now() - days * 86400000).toISOString() : null
+        const whereClause = since ? `WHERE w.user_email = $1 AND rl.created_at >= $2` : `WHERE w.user_email = $1`
+        const params = since ? [req.authUser, since] : [req.authUser]
+
+        let rows = []
+        let total = 0
+
+        try {
+          const countRes = await pgPool.query(
+            `SELECT COUNT(*) FROM request_logs rl
+             JOIN api_keys ak ON rl.api_key_id = ak.id
+             JOIN workspaces w ON ak.workspace_id = w.id
+             ${whereClause}`,
+            params,
+          )
+          total = parseInt(countRes.rows[0]?.count || '0', 10)
+
+          const dataRes = await pgPool.query(
+            `SELECT
+               rl.id, rl.created_at, rl.model, rl.prompt_tokens, rl.completion_tokens,
+               rl.total_tokens, rl.cost_usd, rl.status, rl.latency_ms,
+               ak.name AS key_name,
+               CONCAT(LEFT(ak.key_hash, 8), '...') AS key_preview
+             FROM request_logs rl
+             JOIN api_keys ak ON rl.api_key_id = ak.id
+             JOIN workspaces w ON ak.workspace_id = w.id
+             ${whereClause}
+             ORDER BY rl.created_at DESC
+             LIMIT $${params.length + 1} OFFSET $${params.length + 2}`,
+            [...params, limit, offset],
+          )
+          rows = dataRes.rows
+        } catch {
+          // request_logs table may not exist — fall through to local DB
+        }
+
+        if (rows.length > 0 || total > 0) {
+          return res.json({
+            logs: rows.map((r) => ({
+              id: r.id,
+              createdAt: r.created_at,
+              model: r.model || '—',
+              keyName: r.key_name || '—',
+              keyPreview: r.key_preview || '—',
+              promptTokens: Number(r.prompt_tokens || 0),
+              completionTokens: Number(r.completion_tokens || 0),
+              totalTokens: Number(r.total_tokens || 0),
+              costUsd: Number(r.cost_usd || 0),
+              status: r.status || 'success',
+              latencyMs: Number(r.latency_ms || 0),
+            })),
+            total,
+            page,
+            limit,
+            pages: Math.ceil(total / limit),
+          })
+        }
+      } catch (pgErr) {
+        console.warn('Usage logs PG query failed:', pgErr.message)
+      }
+    }
+
+    // Local DB fallback — use runs array
+    const db = await readDb()
+    const allRuns = (db.runs || [])
+    const filtered = days
+      ? allRuns.filter((r) => new Date(r.createdAt).getTime() >= Date.now() - days * 86400000)
+      : allRuns
+    const total = filtered.length
+    const page_runs = filtered.slice(offset, offset + limit)
+
+    return res.json({
+      logs: page_runs.map((r) => ({
+        id: r.id,
+        createdAt: r.createdAt,
+        model: r.model || '—',
+        keyName: 'Playground',
+        keyPreview: '—',
+        promptTokens: r.promptTokens || 0,
+        completionTokens: r.completionTokens || 0,
+        totalTokens: r.tokens || 0,
+        costUsd: r.spend || 0,
+        status: 'success',
+        latencyMs: r.latencyMs || 0,
+      })),
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    })
+  } catch (error) {
+    console.error('Error serving /api/usage-logs:', error)
+    return res.status(500).json({ error: error instanceof Error ? error.message : 'Internal server error.' })
+  }
+})
+

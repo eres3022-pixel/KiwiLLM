@@ -12,6 +12,7 @@ import { renderDashboard } from './components/Dashboard'
 import { renderModels } from './components/Models'
 import { renderPlayground } from './components/Playground'
 import { renderAdmin } from './components/Admin'
+import { renderUsageLogs } from './components/UsageLogs'
 
 import { topUpPlans, pageLinks } from './data'
 import { currentSession, setCurrentSession, resolveAuthReady, authReady } from './state'
@@ -29,6 +30,7 @@ const isDashboardPage = window.location.pathname === '/dashboard'
 const isModelsPage = window.location.pathname === '/models'
 const isPlaygroundPage = window.location.pathname === '/playground'
 const isAdminPage = window.location.pathname === '/admin'
+const isUsagePage = window.location.pathname === '/usage'
 const isTopUpPage = window.location.pathname === '/top-up'
 const isRefundPage = window.location.pathname === '/refund-policy'
 const supportPage = supportPages[window.location.pathname]
@@ -43,13 +45,15 @@ app.innerHTML = isDocsPage
         ? renderPlayground()
         : isAdminPage
           ? renderAdmin()
-          : isTopUpPage
-            ? renderTopUpPage(pageHeader(brandMark, pageLinks, authAccountMarkup), topUpPlans)
-            : isRefundPage
-              ? renderRefundPolicyPage()
-              : supportPage || window.location.pathname !== '/'
-              ? renderSupportPage(supportPage || pageNotFound, pageHeader(brandMark, pageLinks, authAccountMarkup))
-              : renderHome()
+          : isUsagePage
+            ? renderUsageLogs()
+            : isTopUpPage
+              ? renderTopUpPage(pageHeader(brandMark, pageLinks, authAccountMarkup), topUpPlans)
+              : isRefundPage
+                ? renderRefundPolicyPage()
+                : supportPage || window.location.pathname !== '/'
+                ? renderSupportPage(supportPage || pageNotFound, pageHeader(brandMark, pageLinks, authAccountMarkup))
+                : renderHome()
 
 document.body.insertAdjacentHTML(
   'beforeend',
@@ -976,4 +980,102 @@ if (isPlaygroundPage) {
       button.disabled = false
     }
   })
+}
+
+if (isUsagePage) {
+  await authReady
+
+  type LogEntry = {
+    id: string; createdAt: string; model: string; keyName: string; keyPreview: string
+    promptTokens: number; completionTokens: number; totalTokens: number; costUsd: number; status: string; latencyMs: number
+  }
+  type LogsPayload = { logs: LogEntry[]; total: number; page: number; pages: number; limit: number }
+
+  let currentPage = 1
+
+  const statusBadge = (s: string) =>
+    s === 'error'
+      ? `<span class="usage-status-badge usage-status-error">Error</span>`
+      : `<span class="usage-status-badge usage-status-ok">Success</span>`
+
+  const formatCost = (usd: number) => usd === 0 ? '—' : `$${usd.toFixed(6)}`
+  const formatMs = (ms: number) => ms === 0 ? '—' : `${ms}ms`
+  const formatDate = (iso: string) => {
+    try { return new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) } catch { return iso }
+  }
+
+  const renderPagination = (data: LogsPayload) => {
+    const pag = document.querySelector<HTMLElement>('#usage-pagination')
+    if (!pag) return
+    if (data.pages <= 1) { pag.innerHTML = ''; return }
+    pag.innerHTML = `
+      <button class="usage-page-btn" ${data.page <= 1 ? 'disabled' : ''} data-page="${data.page - 1}">← Prev</button>
+      <span>Page ${data.page} of ${data.pages} · ${data.total.toLocaleString()} total</span>
+      <button class="usage-page-btn" ${data.page >= data.pages ? 'disabled' : ''} data-page="${data.page + 1}">Next →</button>
+    `
+    pag.querySelectorAll<HTMLButtonElement>('.usage-page-btn').forEach((btn) => {
+      btn.addEventListener('click', () => { currentPage = Number(btn.dataset.page); hydrateUsage() })
+    })
+  }
+
+  const hydrateUsage = async () => {
+    const tbody = document.querySelector<HTMLElement>('#usage-logs-body')
+    if (!tbody) return
+    const modelQ = (document.querySelector<HTMLInputElement>('#usage-filter-model')?.value || '').toLowerCase()
+    const statusQ = document.querySelector<HTMLSelectElement>('#usage-filter-status')?.value || ''
+    const days = document.querySelector<HTMLSelectElement>('#usage-filter-period')?.value || '30'
+
+    try {
+      const params = new URLSearchParams({ page: String(currentPage), limit: '50', days })
+      const data = await api<LogsPayload>(`/api/usage-logs?${params}`)
+
+      const logs = data.logs.filter((l) => {
+        return (!modelQ || l.model.toLowerCase().includes(modelQ)) && (!statusQ || l.status === statusQ)
+      })
+
+      const totalTokens = data.logs.reduce((s, l) => s + l.totalTokens, 0)
+      const totalCost = data.logs.reduce((s, l) => s + l.costUsd, 0)
+      const reqEl = document.querySelector<HTMLElement>('#usage-total-requests')
+      const tokEl = document.querySelector<HTMLElement>('#usage-total-tokens')
+      const costEl = document.querySelector<HTMLElement>('#usage-total-cost')
+      if (reqEl) reqEl.textContent = data.total.toLocaleString()
+      if (tokEl) tokEl.textContent = totalTokens >= 1000 ? `${(totalTokens / 1000).toFixed(1)}K` : String(totalTokens)
+      if (costEl) costEl.textContent = totalCost === 0 ? '$0.00' : `$${totalCost.toFixed(4)}`
+
+      tbody.innerHTML = logs.length
+        ? logs.map((l) => `
+          <tr>
+            <td class="usage-col-time">${formatDate(l.createdAt)}</td>
+            <td><span class="usage-model-tag">${escapeHtml(l.model)}</span></td>
+            <td><code class="usage-key-code">${escapeHtml(l.keyName)}</code></td>
+            <td class="usage-num">${l.promptTokens.toLocaleString()}</td>
+            <td class="usage-num">${l.completionTokens.toLocaleString()}</td>
+            <td class="usage-num usage-num-total">${l.totalTokens.toLocaleString()}</td>
+            <td class="usage-num">${formatCost(l.costUsd)}</td>
+            <td>${statusBadge(l.status)}</td>
+            <td class="usage-num">${formatMs(l.latencyMs)}</td>
+          </tr>`).join('')
+        : `<tr><td colspan="9" class="empty-state">No usage logs found for this period.</td></tr>`
+
+      renderPagination(data)
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Could not load usage logs.'
+      const tbody2 = document.querySelector<HTMLElement>('#usage-logs-body')
+      if (tbody2) {
+        tbody2.innerHTML = currentSession
+          ? `<tr><td colspan="9" class="empty-state">${escapeHtml(msg)}</td></tr>`
+          : `<tr><td colspan="9" class="empty-state">Sign in to view your usage logs.</td></tr>`
+      }
+    }
+  }
+
+  await hydrateUsage()
+
+  let filterTimer: ReturnType<typeof setTimeout>
+  document.querySelector('#usage-filter-model')?.addEventListener('input', () => {
+    clearTimeout(filterTimer); filterTimer = setTimeout(() => { currentPage = 1; hydrateUsage() }, 300)
+  })
+  document.querySelector('#usage-filter-status')?.addEventListener('change', () => { currentPage = 1; hydrateUsage() })
+  document.querySelector('#usage-filter-period')?.addEventListener('change', () => { currentPage = 1; hydrateUsage() })
+  document.querySelector('#usage-refresh-btn')?.addEventListener('click', () => { currentPage = 1; hydrateUsage() })
 }
