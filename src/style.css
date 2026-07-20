@@ -2251,6 +2251,64 @@ code b {
   border-radius: 18px;
 }
 
+.dash-hero-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dash-invite-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.dash-invite-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.dash-invite-card > svg:first-child {
+  color: #fff;
+  opacity: 0.9;
+}
+
+.dash-invite-card div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dash-invite-card strong {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.dash-invite-card small {
+  color: #888;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.dash-invite-card .chevron {
+  color: #555;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.dash-invite-card:hover .chevron {
+  color: #fff;
+  transform: translateX(2px);
+}
+
 .dash-hero-card span,
 .dash-hero-card small {
   color: var(--muted);
