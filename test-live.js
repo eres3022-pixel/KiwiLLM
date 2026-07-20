@@ -1,4 +1,4 @@
-const key = 'Kiwi_0a25fabe63b94f50a02bb944c390';
+const key = 'Kiwi_dc4ecb8b767b410f877c0d24ebd9';
 const models = ['DeepSeek-V4-Flash', 'DeepSeek-V4-Pro'];
 const iterations = 4;
 

@@ -21,6 +21,36 @@ router.get('/api/health', (_req, res) => {
   res.json({ ok: true, service: 'Kiwi LLM API', version: 'worker-proxy-db-fallback' })
 })
 
+import { recordPgUsage, flushPgUsage } from './db.js'
+
+router.get('/api/test-flush', async (req, res) => {
+  try {
+    await recordPgUsage({
+      key: { id: 'd25ec49e-eb38-492d-9816-ef8b9563ae3a', workspace_id: 'ae412039-aaa5-4d5b-ac29-bdad67953b73' },
+      model: 'test-model',
+      endpoint: '/test',
+      usage: { inputTokens: 1, outputTokens: 2, totalTokens: 3 },
+      statusCode: 200
+    })
+    
+    const originalError = console.error;
+    let err = null;
+    console.error = (msg, e) => {
+      err = `${msg} ${e}`;
+      originalError(msg, e);
+    };
+    
+    await flushPgUsage();
+    
+    console.error = originalError;
+    
+    if (err) return res.json({ ok: false, error: err })
+    return res.json({ ok: true })
+  } catch (e) {
+    return res.json({ ok: false, exception: e.message })
+  }
+})
+
 router.get('/api/ready', async (_req, res) => {
   try {
     if (pgPool) {
