@@ -46,7 +46,7 @@ app.use((error, _req, res, next) => {
 })
 
 app.use((req, res) => {
-  if (existsSync(distPath) && !req.path.startsWith('/api') && !req.path.startsWith('/v1')) {
+  if (existsSync(distPath) && !req.path.startsWith('/api') && !req.path.startsWith('/v1') && req.path !== '/health') {
     return res.sendFile(join(distPath, 'index.html'))
   }
   res.status(200).json({ status: 'Kiwi LLM API is running', message: 'Ready to receive requests.' })
