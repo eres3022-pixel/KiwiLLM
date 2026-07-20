@@ -307,83 +307,91 @@ if (isDashboardPage) {
       return
     }
 
-    const data = await api<DashboardPayload>('/api/dashboard')
-    const workspaceHealth = document.querySelector<HTMLElement>('#workspace-health')
-    const workspaceHealthNote = document.querySelector<HTMLElement>('#workspace-health-note')
-    const tokenTotal = document.querySelector<HTMLElement>('#token-total')
-    const requestTotal = document.querySelector<HTMLElement>('#request-total')
-    const spendTotal = document.querySelector<HTMLElement>('#spend-total')
+    try {
+      const data = await api<DashboardPayload>('/api/dashboard')
+      const workspaceHealth = document.querySelector<HTMLElement>('#workspace-health')
+      const workspaceHealthNote = document.querySelector<HTMLElement>('#workspace-health-note')
+      const tokenTotal = document.querySelector<HTMLElement>('#token-total')
+      const requestTotal = document.querySelector<HTMLElement>('#request-total')
+      const spendTotal = document.querySelector<HTMLElement>('#spend-total')
 
-    if (workspaceHealth) workspaceHealth.textContent = 'Live'
-    const limits = data.limits || { plan: 'Free', rpm: 5, rpd: 200 }
-    if (workspaceHealthNote) workspaceHealthNote.textContent = `${limits.plan} plan: ${limits.rpm} RPM / ${limits.rpd} RPD`
-    if (tokenTotal) tokenTotal.textContent = `${data.workspace.tokens30d.toLocaleString()} tokens`
-    if (requestTotal) requestTotal.textContent = `${data.workspace.requests30d.toLocaleString()} requests`
-    if (spendTotal) spendTotal.textContent = `${data.workspace.usedCredits30d.toLocaleString()} credits`
+      if (workspaceHealth) workspaceHealth.textContent = 'Live'
+      const limits = data.limits || { plan: 'Free', rpm: 5, rpd: 200 }
+      if (workspaceHealthNote) workspaceHealthNote.textContent = `${limits.plan} plan: ${limits.rpm} RPM / ${limits.rpd} RPD`
+      if (tokenTotal) tokenTotal.textContent = `${data.workspace.tokens30d.toLocaleString()} tokens`
+      if (requestTotal) requestTotal.textContent = `${data.workspace.requests30d.toLocaleString()} requests`
+      if (spendTotal) spendTotal.textContent = `${data.workspace.usedCredits30d.toLocaleString()} credits`
 
-    document.querySelectorAll<HTMLElement>('.dash-stats article').forEach((card, index) => {
-      const stat = data.stats[index]
-      if (!stat) return
-      card.querySelector('span')!.textContent = stat.label
-      card.querySelector('b')!.textContent = stat.trend
-      card.querySelector('strong')!.textContent = stat.value
-      card.querySelector('p')!.textContent = stat.note
-    })
+      document.querySelectorAll<HTMLElement>('.dash-stats article').forEach((card, index) => {
+        const stat = data.stats[index]
+        if (!stat) return
+        card.querySelector('span')!.textContent = stat.label
+        card.querySelector('b')!.textContent = stat.trend
+        card.querySelector('strong')!.textContent = stat.value
+        card.querySelector('p')!.textContent = stat.note
+      })
 
-    const keyPanel = document.querySelector<HTMLElement>('.dash-keys')
-    if (keyPanel) {
-      keyPanel.querySelectorAll('.key-row').forEach((row) => row.remove())
-      keyPanel.querySelector('.empty-state')?.remove()
-      keyPanel.insertAdjacentHTML(
-        'beforeend',
-        data.keys.length
-          ? data.keys
+      const keyPanel = document.querySelector<HTMLElement>('.dash-keys')
+      if (keyPanel) {
+        keyPanel.querySelectorAll('.key-row').forEach((row) => row.remove())
+        keyPanel.querySelector('.empty-state')?.remove()
+        keyPanel.insertAdjacentHTML(
+          'beforeend',
+          data.keys.length
+            ? data.keys
+                .map(
+                  (item) => `
+                <div class="key-row" data-key-id="${escapeHtml(item.id)}">
+                  <div><strong>${escapeHtml(item.name)}</strong><code>${escapeHtml(item.key)}</code></div>
+                  <span>${escapeHtml(item.scope)}</span>
+                  <small>${escapeHtml(item.lastUsed)}</small>
+                  <button class="revoke-key-button" type="button" data-revoke-key="${escapeHtml(item.id)}">Revoke</button>
+                </div>
+              `,
+                )
+                .join('')
+            : '<p class="empty-state">No keys yet. Create one below to start sending requests.</p>',
+        )
+      }
+
+      document.querySelectorAll<HTMLButtonElement>('[data-revoke-key]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          button.disabled = true
+          try {
+            await api<{ ok: boolean }>(`/api/keys/${button.dataset.revokeKey}/revoke`, { method: 'POST' })
+            await hydrateDashboard()
+          } catch (error) {
+            button.disabled = false
+            button.textContent = error instanceof Error ? error.message : 'Could not revoke'
+          }
+        })
+      })
+
+      updateBars('.dash-wide .dash-bars', data.usage.tokenBars)
+      updateBars('.dash-panel:not(.dash-wide) .dash-bars', data.usage.requestBars)
+
+      const spendList = document.querySelector<HTMLElement>('.model-spend-list')
+      if (spendList) {
+        spendList.innerHTML = data.usage.spendByModel.length
+          ? data.usage.spendByModel
               .map(
                 (item) => `
-              <div class="key-row" data-key-id="${escapeHtml(item.id)}">
-                <div><strong>${escapeHtml(item.name)}</strong><code>${escapeHtml(item.key)}</code></div>
-                <span>${escapeHtml(item.scope)}</span>
-                <small>${escapeHtml(item.lastUsed)}</small>
-                <button class="revoke-key-button" type="button" data-revoke-key="${escapeHtml(item.id)}">Revoke</button>
-              </div>
-            `,
-              )
-              .join('')
-          : '<p class="empty-state">No keys yet. Create one below to start sending requests.</p>',
-      )
-    }
-
-    document.querySelectorAll<HTMLButtonElement>('[data-revoke-key]').forEach((button) => {
-      button.addEventListener('click', async () => {
-        button.disabled = true
-        try {
-          await api<{ ok: boolean }>(`/api/keys/${button.dataset.revokeKey}/revoke`, { method: 'POST' })
-          await hydrateDashboard()
-        } catch (error) {
-          button.disabled = false
-          button.textContent = error instanceof Error ? error.message : 'Could not revoke'
-        }
-      })
-    })
-
-    updateBars('.dash-wide .dash-bars', data.usage.tokenBars)
-    updateBars('.dash-panel:not(.dash-wide) .dash-bars', data.usage.requestBars)
-
-    const spendList = document.querySelector<HTMLElement>('.model-spend-list')
-    if (spendList) {
-      spendList.innerHTML = data.usage.spendByModel.length
-        ? data.usage.spendByModel
-            .map(
-              (item) => `
                 <div>
                   <header><span>${escapeHtml(item.model)}</span><b>$${item.spend.toFixed(2)}</b></header>
                   <p>${item.requests.toLocaleString()} requests</p>
                   <i style="--fill:${item.width}%"></i>
                 </div>
               `,
-            )
-            .join('')
-        : '<p class="empty-state">No requests yet. Run the playground or use a key to see model spend.</p>'
+              )
+              .join('')
+          : '<p class="empty-state">No requests yet. Run the playground or use a key to see model spend.</p>'
+      }
+    } catch (error) {
+      console.error('Failed to load dashboard:', error)
+      const workspaceHealth = document.querySelector<HTMLElement>('#workspace-health')
+      const workspaceHealthNote = document.querySelector<HTMLElement>('#workspace-health-note')
+      if (workspaceHealth) workspaceHealth.textContent = 'Offline'
+      if (workspaceHealthNote) workspaceHealthNote.textContent = error instanceof Error ? error.message : 'Could not fetch dashboard'
     }
   }
 
