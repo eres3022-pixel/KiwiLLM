@@ -1600,10 +1600,8 @@ app.use((error, _req, res, next) => {
   return next(error)
 })
 
-const distPath = resolve(__dirname, 'dist')
-app.use(express.static(distPath))
 app.use((_req, res) => {
-  res.sendFile(join(distPath, 'index.html'))
+  res.status(200).json({ status: 'Kiwi LLM API is running', message: 'Ready to receive requests.' })
 })
 
 app.listen(port, () => {
