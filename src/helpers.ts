@@ -27,9 +27,9 @@ export const isProtectedApiPath = (path: string) => protectedApiPaths.has(path) 
 export const isAdminApiPath = (path: string) => path.startsWith('/api/admin/')
 export const adminToken = () => window.sessionStorage.getItem('kiwi_admin_token') || ''
 export const productionApiOrigin =
-  window.location.hostname === 'kiwillm.in' || window.location.hostname === 'www.kiwillm.in' ? 'https://api.kiwillm.in' : ''
+  window.location.hostname.endsWith('kiwillm.in') || window.location.hostname.endsWith('vercel.app') ? 'https://api.kiwillm.in' : ''
 export const apiOrigin = import.meta.env.VITE_KIWI_API_URL || import.meta.env.NEXT_PUBLIC_KIWI_API_URL || productionApiOrigin
-export const apiUrl = (path: string) => (path.startsWith('/api/') && apiOrigin ? `${apiOrigin}${path}` : path)
+export const apiUrl = (path: string) => ((path.startsWith('/api/') || path.startsWith('/v1/')) && apiOrigin ? `${apiOrigin}${path}` : path)
 
 export const getAuthProfile = (user?: any): AuthProfile => {
   const metadata = user?.user_metadata || {}
