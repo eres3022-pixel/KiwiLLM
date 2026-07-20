@@ -219,7 +219,7 @@ router.get('/api/dashboard', requireAuth, async (req, res) => {
         const creditUsd = Number(data.workspace?.creditUsd || 0)
         const requests30d = Number(data.workspace?.requests30d || 0)
         const tokens30d = Number(data.workspace?.tokens30d || 0)
-        const usedCredits30d = Number(data.workspace?.usedCredits30d || 0)
+        const usedUsd30d = Number(data.workspace?.usedUsd30d || 0)
 
         // Merge PG keys + any local-only keys (by id deduplication)
         const pgKeyIds = new Set((data.keys || []).map((k) => k.id))
@@ -235,7 +235,7 @@ router.get('/api/dashboard', requireAuth, async (req, res) => {
             { label: 'Credit balance', value: `$${creditUsd.toFixed(4)}`, note: 'Available balance', trend: 'Live' },
             { label: 'Requests', value: requests30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
             { label: 'Tokens', value: formatTokens(tokens30d), note: 'Input + output', trend: 'Live' },
-            { label: 'Credits used', value: `$${(usedCredits30d / 50).toFixed(4)}`, note: 'Last 30 days', trend: 'Live' },
+            { label: 'Credits used', value: `$${usedUsd30d.toFixed(4)}`, note: 'Last 30 days', trend: 'Live' },
           ],
         })
       } catch (pgErr) {
@@ -248,7 +248,7 @@ router.get('/api/dashboard', requireAuth, async (req, res) => {
     const creditUsd = Number(workspace.creditUsd || 0)
     const requests30d = Number(workspace.requests30d || 0)
     const tokens30d = Number(workspace.tokens30d || 0)
-    const usedCredits30d = Number(workspace.usedCredits30d || 0)
+    const usedUsd30d = Number(workspace.usedUsd30d || 0)
 
     return res.json({
       workspace,
@@ -256,7 +256,7 @@ router.get('/api/dashboard', requireAuth, async (req, res) => {
         { label: 'Credit balance', value: `$${creditUsd.toFixed(4)}`, note: 'Available balance', trend: 'Live' },
         { label: 'Requests', value: requests30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
         { label: 'Tokens', value: formatTokens(tokens30d), note: 'Input + output', trend: 'Live' },
-        { label: 'Credits used', value: `$${(usedCredits30d / 50).toFixed(4)}`, note: 'Last 30 days', trend: 'Live' },
+        { label: 'Credits used', value: `$${usedUsd30d.toFixed(4)}`, note: 'Last 30 days', trend: 'Live' },
       ],
       usage: db.usage || { tokenBars: [], requestBars: [], spendByModel: [] },
       limits: { plan: 'Free', rpm: freeRpmLimit, rpd: freeRpdLimit },

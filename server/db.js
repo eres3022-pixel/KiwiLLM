@@ -276,12 +276,13 @@ export function pgWorkspaceToPayload(workspace, totals = {}) {
   const credits = Number(workspace.credit_balance || 0)
   const creditUsd = Number(workspace.credit_usd_balance || 0)
   const usedCredits30d = Number(totals.credits_used || 0)
+  const usedUsd30d = Number(totals.usd_estimate || 0)
   return {
     email: workspace.email || workspaceEmail,
     credits,
     creditUsd,
     usedCredits30d,
-    usedUsd30d: Number((usedCredits30d / 50).toFixed(2)),
+    usedUsd30d,
     requests30d: Number(totals.requests || 0),
     tokens30d: Number(totals.total_tokens || 0),
   }
