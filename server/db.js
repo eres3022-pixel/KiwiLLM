@@ -288,22 +288,18 @@ export async function checkPgFreeRateLimit(key) {
   if (!pgPool || (key.plan || 'free') !== 'free') return null
 
   const rpm = Number(key.free_rpm_limit || freeRpmLimit)
-  const rpd = Number(key.free_rpd_limit || freeRpdLimit)
   const result = await pgPool.query(
     `
       select
-        count(*) filter (where created_at >= now() - interval '60 seconds') as minute_count,
-        count(*) filter (where created_at >= date_trunc('day', now())) as day_count
+        count(*) filter (where created_at >= now() - interval '60 seconds') as minute_count
       from rate_limit_events
       where api_key_id = $1
     `,
     [key.id],
   )
   const minuteCount = Number(result.rows[0]?.minute_count || 0)
-  const dayCount = Number(result.rows[0]?.day_count || 0)
 
   if (minuteCount >= rpm) return { status: 429, error: `Free plan limit reached: ${rpm} requests per minute.`, retryAfter: 60 }
-  if (dayCount >= rpd) return { status: 429, error: `Free plan limit reached: ${rpd} requests per day.`, retryAfter: 86400 }
 
   await pgPool.query(
     'insert into rate_limit_events (api_key_id, workspace_id) values ($1, $2)',

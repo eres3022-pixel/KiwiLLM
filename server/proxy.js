@@ -248,29 +248,21 @@ export function recordMeteredUsage(db, { keyValue, model, tokens, requests = 1 }
 }
 
 export function checkFreeRateLimit(db, key) {
-  if ((key.plan || 'free') !== 'free') return null
+  const credits = Number(db.workspace?.credits || 0)
+  if (credits <= 0) {
+    return { status: 402, error: 'Insufficient credit balance. Please top up credits in your workspace dashboard.' }
+  }
 
   const now = Date.now()
-  const day = todayKey()
   db.rateLimits ||= {}
-  const state = db.rateLimits[key.id] || { minute: [], day, count: 0 }
+  const state = db.rateLimits[key.id] || { minute: [] }
   state.minute = state.minute.filter((timestamp) => now - timestamp < 60000)
 
-  if (state.day !== day) {
-    state.day = day
-    state.count = 0
-  }
-
   if (state.minute.length >= freeRpmLimit) {
-    return { status: 429, error: `Free plan limit reached: ${freeRpmLimit} requests per minute.`, retryAfter: 60 }
-  }
-
-  if (state.count >= freeRpdLimit) {
-    return { status: 429, error: `Free plan limit reached: ${freeRpdLimit} requests per day.`, retryAfter: 86400 }
+    return { status: 429, error: `Rate limit reached: ${freeRpmLimit} requests per minute on Free plan.`, retryAfter: 60 }
   }
 
   state.minute.push(now)
-  state.count += 1
   db.rateLimits[key.id] = state
   return null
 }

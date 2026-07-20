@@ -317,7 +317,7 @@ if (isDashboardPage) {
 
       if (workspaceHealth) workspaceHealth.textContent = 'Live'
       const limits = data.limits || { plan: 'Free', rpm: 10, rpd: 200 }
-      if (workspaceHealthNote) workspaceHealthNote.textContent = `${limits.plan} plan: ${limits.rpm} RPM / ${limits.rpd} RPD`
+      if (workspaceHealthNote) workspaceHealthNote.textContent = `${limits.plan} plan: ${limits.rpm} RPM (Credit-based)`
       if (tokenTotal) tokenTotal.textContent = `${data.workspace.tokens30d.toLocaleString()} tokens`
       if (requestTotal) requestTotal.textContent = `${data.workspace.requests30d.toLocaleString()} requests`
       if (spendTotal) spendTotal.textContent = `${data.workspace.usedCredits30d.toLocaleString()} credits`
