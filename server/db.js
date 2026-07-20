@@ -33,7 +33,6 @@ export const fallbackModels = [
   { id: 'DeepSeek-V4-Flash', provider: 'DeepSeek', type: 'Text', context: '128k', input: 0.1, output: 0.2, status: 'Live' },
   { id: 'DeepSeek-V4-Pro', provider: 'DeepSeek', type: 'Reasoning', context: '128k', input: 0.5, output: 1.5, status: 'Live' },
   { id: 'glm-4.7', provider: 'Zhipu', type: 'Text', context: '128k', input: 0.1, output: 0.2, status: 'Live' },
-  { id: 'glm-5.2', provider: 'Zhipu', type: 'Reasoning', context: '128k', input: 0.6, output: 1.8, status: 'Live' },
   { id: 'kat-coder-pro-v2', provider: 'Kat', type: 'Code', context: '128k', input: 0.2, output: 0.4, status: 'Live' },
   { id: 'kat-coder-pro-v2.5', provider: 'Kat', type: 'Code', context: '128k', input: 0.2, output: 0.4, status: 'Live' },
   { id: 'Kimi-K2.6', provider: 'Moonshot', type: 'Text', context: '128k', input: 0.3, output: 0.6, status: 'Live' },
