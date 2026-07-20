@@ -197,6 +197,7 @@ export function normalizeWorkerModel(model) {
     context: fallback?.context || 'Provider default',
     input: fallback?.input ?? null,
     output: fallback?.output ?? null,
+    perRequest: fallback?.perRequest ?? null,
     status: fallback?.status || 'Live',
   }
 }
