@@ -87,56 +87,56 @@ export const renderDashboard = () => `
             <p class="empty-state">Loading spend from backend...</p>
           </div>
         </article>
-
-        <article class="dash-panel dash-keys dash-wide" id="api-keys-section">
-          <!-- Header row -->
-          <div class="api-keys-header">
-            <div>
-              <h2>API Keys</h2>
-              <p>Manage, monitor, and revoke your workspace API keys.</p>
-            </div>
-            <span class="dash-panel-head-tag">Free plan</span>
-          </div>
-
-          <!-- Create form -->
-          <div class="key-create-form-row">
-            <input id="key-name" type="text" placeholder="Key name, e.g. codex-production" aria-label="Key name" />
-            <button id="create-key-button" class="button button-kiwi" type="button">+ Create key</button>
-          </div>
-          <div id="create-key-message"></div>
-
-          <!-- Filter + table -->
-          <div class="key-table-topbar">
-            <div class="key-table-filters">
-              <input id="key-filter-name" class="key-filter-input" type="text" placeholder="Filter by name…" aria-label="Filter keys by name" />
-              <input id="key-filter-key" class="key-filter-input" type="text" placeholder="Filter by API key…" aria-label="Filter keys by key" />
-            </div>
-          </div>
-          <div class="key-table-wrapper">
-            <table class="key-table">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>Name</th>
-                  <th>Status</th>
-                  <th>API Key</th>
-                  <th>Quota</th>
-                  <th>Group</th>
-                  <th>Models</th>
-                  <th>IP Restriction</th>
-                  <th>Created</th>
-                  <th>Last Used</th>
-                  <th>Expires</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="key-table-body">
-                <tr><td colspan="12" class="empty-state">Loading API keys from backend...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </article>
       </section>
+
+      <article class="dash-panel dash-keys dash-wide" id="api-keys-section" style="margin-top: 24px;">
+        <!-- Header row -->
+        <div class="api-keys-header">
+          <div>
+            <h2>API Keys</h2>
+            <p>Manage, monitor, and revoke your workspace API keys.</p>
+          </div>
+          <span class="dash-panel-head-tag">Free plan</span>
+        </div>
+
+        <!-- Create form -->
+        <div class="key-create-form-row">
+          <input id="key-name" type="text" placeholder="Key name, e.g. codex-production" aria-label="Key name" />
+          <button id="create-key-button" class="button button-kiwi" type="button">+ Create key</button>
+        </div>
+
+        <!-- Filter + table -->
+        <div class="key-table-topbar">
+          <div class="key-table-filters">
+            <input id="key-filter-name" class="key-filter-input" type="text" placeholder="Filter by name…" aria-label="Filter keys by name" />
+            <input id="key-filter-key" class="key-filter-input" type="text" placeholder="Filter by API key…" aria-label="Filter keys by key" />
+          </div>
+        </div>
+        <div class="key-table-wrapper">
+          <table class="key-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>API Key</th>
+                <th>Quota</th>
+                <th>Group</th>
+                <th>Models</th>
+                <th>IP Restriction</th>
+                <th>Created</th>
+                <th>Last Used</th>
+                <th>Expires</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="key-table-body">
+              <tr><td colspan="12" class="empty-state">Loading API keys from backend...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
 
       <section class="dash-actions">
         <article>

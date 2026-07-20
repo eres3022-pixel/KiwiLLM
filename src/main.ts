@@ -416,7 +416,7 @@ if (isDashboardPage) {
             </tr>
           `
             }).join('')
-          : `<tr><td colspan="12" class="empty-state">No keys created yet. Create an API key below to get started.</td></tr>`
+          : `<tr><td colspan="12" class="empty-state">No keys created yet. Create an API key above to get started.</td></tr>`
 
         tableBody.innerHTML = buildRows(data.keys)
 
@@ -535,30 +535,9 @@ if (isDashboardPage) {
           // ignore session storage errors
         }
       }
-      if (message) {
-        const fullKey = created.key || created.displayKey
-        const maskedKey = created.displayKey || `${fullKey.slice(0, 8)}...${fullKey.slice(-4)}`
-        const createdValId = `created-val-${escapeHtml(created.id)}`
-        message.innerHTML = `
-          <div class="created-key-banner">
-            <div class="created-key-top">
-              <strong>✓ API Key Created: "${escapeHtml(created.name || name)}"</strong>
-              <small>Copy this secret key now. It provides access to your workspace.</small>
-            </div>
-            <div class="key-code-box">
-              <code class="key-value-display" id="${createdValId}">${escapeHtml(fullKey)}</code>
-              <div class="key-actions">
-                <button class="key-btn key-btn-copy" type="button" data-copy-key="${escapeHtml(fullKey)}">📋 Copy Key</button>
-                <button class="key-btn key-btn-toggle" type="button" data-toggle-target="${createdValId}" data-full-key="${escapeHtml(fullKey)}" data-masked-key="${escapeHtml(maskedKey)}">👁️ Hide</button>
-                <button class="key-btn key-btn-revoke" type="button" data-revoke-key="${escapeHtml(created.id)}">🗑️ Revoke</button>
-              </div>
-            </div>
-          </div>
-        `
-      }
       await hydrateDashboard()
     } catch (error) {
-      if (message) message.textContent = error instanceof Error ? error.message : 'Could not create key.'
+      alert(error instanceof Error ? error.message : 'Could not create key.')
     } finally {
       if (button) button.disabled = false
     }
