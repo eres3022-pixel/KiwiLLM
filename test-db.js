@@ -1,21 +1,17 @@
-import fs from 'fs';
-const envFile = fs.readFileSync('.env', 'utf8');
-envFile.split('\n').forEach(line => {
-  const [key, value] = line.split('=');
-  if (key && value) process.env[key.trim()] = value.trim();
-});
+import pg from 'pg';
 
-import { pgPool } from './server/db.js';
+const url = 'postgresql://postgres.lghwozkpsuteevkubysb:eres9325296264@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres';
+const pool = new pg.Pool({ connectionString: url });
 
-if (!pgPool) {
-  console.log('pgPool is null');
-  process.exit(1);
+async function test() {
+  try {
+    console.log("Attempting to connect...");
+    const res = await pool.query('SELECT 1 as success');
+    console.log("Connected successfully! Result:", res.rows);
+  } catch (e) {
+    console.error("Connection failed!", e.message);
+  } finally {
+    await pool.end();
+  }
 }
-
-pgPool.query('select 1')
-  .then(() => console.log('DB SUCCESS'))
-  .catch(err => {
-    console.error('DB ERROR:', err.message);
-    if (err.code) console.error('CODE:', err.code);
-  })
-  .finally(() => pgPool.end());
+test();
