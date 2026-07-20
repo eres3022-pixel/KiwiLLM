@@ -9,9 +9,15 @@ import {
   supabaseUrl, supabasePublishableKey, adminEmails, adminSessions, adminSessionMs
 } from './config.js'
 
-export const pgPool = databaseUrl
+let finalDatabaseUrl = databaseUrl
+if (finalDatabaseUrl && finalDatabaseUrl.includes('pooler.supabase.com') && finalDatabaseUrl.includes(':5432')) {
+  // Render doesn't support IPv6. Supabase port 5432 is IPv6-only. Use 6543 (transaction pooler) for IPv4 support.
+  finalDatabaseUrl = finalDatabaseUrl.replace(':5432', ':6543')
+}
+
+export const pgPool = finalDatabaseUrl
   ? new pg.Pool({
-      connectionString: databaseUrl,
+      connectionString: finalDatabaseUrl,
       ssl: isSupabasePostgres ? { rejectUnauthorized: false } : undefined,
     })
   : null

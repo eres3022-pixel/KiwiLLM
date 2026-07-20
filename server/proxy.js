@@ -19,14 +19,21 @@ export function keyValue() {
 }
 
 export async function findKiwiKey(value = '') {
-  if (pgPool) return findPgKey(value)
-
   if (!value.startsWith(`${kiwiApiPrefix}_`) && !value.startsWith('kiwi_sk_')) {
     return null
   }
 
   if (process.env.KIWI_MASTER_KEY && value === process.env.KIWI_MASTER_KEY) {
     return { id: 'master', name: 'Master key', key: value, plan: 'paid', models: [], lastUsed: 'Now' }
+  }
+
+  if (pgPool) {
+    try {
+      const pgKey = await findPgKey(value)
+      if (pgKey) return pgKey
+    } catch (error) {
+      console.error('PostgreSQL findPgKey failed, falling back to local DB:', error.message)
+    }
   }
 
   const db = await readDb()
