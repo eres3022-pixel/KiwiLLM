@@ -49,8 +49,8 @@ export let modelCache = { expiresAt: 0, models: fallbackModels }
 export const seedDb = {
   workspace: {
     email: workspaceEmail,
-    credits: 0,
-    creditUsd: 0,
+    credits: 1000,
+    creditUsd: 20,
     usedCredits30d: 0,
     usedUsd30d: 0,
     requests30d: 0,
@@ -196,8 +196,8 @@ export async function getDefaultWorkspace(client = pgPool, authUser = null) {
 
     workspaceResult = await client.query(
       `
-        insert into workspaces (name, email, owner_user_id, plan, free_rpm_limit, free_rpd_limit)
-        values ($1, $2, $3, 'free', $4, $5)
+        insert into workspaces (name, email, owner_user_id, plan, credit_balance, credit_usd_balance, free_rpm_limit, free_rpd_limit)
+        values ($1, $2, $3, 'free', 1000, 20.00, $4, $5)
         returning *
       `,
       [`${authName(authUser)} Workspace`, authUser.email, appUser.id, freeRpmLimit, freeRpdLimit],
@@ -219,8 +219,8 @@ export async function getDefaultWorkspace(client = pgPool, authUser = null) {
   )
   result = await client.query(
     `
-      insert into workspaces (name, email, owner_user_id, plan, free_rpm_limit, free_rpd_limit)
-      values ('Kiwi Workspace', $1, $2, 'free', $3, $4)
+      insert into workspaces (name, email, owner_user_id, plan, credit_balance, credit_usd_balance, free_rpm_limit, free_rpd_limit)
+      values ('Kiwi Workspace', $1, $2, 'free', 1000, 20.00, $3, $4)
       returning *
     `,
     [workspaceEmail, userResult.rows[0].id, freeRpmLimit, freeRpdLimit],

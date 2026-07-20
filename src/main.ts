@@ -316,7 +316,7 @@ if (isDashboardPage) {
       const spendTotal = document.querySelector<HTMLElement>('#spend-total')
 
       if (workspaceHealth) workspaceHealth.textContent = 'Live'
-      const limits = data.limits || { plan: 'Free', rpm: 5, rpd: 200 }
+      const limits = data.limits || { plan: 'Free', rpm: 10, rpd: 200 }
       if (workspaceHealthNote) workspaceHealthNote.textContent = `${limits.plan} plan: ${limits.rpm} RPM / ${limits.rpd} RPD`
       if (tokenTotal) tokenTotal.textContent = `${data.workspace.tokens30d.toLocaleString()} tokens`
       if (requestTotal) requestTotal.textContent = `${data.workspace.requests30d.toLocaleString()} requests`

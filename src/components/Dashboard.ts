@@ -167,7 +167,7 @@ export const renderDashboard = () => `
         </div>
         <div class="key-builder-footer">
           <button id="create-key-button" class="button button-light" type="button">Create key</button>
-          <p id="create-key-message">New free keys can call any live model and are limited to 5 RPM / 200 RPD.</p>
+          <p id="create-key-message">New free keys can call any live model and are limited to 10 RPM / 200 RPD.</p>
         </div>
       </section>
     </section>
