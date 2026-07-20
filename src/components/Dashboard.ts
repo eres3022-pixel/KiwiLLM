@@ -86,14 +86,29 @@ export const renderDashboard = () => `
           </div>
         </article>
 
-        <article class="dash-panel dash-keys dash-wide">
+        <article class="dash-panel dash-keys dash-wide" id="api-keys-section">
+          <!-- Header row -->
+          <div class="api-keys-header">
+            <div>
+              <h2>API Keys</h2>
+              <p>Manage, monitor, and revoke your workspace API keys.</p>
+            </div>
+            <span class="dash-panel-head-tag">Free plan</span>
+          </div>
+
+          <!-- Create form -->
+          <div class="key-create-form-row">
+            <input id="key-name" type="text" placeholder="Key name, e.g. codex-production" aria-label="Key name" />
+            <button id="create-key-button" class="button button-kiwi" type="button">+ Create key</button>
+          </div>
+          <div id="create-key-message"></div>
+
+          <!-- Filter + table -->
           <div class="key-table-topbar">
             <div class="key-table-filters">
               <input id="key-filter-name" class="key-filter-input" type="text" placeholder="Filter by name…" aria-label="Filter keys by name" />
               <input id="key-filter-key" class="key-filter-input" type="text" placeholder="Filter by API key…" aria-label="Filter keys by key" />
-              <span class="key-filter-status">⊙ Status</span>
             </div>
-            <a class="key-create-btn" href="#create-api-key">+ Create API Key</a>
           </div>
           <div class="key-table-wrapper">
             <table class="key-table">
@@ -175,20 +190,7 @@ export const renderDashboard = () => `
         <small>Payment methods supported: Card, UPI, and Crypto (USDT). Balance updates upon confirmation.</small>
       </section>
 
-      <section class="key-builder-panel" id="create-api-key">
-        <div class="dash-panel-head">
-          <div>
-            <h2>Create an API key</h2>
-            <p>Name the key and use it with any live Kiwi model route.</p>
-          </div>
-          <span>Free plan</span>
-        </div>
-        <div class="key-builder-form key-builder-form-inline">
-          <input id="key-name" type="text" placeholder="Key name, e.g. codex-production" aria-label="Key name" />
-          <button id="create-key-button" class="button button-kiwi" type="button">Create key</button>
-        </div>
-        <div id="create-key-message"></div>
-      </section>
+
 
       <section class="community-banner">
         <div class="community-content">

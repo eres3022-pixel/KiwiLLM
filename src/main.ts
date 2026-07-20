@@ -509,13 +509,6 @@ if (isDashboardPage) {
     }
   })
 
-  // "+ Create API Key" scrolls to the section and focuses the input
-  document.querySelector<HTMLAnchorElement>('.key-create-btn')?.addEventListener('click', (e) => {
-    e.preventDefault()
-    const section = document.querySelector<HTMLElement>('#create-api-key')
-    section?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    setTimeout(() => document.querySelector<HTMLInputElement>('#key-name')?.focus(), 350)
-  })
 
   document.querySelector<HTMLButtonElement>('#create-key-button')?.addEventListener('click', async () => {
     const nameInput = document.querySelector<HTMLInputElement>('#key-name')
