@@ -14,7 +14,7 @@ export const renderDashboard = () => `
         <a href="/usage">Usage</a>
         <a href="/playground">Playground</a>
         <a href="/docs">Docs</a>
-        <a href="/">Home</a>
+        <a href="/top-up">Wallet</a>
       </nav>
       <div class="dash-account">${authAccountMarkup()}</div>
     </header>
