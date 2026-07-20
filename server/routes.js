@@ -174,38 +174,54 @@ router.post('/v1/video/generations', (req, res) => {
 })
 
 router.get('/api/dashboard', requireAuth, async (req, res) => {
-  if (pgPool) {
-    const data = await getPgDashboard(req.authUser)
-    return res.json({
-      ...data,
-      stats: [
-        { label: 'Credit balance', value: data.workspace.credits.toLocaleString(), note: `$${data.workspace.creditUsd.toFixed(2)} available`, trend: 'Live' },
-        { label: 'Requests', value: data.workspace.requests30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
-        { label: 'Tokens', value: formatTokens(data.workspace.tokens30d), note: 'Input + output', trend: 'Live' },
-        { label: 'Credits used', value: data.workspace.usedCredits30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
-      ],
-    })
-  }
+  try {
+    if (pgPool) {
+      const data = await getPgDashboard(req.authUser)
+      const credits = Number(data.workspace?.credits || 0)
+      const creditUsd = Number(data.workspace?.creditUsd || 0)
+      const requests30d = Number(data.workspace?.requests30d || 0)
+      const tokens30d = Number(data.workspace?.tokens30d || 0)
+      const usedCredits30d = Number(data.workspace?.usedCredits30d || 0)
 
-  const db = await readDb()
-  // Using imported util or just return usage (assuming refresh is in db module or skip)
-  // In original code, refreshWorkspaceTotals was used here, let's just make sure it exists, or just send db.workspace
-  res.json({
-    workspace: db.workspace,
-    stats: [
-      { label: 'Credit balance', value: db.workspace.credits.toLocaleString(), note: `$${db.workspace.creditUsd.toFixed(2)} available`, trend: 'Live' },
-      { label: 'Requests', value: db.workspace.requests30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
-      { label: 'Tokens', value: formatTokens(db.workspace.tokens30d), note: 'Input + output', trend: 'Live' },
-      { label: 'Credits used', value: db.workspace.usedCredits30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
-    ],
-    usage: db.usage,
-    limits: {
-      plan: 'Free',
-      rpm: freeRpmLimit,
-      rpd: freeRpdLimit,
-    },
-    keys: db.keys.map((item) => ({ ...item, key: publicKey(item.key) })),
-  })
+      return res.json({
+        ...data,
+        stats: [
+          { label: 'Credit balance', value: credits.toLocaleString(), note: `$${creditUsd.toFixed(2)} available`, trend: 'Live' },
+          { label: 'Requests', value: requests30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
+          { label: 'Tokens', value: formatTokens(tokens30d), note: 'Input + output', trend: 'Live' },
+          { label: 'Credits used', value: usedCredits30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
+        ],
+      })
+    }
+
+    const db = await readDb()
+    const workspace = db.workspace || {}
+    const credits = Number(workspace.credits || 0)
+    const creditUsd = Number(workspace.creditUsd || 0)
+    const requests30d = Number(workspace.requests30d || 0)
+    const tokens30d = Number(workspace.tokens30d || 0)
+    const usedCredits30d = Number(workspace.usedCredits30d || 0)
+
+    return res.json({
+      workspace,
+      stats: [
+        { label: 'Credit balance', value: credits.toLocaleString(), note: `$${creditUsd.toFixed(2)} available`, trend: 'Live' },
+        { label: 'Requests', value: requests30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
+        { label: 'Tokens', value: formatTokens(tokens30d), note: 'Input + output', trend: 'Live' },
+        { label: 'Credits used', value: usedCredits30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
+      ],
+      usage: db.usage || { tokenBars: [], requestBars: [], spendByModel: [] },
+      limits: {
+        plan: 'Free',
+        rpm: freeRpmLimit,
+        rpd: freeRpdLimit,
+      },
+      keys: (db.keys || []).map((item) => ({ ...item, key: publicKey(item.key) })),
+    })
+  } catch (error) {
+    console.error('Error serving /api/dashboard:', error)
+    return res.status(500).json({ error: error instanceof Error ? error.message : 'Internal server error.' })
+  }
 })
 
 router.post('/api/redeem', requireAuth, async (req, res) => {
