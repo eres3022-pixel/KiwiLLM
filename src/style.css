@@ -4411,3 +4411,284 @@ code b {
   opacity: 0.35;
   cursor: not-allowed;
 }
+
+/* ==================================================
+   Invite to Earn Modal
+   ================================================== */
+
+.invite-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.invite-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.invite-backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, #1b2838 0%, #0d1218 80%, #05080c 100%);
+}
+
+.invite-dialog {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.invite-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: color 0.2s;
+  z-index: 20;
+}
+.invite-close:hover {
+  color: #fff;
+}
+
+.invite-header {
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 60px;
+}
+.invite-header h2 {
+  font-size: 26px;
+  margin: 0 0 10px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+.invite-header p {
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  font-size: 15px;
+}
+
+.invite-3d-scene {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+  margin: 0 auto;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.invite-card-arc {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.invite-3d-card {
+  position: absolute;
+  width: 140px;
+  height: 80px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-style: preserve-3d;
+  
+  /* Arc math using the custom property --arc-index (-2, -1, 0, 1, 2) */
+  transform: translateX(calc(var(--arc-index) * 220px)) 
+             translateY(calc(abs(var(--arc-index)) * 40px)) 
+             rotateZ(calc(var(--arc-index) * 15deg))
+             scale(calc(1 - abs(var(--arc-index)) * 0.15));
+  
+  opacity: calc(1 - abs(var(--arc-index)) * 0.2);
+}
+
+.invite-card-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: -1;
+  overflow: hidden;
+}
+
+.invite-card-bg::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, var(--card-color-1, #444), var(--card-color-2, #111));
+  opacity: 0.8;
+}
+
+.invite-3d-card.active {
+  width: 160px;
+  height: 90px;
+  box-shadow: 0 0 40px rgba(130, 200, 255, 0.3), 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 10;
+}
+
+.card-365 { --card-color-1: #888; --card-color-2: #222; }
+.card-3 { --card-color-1: #5ee7df; --card-color-2: #b490ca; }
+.card-7 { --card-color-1: #a18cd1; --card-color-2: #fbc2eb; }
+.card-15 { --card-color-1: #8fd3f4; --card-color-2: #84fab0; }
+.card-30 { --card-color-1: #f6d365; --card-color-2: #fda085; }
+
+.invite-3d-card span {
+  z-index: 2;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.invite-3d-card strong {
+  font-size: 22px;
+}
+.invite-3d-card.active strong {
+  font-size: 26px;
+}
+
+.invite-center-actions {
+  text-align: center;
+  margin-top: -30px;
+  margin-bottom: 50px;
+  z-index: 20;
+}
+.invite-center-actions h3 {
+  font-size: 18px;
+  margin: 0 0 16px;
+  font-weight: 600;
+}
+.invite-action-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 16px;
+}
+.invite-action-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.invite-stats {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+.invite-stats .divider {
+  margin: 0 8px;
+}
+.invite-stats a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+}
+.invite-stats a:hover {
+  color: #fff;
+}
+
+.invite-footer {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+.invite-footer-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 20px;
+}
+
+.invite-tasks {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.invite-task-card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  backdrop-filter: blur(10px);
+  transition: background 0.2s;
+}
+.invite-task-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.invite-task-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.invite-task-content {
+  flex: 1;
+  text-align: left;
+}
+.invite-task-content h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.invite-task-btn {
+  background: #fff;
+  color: #000;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.invite-task-btn:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .invite-tasks {
+    flex-direction: column;
+  }
+  .invite-3d-card {
+    transform: translateX(calc(var(--arc-index) * 100px)) 
+               translateY(calc(abs(var(--arc-index)) * 40px)) 
+               rotateZ(calc(var(--arc-index) * 10deg))
+               scale(calc(1 - abs(var(--arc-index)) * 0.2));
+  }
+}

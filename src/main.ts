@@ -79,6 +79,77 @@ document.body.insertAdjacentHTML(
         <small data-auth-message>${supabase ? 'Secure OAuth powered by Supabase.' : 'Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to enable login.'}</small>
       </section>
     </div>
+
+    <div class="invite-modal" id="invite-modal" hidden>
+      <div class="invite-backdrop" id="invite-close-bg"></div>
+      <div class="invite-dialog">
+        <button class="invite-close" id="invite-close-btn" aria-label="Close invite modal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        
+        <div class="invite-header">
+          <h2>KiwiLLM Together</h2>
+          <p>Invite friends to Kiwi for guaranteed Membership Credits</p>
+        </div>
+        
+        <div class="invite-3d-scene">
+          <div class="invite-card-arc">
+            <div class="invite-3d-card" style="--arc-index: -2;">
+              <div class="invite-card-bg card-365"></div>
+              <span><strong>365</strong> Days</span>
+            </div>
+            <div class="invite-3d-card" style="--arc-index: -1;">
+              <div class="invite-card-bg card-3"></div>
+              <span><strong>3</strong> Days</span>
+            </div>
+            <div class="invite-3d-card active" style="--arc-index: 0;">
+              <div class="invite-card-bg card-7"></div>
+              <span><strong>7</strong> Days</span>
+            </div>
+            <div class="invite-3d-card" style="--arc-index: 1;">
+              <div class="invite-card-bg card-15"></div>
+              <span><strong>15</strong> Days</span>
+            </div>
+            <div class="invite-3d-card" style="--arc-index: 2;">
+              <div class="invite-card-bg card-30"></div>
+              <span><strong>30</strong> Days</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="invite-center-actions">
+          <h3>7-Day Membership Credits</h3>
+          <button class="invite-action-btn">Invite to earn chances</button>
+          <div class="invite-stats">
+            <span>Draws left: 0</span> <span class="divider">|</span> <a href="#">My Prizes ></a>
+          </div>
+        </div>
+        
+        <div class="invite-footer">
+          <p class="invite-footer-text">Complete any task below, and both of you get [ 1 ] draw.</p>
+          <div class="invite-tasks">
+            <div class="invite-task-card">
+              <div class="invite-task-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+              </div>
+              <div class="invite-task-content">
+                <h4>Invite a friend to join Kiwi</h4>
+              </div>
+              <button class="invite-task-btn">Invite</button>
+            </div>
+            <div class="invite-task-card">
+              <div class="invite-task-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+              </div>
+              <div class="invite-task-content">
+                <h4>Invite a friend to subscribe to Kiwi Membership</h4>
+              </div>
+              <button class="invite-task-btn">Invite</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   `,
 )
 
@@ -154,6 +225,27 @@ document.querySelectorAll<HTMLElement>('[data-auth-open]').forEach((button) => {
 document.querySelectorAll<HTMLElement>('[data-auth-close]').forEach((button) => {
   button.addEventListener('click', closeAuthModal)
 })
+
+const inviteModal = document.getElementById('invite-modal')
+const openInviteModal = () => {
+  if (!inviteModal) return
+  inviteModal.hidden = false
+  requestAnimationFrame(() => inviteModal.classList.add('is-open'))
+}
+const closeInviteModal = () => {
+  if (!inviteModal) return
+  inviteModal.classList.remove('is-open')
+  window.setTimeout(() => { inviteModal.hidden = true }, 300)
+}
+
+document.querySelectorAll<HTMLElement>('.dash-invite-card').forEach((btn) => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault()
+    openInviteModal()
+  })
+})
+document.getElementById('invite-close-btn')?.addEventListener('click', closeInviteModal)
+document.getElementById('invite-close-bg')?.addEventListener('click', closeInviteModal)
 
 document.querySelectorAll<HTMLButtonElement>('[data-auth-provider]').forEach((button) => {
   button.addEventListener('click', async () => {
