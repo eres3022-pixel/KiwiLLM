@@ -364,11 +364,18 @@ if (isDashboardPage) {
 
       const tableBody = document.querySelector<HTMLElement>('#key-table-body')
       if (tableBody) {
+        let createdKeysMap: Record<string, string> = {}
+        try {
+          createdKeysMap = JSON.parse(sessionStorage.getItem('kiwi_created_keys') || '{}')
+        } catch {
+          createdKeysMap = {}
+        }
+
         tableBody.innerHTML = data.keys.length
           ? data.keys
               .map((item) => {
-                const fullKey = item.key
-                const maskedKey = item.key.includes('...') ? item.key : `${item.key.slice(0, 7)}...${item.key.slice(-4)}`
+                const fullKey = createdKeysMap[item.id] || item.key
+                const maskedKey = fullKey.includes('••••') ? fullKey : item.key.includes('...') ? item.key : `${fullKey.slice(0, 7)}...${fullKey.slice(-4)}`
                 const keyDisplayId = `table-key-${escapeHtml(item.id)}`
                 const createdDate = item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Recently'
                 return `
@@ -480,6 +487,15 @@ if (isDashboardPage) {
         body: JSON.stringify({ name, models: [] }),
       })
       if (nameInput) nameInput.value = ''
+      if (created.id && created.key) {
+        try {
+          const map = JSON.parse(sessionStorage.getItem('kiwi_created_keys') || '{}')
+          map[created.id] = created.key
+          sessionStorage.setItem('kiwi_created_keys', JSON.stringify(map))
+        } catch {
+          // ignore session storage errors
+        }
+      }
       if (message) {
         const fullKey = created.key || created.displayKey
         const maskedKey = created.displayKey || `${fullKey.slice(0, 8)}...${fullKey.slice(-4)}`
