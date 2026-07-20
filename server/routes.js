@@ -202,7 +202,7 @@ router.get('/api/dashboard', requireAuth, async (req, res) => {
           ...data,
           keys: mergedKeys,
           stats: [
-            { label: 'Credit balance', value: `$${creditUsd.toFixed(2)}`, note: `${credits.toLocaleString()} credits available`, trend: 'Live' },
+            { label: 'Credit balance', value: `$${creditUsd.toFixed(2)}`, note: 'Available balance', trend: 'Live' },
             { label: 'Requests', value: requests30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
             { label: 'Tokens', value: formatTokens(tokens30d), note: 'Input + output', trend: 'Live' },
             { label: 'Credits used', value: `$${(usedCredits30d / 50).toFixed(2)}`, note: 'Last 30 days', trend: 'Live' },
@@ -223,7 +223,7 @@ router.get('/api/dashboard', requireAuth, async (req, res) => {
     return res.json({
       workspace,
       stats: [
-        { label: 'Credit balance', value: `$${creditUsd.toFixed(2)}`, note: `${credits.toLocaleString()} credits available`, trend: 'Live' },
+        { label: 'Credit balance', value: `$${creditUsd.toFixed(2)}`, note: 'Available balance', trend: 'Live' },
         { label: 'Requests', value: requests30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
         { label: 'Tokens', value: formatTokens(tokens30d), note: 'Input + output', trend: 'Live' },
         { label: 'Credits used', value: `$${(usedCredits30d / 50).toFixed(2)}`, note: 'Last 30 days', trend: 'Live' },
