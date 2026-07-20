@@ -86,15 +86,33 @@ export const renderDashboard = () => `
           </div>
         </article>
 
-        <article class="dash-panel dash-keys">
+        <article class="dash-panel dash-keys dash-wide">
           <div class="dash-panel-head">
             <div>
               <h2>API keys</h2>
-              <p>Scoped keys for teams and clients.</p>
+              <p>Manage, monitor, and revoke your workspace API keys.</p>
             </div>
-            <a href="#create-api-key">New key</a>
+            <a class="button button-light" href="#create-api-key">+ Create new key</a>
           </div>
-          <p class="empty-state">Loading keys from backend...</p>
+          <div class="key-table-wrapper">
+            <table class="key-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>API Key</th>
+                  <th>Quota</th>
+                  <th>Models</th>
+                  <th>Created</th>
+                  <th>Last Used</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="key-table-body">
+                <tr><td colspan="8" class="empty-state">Loading API keys from backend...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </article>
       </section>
 

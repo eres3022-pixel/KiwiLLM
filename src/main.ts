@@ -310,7 +310,7 @@ if (isDashboardPage) {
     }
     stats: Array<{ label: string; value: string; note: string; trend: string }>
     limits?: { plan: string; rpm: number }
-    keys: Array<{ id: string; name: string; key: string; scope: string; lastUsed: string }>
+    keys: Array<{ id: string; name: string; key: string; scope: string; lastUsed: string; createdAt?: string }>
     usage: {
       tokenBars: number[]
       requestBars: number[]
@@ -362,41 +362,38 @@ if (isDashboardPage) {
         card.querySelector('p')!.textContent = stat.note
       })
 
-      const keyPanel = document.querySelector<HTMLElement>('.dash-keys')
-      if (keyPanel) {
-        keyPanel.querySelectorAll('.key-row').forEach((row) => row.remove())
-        keyPanel.querySelector('.empty-state')?.remove()
-        keyPanel.insertAdjacentHTML(
-          'beforeend',
-          data.keys.length
-            ? data.keys
-                .map((item) => {
-                  const fullKey = item.key
-                  const maskedKey = item.key.includes('...') ? item.key : `${item.key.slice(0, 8)}...${item.key.slice(-4)}`
-                  const keyDisplayId = `key-val-${escapeHtml(item.id)}`
-                  return `
-                <div class="key-row" data-key-id="${escapeHtml(item.id)}">
-                  <div class="key-row-header">
-                    <div class="key-title-group">
-                      <strong class="key-name">${escapeHtml(item.name)}</strong>
-                      <span class="key-scope-badge">${escapeHtml(item.scope)}</span>
-                    </div>
-                    <small class="key-last-used">Last used: ${escapeHtml(item.lastUsed)}</small>
+      const tableBody = document.querySelector<HTMLElement>('#key-table-body')
+      if (tableBody) {
+        tableBody.innerHTML = data.keys.length
+          ? data.keys
+              .map((item) => {
+                const fullKey = item.key
+                const maskedKey = item.key.includes('...') ? item.key : `${item.key.slice(0, 7)}...${item.key.slice(-4)}`
+                const keyDisplayId = `table-key-${escapeHtml(item.id)}`
+                const createdDate = item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Recently'
+                return `
+              <tr data-key-id="${escapeHtml(item.id)}">
+                <td class="key-col-name">${escapeHtml(item.name)}</td>
+                <td><span class="key-status-badge">Enabled</span></td>
+                <td>
+                  <div class="key-col-code">
+                    <code id="${keyDisplayId}">${escapeHtml(maskedKey)}</code>
+                    <button class="icon-btn" type="button" title="Copy key" data-copy-key="${escapeHtml(fullKey)}">📋</button>
+                    <button class="icon-btn" type="button" title="Show/Hide key" data-toggle-target="${keyDisplayId}" data-full-key="${escapeHtml(fullKey)}" data-masked-key="${escapeHtml(maskedKey)}">👁️</button>
                   </div>
-                  <div class="key-code-box">
-                    <code class="key-value-display" id="${keyDisplayId}">${escapeHtml(maskedKey)}</code>
-                    <div class="key-actions">
-                      <button class="key-btn key-btn-copy" type="button" data-copy-key="${escapeHtml(fullKey)}">📋 Copy</button>
-                      <button class="key-btn key-btn-toggle" type="button" data-toggle-target="${keyDisplayId}" data-full-key="${escapeHtml(fullKey)}" data-masked-key="${escapeHtml(maskedKey)}">👁️ Show</button>
-                      <button class="key-btn key-btn-revoke" type="button" data-revoke-key="${escapeHtml(item.id)}">🗑️ Revoke</button>
-                    </div>
-                  </div>
-                </div>
-              `
-                })
-                .join('')
-            : '<p class="empty-state">No keys yet. Create one below to start sending requests.</p>',
-        )
+                </td>
+                <td>Unlimited</td>
+                <td>${escapeHtml(item.scope)}</td>
+                <td>${escapeHtml(createdDate)}</td>
+                <td>${escapeHtml(item.lastUsed)}</td>
+                <td>
+                  <button class="key-btn key-btn-revoke" type="button" data-revoke-key="${escapeHtml(item.id)}">🚫 Revoke</button>
+                </td>
+              </tr>
+            `
+              })
+              .join('')
+          : '<tr><td colspan="8" class="empty-state">No keys created yet. Create an API key below to get started.</td></tr>'
       }
 
       document.querySelectorAll<HTMLButtonElement>('[data-revoke-key]').forEach((button) => {
@@ -484,7 +481,25 @@ if (isDashboardPage) {
       })
       if (nameInput) nameInput.value = ''
       if (message) {
-        message.innerHTML = `<span style="color: var(--mint); font-weight: 700;">✓ API key "${escapeHtml(created.name || name)}" created successfully! Added below.</span>`
+        const fullKey = created.key || created.displayKey
+        const maskedKey = created.displayKey || `${fullKey.slice(0, 8)}...${fullKey.slice(-4)}`
+        const createdValId = `created-val-${escapeHtml(created.id)}`
+        message.innerHTML = `
+          <div class="created-key-banner">
+            <div class="created-key-top">
+              <strong>✓ API Key Created: "${escapeHtml(created.name || name)}"</strong>
+              <small>Copy this secret key now. It provides access to your workspace.</small>
+            </div>
+            <div class="key-code-box">
+              <code class="key-value-display" id="${createdValId}">${escapeHtml(fullKey)}</code>
+              <div class="key-actions">
+                <button class="key-btn key-btn-copy" type="button" data-copy-key="${escapeHtml(fullKey)}">📋 Copy Key</button>
+                <button class="key-btn key-btn-toggle" type="button" data-toggle-target="${createdValId}" data-full-key="${escapeHtml(fullKey)}" data-masked-key="${escapeHtml(maskedKey)}">👁️ Hide</button>
+                <button class="key-btn key-btn-revoke" type="button" data-revoke-key="${escapeHtml(created.id)}">🗑️ Revoke</button>
+              </div>
+            </div>
+          </div>
+        `
       }
       await hydrateDashboard()
     } catch (error) {
