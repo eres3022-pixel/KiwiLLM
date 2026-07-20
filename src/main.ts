@@ -247,6 +247,100 @@ document.querySelectorAll<HTMLElement>('.dash-invite-card').forEach((btn) => {
 document.getElementById('invite-close-btn')?.addEventListener('click', closeInviteModal)
 document.getElementById('invite-close-bg')?.addEventListener('click', closeInviteModal)
 
+// --- Carousel Physics Engine ---
+const scene = document.querySelector('.invite-3d-scene') as HTMLElement
+const cards = document.querySelectorAll('.invite-3d-card') as NodeListOf<HTMLElement>
+const activeTitle = document.querySelector('.invite-center-actions h3') as HTMLElement
+
+if (scene && cards.length) {
+  let isDragging = false
+  let targetRotation = 0
+  let currentRotation = 0
+  let velocity = 0
+  let lastTime = performance.now()
+  let lastX = 0
+
+  const cardTitles = [
+    '365-Day Membership Credits',
+    '3-Day Membership Credits',
+    '7-Day Membership Credits',
+    '15-Day Membership Credits',
+    '30-Day Membership Credits'
+  ]
+
+  const onPointerDown = (e: PointerEvent) => {
+    isDragging = true
+    lastX = e.clientX
+    velocity = 0
+    scene.style.cursor = 'grabbing'
+  }
+
+  const onPointerMove = (e: PointerEvent) => {
+    if (!isDragging) return
+    const deltaX = e.clientX - lastX
+    lastX = e.clientX
+    targetRotation -= deltaX / 200
+  }
+
+  const onPointerUp = () => {
+    if (!isDragging) return
+    isDragging = false
+    scene.style.cursor = 'grab'
+    
+    if (Math.abs(velocity) < 0.05) {
+      targetRotation = Math.round(targetRotation)
+    }
+  }
+
+  scene.addEventListener('pointerdown', onPointerDown)
+  window.addEventListener('pointermove', onPointerMove)
+  window.addEventListener('pointerup', onPointerUp)
+  scene.style.cursor = 'grab'
+  scene.style.touchAction = 'none'
+
+  const updatePhysics = (time: number) => {
+    const dt = Math.min((time - lastTime) / 16.66, 2)
+    lastTime = time
+
+    if (!isDragging) {
+      targetRotation -= 0.002 * dt
+      velocity *= Math.pow(0.9, dt)
+      currentRotation += (targetRotation - currentRotation) * 0.1 * dt
+    } else {
+      velocity = (targetRotation - currentRotation)
+      currentRotation += velocity * 0.5 * dt
+    }
+
+    let activeIndex = 0
+    let closestDist = Infinity
+
+    cards.forEach((card, i) => {
+      let logicalIndex = i - 2 
+      let relativePos = (logicalIndex - currentRotation) % 5
+      if (relativePos > 2.5) relativePos -= 5
+      if (relativePos < -2.5) relativePos += 5
+      
+      card.style.setProperty('--arc-index', relativePos.toString())
+      
+      const dist = Math.abs(relativePos)
+      if (dist < closestDist) {
+        closestDist = dist
+        activeIndex = i
+      }
+      
+      card.classList.toggle('active', dist < 0.5)
+    })
+
+    if (activeTitle) {
+      activeTitle.textContent = cardTitles[activeIndex]
+    }
+
+    requestAnimationFrame(updatePhysics)
+  }
+  
+  requestAnimationFrame(updatePhysics)
+}
+// --- End Carousel Physics ---
 document.querySelectorAll<HTMLButtonElement>('[data-auth-provider]').forEach((button) => {
   button.addEventListener('click', async () => {
     const provider = button.dataset.authProvider as 'google' | 'github'

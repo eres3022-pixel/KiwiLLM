@@ -4514,16 +4514,16 @@ code b {
   font-size: 14px;
   color: #fff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
   transform-style: preserve-3d;
   
-  /* Arc math using the custom property --arc-index (-2, -1, 0, 1, 2) */
+  /* Arc math using the custom property --arc-index */
   transform: translateX(calc(var(--arc-index) * 220px)) 
              translateY(calc(abs(var(--arc-index)) * 40px)) 
              rotateZ(calc(var(--arc-index) * 15deg))
              scale(calc(1 - abs(var(--arc-index)) * 0.15));
   
   opacity: calc(1 - abs(var(--arc-index)) * 0.2);
+  z-index: calc(10 - round(abs(var(--arc-index))));
 }
 
 .invite-card-bg {
