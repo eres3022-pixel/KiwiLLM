@@ -28,6 +28,14 @@ const corsMiddleware = cors({
 app.use(['/api', '/v1'], corsMiddleware)
 app.use(express.json({ limit: '1mb' }))
 
+import { join } from 'node:path'
+import { existsSync } from 'node:fs'
+
+const distPath = join(process.cwd(), 'dist')
+if (existsSync(distPath)) {
+  app.use(express.static(distPath))
+}
+
 app.use(router)
 
 app.use((error, _req, res, next) => {
@@ -37,7 +45,10 @@ app.use((error, _req, res, next) => {
   return next(error)
 })
 
-app.use((_req, res) => {
+app.use((req, res) => {
+  if (existsSync(distPath) && !req.path.startsWith('/api') && !req.path.startsWith('/v1')) {
+    return res.sendFile(join(distPath, 'index.html'))
+  }
   res.status(200).json({ status: 'Kiwi LLM API is running', message: 'Ready to receive requests.' })
 })
 
