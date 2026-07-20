@@ -547,6 +547,13 @@ export async function flushPgUsage() {
         on conflict (workspace_id, usage_date)
         do update set requests = daily_usage.requests + excluded.requests, input_tokens = daily_usage.input_tokens + excluded.input_tokens, output_tokens = daily_usage.output_tokens + excluded.output_tokens, total_tokens = daily_usage.total_tokens + excluded.total_tokens, credits_used = daily_usage.credits_used + excluded.credits_used, usd_estimate = daily_usage.usd_estimate + excluded.usd_estimate
       `, [v.w, v.d, v.r, v.i, v.o, v.t, v.c, v.u])
+      
+      await client.query(`
+        update workspaces 
+        set credit_usd_balance = credit_usd_balance - $1,
+            credit_balance = credit_balance - $2
+        where id = $3
+      `, [v.u, v.c, v.w])
     }
 
     for (const v of Object.values(modelMap)) {
