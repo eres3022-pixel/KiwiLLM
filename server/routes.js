@@ -176,22 +176,26 @@ router.post('/v1/video/generations', (req, res) => {
 router.get('/api/dashboard', requireAuth, async (req, res) => {
   try {
     if (pgPool) {
-      const data = await getPgDashboard(req.authUser)
-      const credits = Number(data.workspace?.credits || 0)
-      const creditUsd = Number(data.workspace?.creditUsd || 0)
-      const requests30d = Number(data.workspace?.requests30d || 0)
-      const tokens30d = Number(data.workspace?.tokens30d || 0)
-      const usedCredits30d = Number(data.workspace?.usedCredits30d || 0)
+      try {
+        const data = await getPgDashboard(req.authUser)
+        const credits = Number(data.workspace?.credits || 0)
+        const creditUsd = Number(data.workspace?.creditUsd || 0)
+        const requests30d = Number(data.workspace?.requests30d || 0)
+        const tokens30d = Number(data.workspace?.tokens30d || 0)
+        const usedCredits30d = Number(data.workspace?.usedCredits30d || 0)
 
-      return res.json({
-        ...data,
-        stats: [
-          { label: 'Credit balance', value: credits.toLocaleString(), note: `$${creditUsd.toFixed(2)} available`, trend: 'Live' },
-          { label: 'Requests', value: requests30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
-          { label: 'Tokens', value: formatTokens(tokens30d), note: 'Input + output', trend: 'Live' },
-          { label: 'Credits used', value: usedCredits30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
-        ],
-      })
+        return res.json({
+          ...data,
+          stats: [
+            { label: 'Credit balance', value: credits.toLocaleString(), note: `$${creditUsd.toFixed(2)} available`, trend: 'Live' },
+            { label: 'Requests', value: requests30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
+            { label: 'Tokens', value: formatTokens(tokens30d), note: 'Input + output', trend: 'Live' },
+            { label: 'Credits used', value: usedCredits30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
+          ],
+        })
+      } catch (pgErr) {
+        console.warn('PostgreSQL database query failed, falling back to local DB:', pgErr.message)
+      }
     }
 
     const db = await readDb()

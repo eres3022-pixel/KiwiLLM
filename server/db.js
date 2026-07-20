@@ -16,6 +16,12 @@ export const pgPool = databaseUrl
     })
   : null
 
+if (pgPool) {
+  pgPool.on('error', (err) => {
+    console.warn('PostgreSQL Pool background error:', err.message)
+  })
+}
+
 export const fallbackModels = [
   { id: 'auto', provider: 'Auto Router', type: 'Reasoning', context: '128k', input: 0, output: 0, status: 'Live' },
   { id: 'DeepSeek-V4-Flash', provider: 'DeepSeek', type: 'Text', context: '128k', input: 0.1, output: 0.2, status: 'Live' },
