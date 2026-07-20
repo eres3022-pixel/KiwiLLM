@@ -275,11 +275,21 @@ export async function findPgKey(value = '') {
     [keyHash(value)],
   )
   const keyObj = result.rows[0] || null
-  if (keyObj) {
-    pgKeyCache.set(value, { key: keyObj, expiresAt: now + 60000 })
-  }
+  pgKeyCache.set(value, { key: keyObj, expiresAt: now + (keyObj ? 60000 : 10000) })
   return keyObj
 }
+
+setInterval(() => {
+  const now = Date.now()
+  for (const [k, v] of pgKeyCache.entries()) {
+    if (v.expiresAt < now) pgKeyCache.delete(k)
+  }
+  for (const [k, v] of rateLimitCache.entries()) {
+    const valid = v.filter((t) => now - t < 60000)
+    if (valid.length === 0) rateLimitCache.delete(k)
+    else rateLimitCache.set(k, valid)
+  }
+}, 60000)
 
 export function publicKey(key) {
   return `${key.slice(0, 17)}••••`
