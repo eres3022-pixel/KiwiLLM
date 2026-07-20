@@ -370,23 +370,30 @@ if (isDashboardPage) {
           'beforeend',
           data.keys.length
             ? data.keys
-                .map(
-                  (item) => `
+                .map((item) => {
+                  const fullKey = item.key
+                  const maskedKey = item.key.includes('...') ? item.key : `${item.key.slice(0, 8)}...${item.key.slice(-4)}`
+                  const keyDisplayId = `key-val-${escapeHtml(item.id)}`
+                  return `
                 <div class="key-row" data-key-id="${escapeHtml(item.id)}">
-                  <div class="key-row-info">
-                    <strong>${escapeHtml(item.name)}</strong>
-                    <code>${escapeHtml(item.key)}</code>
-                    <div class="key-row-meta">
-                      <span>${escapeHtml(item.scope)}</span> • <small>${escapeHtml(item.lastUsed)}</small>
+                  <div class="key-row-header">
+                    <div class="key-title-group">
+                      <strong class="key-name">${escapeHtml(item.name)}</strong>
+                      <span class="key-scope-badge">${escapeHtml(item.scope)}</span>
+                    </div>
+                    <small class="key-last-used">Last used: ${escapeHtml(item.lastUsed)}</small>
+                  </div>
+                  <div class="key-code-box">
+                    <code class="key-value-display" id="${keyDisplayId}">${escapeHtml(maskedKey)}</code>
+                    <div class="key-actions">
+                      <button class="key-btn key-btn-copy" type="button" data-copy-key="${escapeHtml(fullKey)}">📋 Copy</button>
+                      <button class="key-btn key-btn-toggle" type="button" data-toggle-target="${keyDisplayId}" data-full-key="${escapeHtml(fullKey)}" data-masked-key="${escapeHtml(maskedKey)}">👁️ Show</button>
+                      <button class="key-btn key-btn-revoke" type="button" data-revoke-key="${escapeHtml(item.id)}">🗑️ Revoke</button>
                     </div>
                   </div>
-                  <div class="key-actions">
-                    <button class="key-btn key-btn-copy" type="button" data-copy-key="${escapeHtml(item.key)}">📋 Copy</button>
-                    <button class="key-btn key-btn-revoke" type="button" data-revoke-key="${escapeHtml(item.id)}">🗑️ Revoke</button>
-                  </div>
                 </div>
-              `,
-                )
+              `
+                })
                 .join('')
             : '<p class="empty-state">No keys yet. Create one below to start sending requests.</p>',
         )
@@ -477,24 +484,7 @@ if (isDashboardPage) {
       })
       if (nameInput) nameInput.value = ''
       if (message) {
-        const fullKey = created.key || created.displayKey
-        const maskedKey = created.displayKey || fullKey
-        message.innerHTML = `
-          <div class="new-key-card">
-            <div class="new-key-header">
-              <span>✓ API Key Created: "${escapeHtml(created.name || name)}"</span>
-              <small>Copy this key now. Keep it secure.</small>
-            </div>
-            <div class="new-key-box">
-              <code class="new-key-code" id="new-key-display">${escapeHtml(fullKey)}</code>
-              <div class="new-key-actions">
-                <button class="key-btn key-btn-copy" type="button" data-copy-key="${escapeHtml(fullKey)}">📋 Copy</button>
-                <button class="key-btn key-btn-toggle" type="button" data-toggle-target="new-key-display" data-full-key="${escapeHtml(fullKey)}" data-masked-key="${escapeHtml(maskedKey)}">👁️ Hide</button>
-                <button class="key-btn key-btn-revoke" type="button" data-revoke-key="${escapeHtml(created.id)}">🗑️ Revoke</button>
-              </div>
-            </div>
-          </div>
-        `
+        message.innerHTML = `<span style="color: var(--mint); font-weight: 700;">✓ API key "${escapeHtml(created.name || name)}" created successfully! Added below.</span>`
       }
       await hydrateDashboard()
     } catch (error) {

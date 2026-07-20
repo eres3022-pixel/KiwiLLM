@@ -2416,51 +2416,78 @@ code b {
 
 .key-row {
   display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 16px;
+  gap: 12px;
   margin-top: 16px;
-  padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.025);
-  transition: border-color 0.2s ease;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
 }
 
 .key-row:hover {
-  border-color: rgba(184, 255, 0, 0.25);
+  border-color: rgba(184, 255, 0, 0.35);
+  background: rgba(255, 255, 255, 0.045);
 }
 
-.key-row-info {
-  display: grid;
-  gap: 6px;
-}
-
-.key-row strong {
-  color: #fff;
-  font-size: 14px;
-}
-
-.key-row code {
-  color: var(--mint);
-  font-family: var(--mono);
-  font-size: 12px;
-  word-break: break-all;
-}
-
-.key-row-meta {
+.key-row-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  margin-top: 4px;
-  color: rgba(255, 255, 255, 0.55);
+}
+
+.key-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.key-name {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.key-scope-badge {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(184, 255, 0, 0.12);
+  color: var(--mint);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.key-last-used {
+  color: rgba(255, 255, 255, 0.5);
   font-size: 12px;
+}
+
+.key-code-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.key-value-display {
+  color: var(--mint);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  word-break: break-all;
 }
 
 .key-actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .key-btn {
