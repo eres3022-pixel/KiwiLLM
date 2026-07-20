@@ -87,29 +87,34 @@ export const renderDashboard = () => `
         </article>
 
         <article class="dash-panel dash-keys dash-wide">
-          <div class="dash-panel-head">
-            <div>
-              <h2>API keys</h2>
-              <p>Manage, monitor, and revoke your workspace API keys.</p>
+          <div class="key-table-topbar">
+            <div class="key-table-filters">
+              <input id="key-filter-name" class="key-filter-input" type="text" placeholder="Filter by name…" aria-label="Filter keys by name" />
+              <input id="key-filter-key" class="key-filter-input" type="text" placeholder="Filter by API key…" aria-label="Filter keys by key" />
+              <span class="key-filter-status">⊙ Status</span>
             </div>
-            <a class="button button-light" href="#create-api-key">+ Create new key</a>
+            <a class="key-create-btn" href="#create-api-key">+ Create API Key</a>
           </div>
           <div class="key-table-wrapper">
             <table class="key-table">
               <thead>
                 <tr>
+                  <th></th>
                   <th>Name</th>
                   <th>Status</th>
                   <th>API Key</th>
                   <th>Quota</th>
+                  <th>Group</th>
                   <th>Models</th>
+                  <th>IP Restriction</th>
                   <th>Created</th>
                   <th>Last Used</th>
+                  <th>Expires</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="key-table-body">
-                <tr><td colspan="8" class="empty-state">Loading API keys from backend...</td></tr>
+                <tr><td colspan="12" class="empty-state">Loading API keys from backend...</td></tr>
               </tbody>
             </table>
           </div>
@@ -178,15 +183,12 @@ export const renderDashboard = () => `
           </div>
           <span>Free plan</span>
         </div>
-        <div class="key-builder-form">
+        <div class="key-builder-form key-builder-form-inline">
           <input id="key-name" type="text" placeholder="Key name, e.g. codex-production" aria-label="Key name" />
-          <select id="key-mode" aria-label="Model routing mode">
-            <option>Any model the client chooses</option>
-          </select>
+          <button id="create-key-button" class="button button-kiwi" type="button">Create key</button>
         </div>
         <div class="key-builder-footer">
-          <button id="create-key-button" class="button button-light" type="button">Create key</button>
-          <p id="create-key-message">New free keys can call any live model at 10 RPM (credit-based, no daily limits).</p>
+          <div id="create-key-message"></div>
         </div>
       </section>
 

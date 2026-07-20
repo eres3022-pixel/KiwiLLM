@@ -2414,13 +2414,137 @@ code b {
   font-weight: 800;
 }
 
+.key-table-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px 10px;
+}
+
+.key-table-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.key-filter-input {
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-size: 12px;
+  font-family: var(--sans);
+  min-width: 140px;
+  transition: border-color 0.15s;
+}
+
+.key-filter-input:focus {
+  outline: none;
+  border-color: rgba(184, 255, 0, 0.4);
+}
+
+.key-filter-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 12px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.key-create-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 8px;
+  background: var(--kiwi);
+  color: #061006;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.key-create-btn:hover {
+  opacity: 0.88;
+}
+
+.key-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mint);
+  opacity: 0.6;
+}
+
+.key-group-badge {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+}
+
+.key-action-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon-btn-danger {
+  color: rgba(255, 120, 120, 0.75);
+}
+
+.icon-btn-danger:hover {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.12);
+}
+
+.key-builder-form-inline {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.button-kiwi {
+  height: 44px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--kiwi);
+  color: #061006;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.button-kiwi:hover {
+  opacity: 0.88;
+}
+
+.button-kiwi:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
 .key-table-wrapper {
   width: 100%;
   overflow-x: auto;
-  margin-top: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.35);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .key-table {

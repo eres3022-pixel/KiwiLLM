@@ -372,50 +372,85 @@ if (isDashboardPage) {
           createdKeysMap = {}
         }
 
-        tableBody.innerHTML = data.keys.length
-          ? data.keys
-              .map((item) => {
-                const fullKey = createdKeysMap[item.id] || item.key
-                const maskedKey = fullKey.includes('••••') ? fullKey : item.key.includes('...') ? item.key : `${fullKey.slice(0, 7)}...${fullKey.slice(-4)}`
-                const keyDisplayId = `table-key-${escapeHtml(item.id)}`
-                const createdDate = item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'Recently'
-                return `
-              <tr data-key-id="${escapeHtml(item.id)}">
-                <td class="key-col-name">${escapeHtml(item.name)}</td>
-                <td><span class="key-status-badge">Enabled</span></td>
-                <td>
-                  <div class="key-col-code">
-                    <code id="${keyDisplayId}">${escapeHtml(maskedKey)}</code>
-                    <button class="icon-btn" type="button" title="Copy key" data-copy-key="${escapeHtml(fullKey)}">📋</button>
-                    <button class="icon-btn" type="button" title="Show/Hide key" data-toggle-target="${keyDisplayId}" data-full-key="${escapeHtml(fullKey)}" data-masked-key="${escapeHtml(maskedKey)}">👁️</button>
-                  </div>
-                </td>
-                <td>Unlimited</td>
-                <td>${escapeHtml(item.scope)}</td>
-                <td>${escapeHtml(createdDate)}</td>
-                <td>${escapeHtml(item.lastUsed)}</td>
-                <td>
-                  <button class="key-btn key-btn-revoke" type="button" data-revoke-key="${escapeHtml(item.id)}">🚫 Revoke</button>
-                </td>
-              </tr>
-            `
-              })
-              .join('')
-          : '<tr><td colspan="8" class="empty-state">No keys created yet. Create an API key below to get started.</td></tr>'
+        const buildRows = (keys: typeof data.keys) => keys.length
+          ? keys.map((item) => {
+              const fullKey = createdKeysMap[item.id] || item.key
+              const maskedKey = fullKey.includes('••••') ? fullKey : item.key.includes('...') ? item.key : `${fullKey.slice(0, 7)}...${fullKey.slice(-4)}`
+              const keyDisplayId = `table-key-${escapeHtml(item.id)}`
+              const createdDate = item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently'
+              return `
+            <tr data-key-id="${escapeHtml(item.id)}" data-key-name="${escapeHtml(item.name.toLowerCase())}" data-key-preview="${escapeHtml(maskedKey.toLowerCase())}">
+              <td><span class="key-dot"></span></td>
+              <td class="key-col-name">${escapeHtml(item.name)}</td>
+              <td><span class="key-status-badge">Enabled</span></td>
+              <td>
+                <div class="key-col-code">
+                  <code id="${keyDisplayId}">${escapeHtml(maskedKey)}</code>
+                  <button class="icon-btn" type="button" title="Copy key" data-copy-key="${escapeHtml(fullKey)}">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  </button>
+                </div>
+              </td>
+              <td>Unlimited</td>
+              <td><span class="key-group-badge">User Group</span></td>
+              <td>Unlimited</td>
+              <td><span style="color:rgba(255,255,255,0.45);">No restriction</span></td>
+              <td>${escapeHtml(createdDate)}</td>
+              <td>${escapeHtml(item.lastUsed)}</td>
+              <td><span style="color:rgba(255,255,255,0.45);">Never</span></td>
+              <td>
+                <div class="key-action-group">
+                  <button class="icon-btn icon-btn-danger" type="button" title="Revoke" data-revoke-key="${escapeHtml(item.id)}">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                  </button>
+                  <button class="icon-btn" type="button" title="Show/Hide key" data-toggle-target="${keyDisplayId}" data-full-key="${escapeHtml(fullKey)}" data-masked-key="${escapeHtml(maskedKey)}">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                  <button class="icon-btn" type="button" title="More options">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `
+            }).join('')
+          : `<tr><td colspan="12" class="empty-state">No keys created yet. Create an API key below to get started.</td></tr>`
+
+        tableBody.innerHTML = buildRows(data.keys)
+
+        // Filter logic
+        const filterName = document.querySelector<HTMLInputElement>('#key-filter-name')
+        const filterKey = document.querySelector<HTMLInputElement>('#key-filter-key')
+        const applyFilter = () => {
+          const nameQ = filterName?.value.toLowerCase() || ''
+          const keyQ = filterKey?.value.toLowerCase() || ''
+          const filtered = data.keys.filter(item => {
+            const fullKey = createdKeysMap[item.id] || item.key
+            const maskedKey = `${fullKey.slice(0, 7)}...${fullKey.slice(-4)}`
+            return item.name.toLowerCase().includes(nameQ) && (maskedKey.toLowerCase().includes(keyQ) || fullKey.toLowerCase().includes(keyQ))
+          })
+          tableBody.innerHTML = buildRows(filtered)
+          wireRevoke()
+        }
+        filterName?.addEventListener('input', applyFilter)
+        filterKey?.addEventListener('input', applyFilter)
       }
 
-      document.querySelectorAll<HTMLButtonElement>('[data-revoke-key]').forEach((button) => {
-        button.addEventListener('click', async () => {
-          button.disabled = true
-          try {
-            await api<{ ok: boolean }>(`/api/keys/${button.dataset.revokeKey}/revoke`, { method: 'POST' })
-            await hydrateDashboard()
-          } catch (error) {
-            button.disabled = false
-            button.textContent = error instanceof Error ? error.message : 'Could not revoke'
-          }
+      const wireRevoke = () => {
+        document.querySelectorAll<HTMLButtonElement>('[data-revoke-key]').forEach((button) => {
+          button.addEventListener('click', async () => {
+            button.disabled = true
+            try {
+              await api<{ ok: boolean }>(`/api/keys/${button.dataset.revokeKey}/revoke`, { method: 'POST' })
+              await hydrateDashboard()
+            } catch (error) {
+              button.disabled = false
+              button.textContent = error instanceof Error ? error.message : 'Could not revoke'
+            }
+          })
         })
-      })
+      }
+      wireRevoke()
 
       updateBars('.dash-wide .dash-bars', data.usage.tokenBars)
       updateBars('.dash-panel:not(.dash-wide) .dash-bars', data.usage.requestBars)
