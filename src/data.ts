@@ -46,7 +46,7 @@ export const footerColumns = [
   { title: 'Contact', links: [{ label: 'Contact Us', href: '/contact' }, { label: 'Email Support', href: 'mailto:support@kiwillm.in' }] },
   { title: 'Programs', links: [{ label: 'Creator Program', href: '/creator-program' }] },
   { title: 'Company', links: [{ label: 'Blogs', href: '/blog' }, { label: 'Refund Policy', href: '/refund-policy' }, { label: 'Privacy Policy', href: '/privacy' }, { label: 'Terms & Conditions', href: '/terms' }, { label: 'Cookie Policy', href: '/cookie-policy' }, { label: 'Acceptable Use', href: '/acceptable-use' }] },
-  { title: 'Social', links: [{ label: 'Twitter', href: 'https://x.com/KIWILLM' }, { label: 'Discord', href: '/community' }, { label: 'LinkedIn', href: '/linkedin' }, { label: 'GitHub', href: '/github' }, { label: 'Telegram', href: 'https://t.me/KIWILLM' }] },
+  { title: 'Social', links: [{ label: 'Telegram', href: 'https://t.me/kiwillm' }, { label: 'Discord', href: 'https://discord.gg/RCZXtvyByj' }, { label: 'Twitter', href: 'https://x.com/KIWILLM' }, { label: 'GitHub', href: '/github' }] },
 ]
 
 export const pageLinks = [
