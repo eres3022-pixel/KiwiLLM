@@ -305,6 +305,12 @@ router.post('/api/keys', requireAuth, async (req, res) => {
   const name = String(req.body.name || 'Untitled key').trim().slice(0, 80)
   const selectedModels = Array.isArray(req.body.models) && req.body.models.length ? req.body.models : []
 
+  const db = await readDb()
+  const activeLocalKeys = (db.keys || []).filter((k) => !k.revoked && !k.revokedAt)
+  if (activeLocalKeys.length >= 2) {
+    return res.status(400).json({ error: 'Free plan limit: Maximum 2 active API keys allowed. Please revoke an existing key first.' })
+  }
+
   let createdItem = null
   if (pgPool) {
     try {
@@ -317,11 +323,13 @@ router.post('/api/keys', requireAuth, async (req, res) => {
         metadata: { name, selectedModels, keyPreview: publicKey(createdItem.key) },
       })
     } catch (pgErr) {
+      if (pgErr.status === 400 || pgErr.message?.includes('Maximum 2 active API keys')) {
+        return res.status(400).json({ error: pgErr.message })
+      }
       console.warn('PostgreSQL key creation failed, falling back to local DB:', pgErr.message)
     }
   }
 
-  const db = await readDb()
   const key = createdItem ? createdItem.key : keyValue()
   const item = {
     id: createdItem ? createdItem.id : crypto.randomUUID(),

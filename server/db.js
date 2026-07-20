@@ -271,6 +271,18 @@ export function keyValue() {
 
 export async function createPgKey({ name, selectedModels, authUser }) {
   const workspace = await getDefaultWorkspace(pgPool, authUser)
+  
+  const activeCountResult = await pgPool.query(
+    'select count(*) from api_keys where workspace_id = $1 and revoked_at is null',
+    [workspace.id],
+  )
+  const activeCount = Number(activeCountResult.rows[0]?.count || 0)
+  if (activeCount >= 2) {
+    const error = new Error('Free plan limit: Maximum 2 active API keys allowed. Please revoke an existing key first.')
+    error.status = 400
+    throw error
+  }
+
   const key = keyValue()
   const scope = selectedModels.length > 3 ? `${selectedModels.length} models` : selectedModels.length ? selectedModels.join(', ') : 'All live models'
   const result = await pgPool.query(
