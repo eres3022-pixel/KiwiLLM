@@ -134,12 +134,13 @@ if (pgPool) {
 }
 
 export const fallbackModels = [
-  { id: 'auto', provider: 'Auto Router', type: 'Reasoning', context: '128k', input: 0, output: 0, status: 'Live' },
+  { id: 'auto', provider: 'Auto Router', type: 'Reasoning', context: '128k', input: 0, output: 0, perRequest: 0.1, status: 'Live' },
   { id: 'DeepSeek-V4-Flash', provider: 'DeepSeek', type: 'Text', context: '128k', input: 0.001, output: 0.001, status: 'Live' },
   { id: 'DeepSeek-V4-Pro', provider: 'DeepSeek', type: 'Reasoning', context: '128k', input: 0.4, output: 0.85, status: 'Live' },
   { id: 'glm-4.7', provider: 'Zhipu', type: 'Text', context: '128k', input: 0.25, output: 1.1, status: 'Live' },
+  { id: 'glm-5.2', provider: 'Zhipu', type: 'Reasoning', context: '1M', input: 0, output: 0, perRequest: 2, status: 'Live' },
   { id: 'kat-coder-pro-v2', provider: 'Kat', type: 'Code', context: '128k', input: 12, output: 12, status: 'Live' },
-  { id: 'kat-coder-pro-v2.5', provider: 'Kat', type: 'Code', context: '128k', input: 5, output: 5, status: 'Live' },
+  { id: 'kat-coder-pro-v2.5', provider: 'Kat', type: 'Code', context: '128k', input: 0, output: 0, perRequest: 5, status: 'Live' },
   { id: 'Kimi-K2.6', provider: 'Moonshot', type: 'Text', context: '128k', input: 0.88, output: 3.84, status: 'Live' },
   { id: 'MiniMax-M2.7', provider: 'MiniMax', type: 'Text', context: '128k', input: 0.3, output: 1.2, status: 'Live' },
   { id: 'MiniMax-M3', provider: 'MiniMax', type: 'Reasoning', context: '128k', input: 5, output: 5, status: 'Live' },
@@ -150,8 +151,13 @@ export const fallbackModels = [
   { id: 'Spark-X2-Flash', provider: 'iFlytek', type: 'Text', context: '128k', input: 5, output: 5, status: 'Live' },
   { id: 'step-3.5-flash', provider: 'StepFun', type: 'Text', context: '128k', input: 0.096, output: 0.288, status: 'Live' },
   { id: 'step-3.5-flash-2603', provider: 'StepFun', type: 'Text', context: '128k', input: 0.1, output: 0.3, status: 'Live' },
-  { id: 'step-3.7-flash', provider: 'StepFun', type: 'Text', context: '128k', input: 0.001, output: 0.001, status: 'Live' },
+  { id: 'step-3.7-flash', provider: 'StepFun', type: 'Text', context: '128k', input: 0, output: 0, perRequest: 0.001, status: 'Live' },
+  { id: 'step-image-edit-2', provider: 'OpenAI', type: 'Image', context: 'Provider default', input: 120, output: 120, status: 'Live' },
   { id: 'step-router-v1', provider: 'StepFun', type: 'Text', context: '128k', input: 120, output: 120, status: 'Live' },
+  { id: 'stepaudio-2.5-asr', provider: 'OpenAI', type: 'Text', context: 'Provider default', input: 120, output: 120, status: 'Live' },
+  { id: 'stepaudio-2.5-chat', provider: 'StepFun', type: 'Audio', context: '128k', input: 75, output: 75, status: 'Live' },
+  { id: 'stepaudio-2.5-realtime', provider: 'OpenAI', type: 'Text', context: 'Provider default', input: 15, output: 15, status: 'Live' },
+  { id: 'stepaudio-2.5-tts', provider: 'OpenAI', type: 'Text', context: 'Provider default', input: 120, output: 120, status: 'Live' },
 ]
 
 export let modelCache = { expiresAt: 0, models: fallbackModels }

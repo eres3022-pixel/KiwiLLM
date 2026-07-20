@@ -118,8 +118,11 @@ export function creditCost(tokens) {
   return Number((tokens / 1000).toFixed(2))
 }
 
-export function modelSpendUsd(model, tokens) {
+export function modelSpendUsd(model, tokens, requests = 1) {
   const route = fallbackModels.find((item) => item.id === model)
+  if (route && route.perRequest) {
+    return Number((requests * route.perRequest).toFixed(4))
+  }
   const perMillion = route ? (route.input + route.output) / 2 : 1
   return Number(((tokens / 1000000) * perMillion).toFixed(4))
 }

@@ -550,7 +550,8 @@ if (isModelsPage) {
     summary?: { total: number; text: number; code: number; reasoning: number; image: number; video: number }
   }
 
-  const priceText = (value: number | null) => {
+  const priceText = (value: number | null, model: any = null) => {
+    if (model && model.perRequest) return `$${model.perRequest < 0.01 ? model.perRequest.toFixed(4) : model.perRequest.toFixed(2)} / req`
     if (typeof value !== 'number') return 'Provider'
     if (value === 0) return 'Free'
     return `$${value < 0.01 ? value.toFixed(4) : value.toFixed(2)}`
@@ -580,8 +581,8 @@ if (isModelsPage) {
                 <span>${escapeHtml(model.provider)}</span>
                 <span>${escapeHtml(model.type)}</span>
                 <span>${escapeHtml(model.context)}</span>
-                <span>${priceText(model.input)}</span>
-                <span>${priceText(model.output)}</span>
+                <span>${priceText(model.input, model)}</span>
+                <span>${priceText(model.output, model)}</span>
                 <b class="${model.status === 'Paid' ? 'paid' : ''}">${escapeHtml(model.status)}</b>
               </div>
             `,
