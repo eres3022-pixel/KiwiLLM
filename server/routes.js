@@ -231,43 +231,47 @@ router.get('/api/dashboard', requireAuth, async (req, res) => {
 router.post('/api/redeem', requireAuth, async (req, res) => {
   const code = String(req.body.code || '').trim().toUpperCase()
   if (pgPool) {
-    const workspace = await getDefaultWorkspace(pgPool, req.authUser)
-    const result = await pgPool.query(
-      `
-        select * from redemption_codes
-        where code = $1
-          and redeemed_count < max_redemptions
-          and (expires_at is null or expires_at > now())
-        limit 1
-      `,
-      [code],
-    )
-    const redemption = result.rows[0]
-    if (!redemption) return res.status(404).json({ error: 'Invalid or already used Kiwi code.' })
-
-    await pgPool.query('begin')
     try {
-      await pgPool.query('update redemption_codes set redeemed_count = redeemed_count + 1 where id = $1', [redemption.id])
-      await pgPool.query('insert into redemption_uses (redemption_code_id, workspace_id) values ($1, $2)', [redemption.id, workspace.id])
-      await pgPool.query(
-        'insert into credit_transactions (workspace_id, type, credits, description) values ($1, $2, $3, $4)',
-        [workspace.id, 'redeem', Number(redemption.credits), `Redeemed ${code}`],
+      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
+      const result = await pgPool.query(
+        `
+          select * from redemption_codes
+          where code = $1
+            and redeemed_count < max_redemptions
+            and (expires_at is null or expires_at > now())
+          limit 1
+        `,
+        [code],
       )
-      await pgPool.query(
-        'update workspaces set credit_balance = credit_balance + $1, credit_usd_balance = credit_usd_balance + $2 where id = $3',
-        [Number(redemption.credits), Number(redemption.credits) / 50, workspace.id],
-      )
-      await pgPool.query('commit')
-      await recordAuditEvent({
-        workspace,
-        authUser: req.authUser,
-        action: 'redeem_code',
-        metadata: { code, credits: Number(redemption.credits) },
-      })
-      return res.json({ ok: true, creditsAdded: Number(redemption.credits) })
-    } catch (error) {
-      await pgPool.query('rollback')
-      throw error
+      const redemption = result.rows[0]
+      if (!redemption) return res.status(404).json({ error: 'Invalid or already used Kiwi code.' })
+
+      await pgPool.query('begin')
+      try {
+        await pgPool.query('update redemption_codes set redeemed_count = redeemed_count + 1 where id = $1', [redemption.id])
+        await pgPool.query('insert into redemption_uses (redemption_code_id, workspace_id) values ($1, $2)', [redemption.id, workspace.id])
+        await pgPool.query(
+          'insert into credit_transactions (workspace_id, type, credits, description) values ($1, $2, $3, $4)',
+          [workspace.id, 'redeem', Number(redemption.credits), `Redeemed ${code}`],
+        )
+        await pgPool.query(
+          'update workspaces set credit_balance = credit_balance + $1, credit_usd_balance = credit_usd_balance + $2 where id = $3',
+          [Number(redemption.credits), Number(redemption.credits) / 50, workspace.id],
+        )
+        await pgPool.query('commit')
+        await recordAuditEvent({
+          workspace,
+          authUser: req.authUser,
+          action: 'redeem_code',
+          metadata: { code, credits: Number(redemption.credits) },
+        })
+        return res.json({ ok: true, creditsAdded: Number(redemption.credits) })
+      } catch (error) {
+        await pgPool.query('rollback')
+        throw error
+      }
+    } catch (pgErr) {
+      console.warn('PostgreSQL redeem failed, falling back to local DB:', pgErr.message)
     }
   }
 
@@ -302,15 +306,19 @@ router.post('/api/keys', requireAuth, async (req, res) => {
   const selectedModels = Array.isArray(req.body.models) && req.body.models.length ? req.body.models : []
 
   if (pgPool) {
-    const item = await createPgKey({ name, selectedModels, authUser: req.authUser })
-    const workspace = await getDefaultWorkspace(pgPool, req.authUser)
-    await recordAuditEvent({
-      workspace,
-      authUser: req.authUser,
-      action: 'create_api_key',
-      metadata: { name, selectedModels, keyPreview: publicKey(item.key) },
-    })
-    return res.status(201).json({ ...item, displayKey: publicKey(item.key) })
+    try {
+      const item = await createPgKey({ name, selectedModels, authUser: req.authUser })
+      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
+      await recordAuditEvent({
+        workspace,
+        authUser: req.authUser,
+        action: 'create_api_key',
+        metadata: { name, selectedModels, keyPreview: publicKey(item.key) },
+      })
+      return res.status(201).json({ ...item, displayKey: publicKey(item.key) })
+    } catch (pgErr) {
+      console.warn('PostgreSQL key creation failed, falling back to local DB:', pgErr.message)
+    }
   }
 
   const db = await readDb()
@@ -334,24 +342,28 @@ router.post('/api/keys', requireAuth, async (req, res) => {
 router.post('/api/keys/:id/revoke', requireAuth, async (req, res) => {
   const keyId = String(req.params.id || '')
   if (pgPool) {
-    const workspace = await getDefaultWorkspace(pgPool, req.authUser)
-    const result = await pgPool.query(
-      `
-        update api_keys
-        set revoked_at = now()
-        where id = $1 and workspace_id = $2 and revoked_at is null
-        returning id, name, key_preview
-      `,
-      [keyId, workspace.id],
-    )
-    if (!result.rowCount) return res.status(404).json({ error: 'API key not found.' })
-    await recordAuditEvent({
-      workspace,
-      authUser: req.authUser,
-      action: 'revoke_api_key',
-      metadata: { id: result.rows[0].id, name: result.rows[0].name, keyPreview: result.rows[0].key_preview },
-    })
-    return res.json({ ok: true })
+    try {
+      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
+      const result = await pgPool.query(
+        `
+          update api_keys
+          set revoked_at = now()
+          where id = $1 and workspace_id = $2 and revoked_at is null
+          returning id, name, key_preview
+        `,
+        [keyId, workspace.id],
+      )
+      if (!result.rowCount) return res.status(404).json({ error: 'API key not found.' })
+      await recordAuditEvent({
+        workspace,
+        authUser: req.authUser,
+        action: 'revoke_api_key',
+        metadata: { id: result.rows[0].id, name: result.rows[0].name, keyPreview: result.rows[0].key_preview },
+      })
+      return res.json({ ok: true })
+    } catch (pgErr) {
+      console.warn('PostgreSQL key revocation failed, falling back to local DB:', pgErr.message)
+    }
   }
 
   const db = await readDb()
