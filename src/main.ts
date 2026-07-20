@@ -1029,16 +1029,19 @@ if (isUsagePage) {
       const params = new URLSearchParams({ page: String(currentPage), limit: '50', days })
       const data = await api<LogsPayload>(`/api/usage-logs?${params}`)
 
-      const logs = data.logs.filter((l) => {
+      const allLogs: LogEntry[] = Array.isArray(data?.logs) ? data.logs : []
+      const total = data?.total ?? allLogs.length
+
+      const logs = allLogs.filter((l) => {
         return (!modelQ || l.model.toLowerCase().includes(modelQ)) && (!statusQ || l.status === statusQ)
       })
 
-      const totalTokens = data.logs.reduce((s, l) => s + l.totalTokens, 0)
-      const totalCost = data.logs.reduce((s, l) => s + l.costUsd, 0)
+      const totalTokens = allLogs.reduce((s, l) => s + (l.totalTokens || 0), 0)
+      const totalCost = allLogs.reduce((s, l) => s + (l.costUsd || 0), 0)
       const reqEl = document.querySelector<HTMLElement>('#usage-total-requests')
       const tokEl = document.querySelector<HTMLElement>('#usage-total-tokens')
       const costEl = document.querySelector<HTMLElement>('#usage-total-cost')
-      if (reqEl) reqEl.textContent = data.total.toLocaleString()
+      if (reqEl) reqEl.textContent = total.toLocaleString()
       if (tokEl) tokEl.textContent = totalTokens >= 1000 ? `${(totalTokens / 1000).toFixed(1)}K` : String(totalTokens)
       if (costEl) costEl.textContent = totalCost === 0 ? '$0.00' : `$${totalCost.toFixed(4)}`
 
@@ -1048,16 +1051,16 @@ if (isUsagePage) {
             <td class="usage-col-time">${formatDate(l.createdAt)}</td>
             <td><span class="usage-model-tag">${escapeHtml(l.model)}</span></td>
             <td><code class="usage-key-code">${escapeHtml(l.keyName)}</code></td>
-            <td class="usage-num">${l.promptTokens.toLocaleString()}</td>
-            <td class="usage-num">${l.completionTokens.toLocaleString()}</td>
-            <td class="usage-num usage-num-total">${l.totalTokens.toLocaleString()}</td>
-            <td class="usage-num">${formatCost(l.costUsd)}</td>
-            <td>${statusBadge(l.status)}</td>
-            <td class="usage-num">${formatMs(l.latencyMs)}</td>
+            <td class="usage-num">${(l.promptTokens || 0).toLocaleString()}</td>
+            <td class="usage-num">${(l.completionTokens || 0).toLocaleString()}</td>
+            <td class="usage-num usage-num-total">${(l.totalTokens || 0).toLocaleString()}</td>
+            <td class="usage-num">${formatCost(l.costUsd || 0)}</td>
+            <td>${statusBadge(l.status || 'success')}</td>
+            <td class="usage-num">${formatMs(l.latencyMs || 0)}</td>
           </tr>`).join('')
-        : `<tr><td colspan="9" class="empty-state">No usage logs found for this period.</td></tr>`
+        : `<tr><td colspan="9" class="empty-state">No usage logs yet — start making API requests to see them here.</td></tr>`
 
-      renderPagination(data)
+      renderPagination({ ...data, logs: allLogs, total })
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Could not load usage logs.'
       const tbody2 = document.querySelector<HTMLElement>('#usage-logs-body')
