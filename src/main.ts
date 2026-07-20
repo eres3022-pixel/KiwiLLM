@@ -550,7 +550,11 @@ if (isModelsPage) {
     summary?: { total: number; text: number; code: number; reasoning: number; image: number; video: number }
   }
 
-  const priceText = (value: number | null) => (typeof value === 'number' ? `$${value.toFixed(2)}` : 'Provider')
+  const priceText = (value: number | null) => {
+    if (typeof value !== 'number') return 'Provider'
+    if (value === 0) return 'Free'
+    return `$${value < 0.01 ? value.toFixed(4) : value.toFixed(2)}`
+  }
   const summarizeModels = (models: ModelPayload['models']) => ({
     total: models.length,
     text: models.filter((model) => model.type === 'Text').length,
