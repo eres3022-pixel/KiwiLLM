@@ -246,11 +246,22 @@ export function pgKeyToPayload(row, fullKey = null) {
   }
 }
 
+const pgKeyCache = new Map()
+
 export async function findPgKey(value = '') {
   if (!pgPool || (!value.startsWith(`${kiwiApiPrefix}_`) && !value.startsWith('kiwi_sk_'))) return null
+  
+  const now = Date.now()
+  const cached = pgKeyCache.get(value)
+  if (cached && cached.expiresAt > now) {
+    return cached.key
+  }
+
   if (process.env.KIWI_MASTER_KEY && value === process.env.KIWI_MASTER_KEY) {
     const workspace = await getDefaultWorkspace()
-    return { id: 'master', workspace_id: workspace.id, name: 'Master key', key: value, plan: 'admin', allowed_models: [] }
+    const masterKey = { id: 'master', workspace_id: workspace.id, name: 'Master key', key: value, plan: 'admin', allowed_models: [] }
+    pgKeyCache.set(value, { key: masterKey, expiresAt: now + 60000 })
+    return masterKey
   }
 
   const result = await pgPool.query(
@@ -263,7 +274,11 @@ export async function findPgKey(value = '') {
     `,
     [keyHash(value)],
   )
-  return result.rows[0] || null
+  const keyObj = result.rows[0] || null
+  if (keyObj) {
+    pgKeyCache.set(value, { key: keyObj, expiresAt: now + 60000 })
+  }
+  return keyObj
 }
 
 export function publicKey(key) {
