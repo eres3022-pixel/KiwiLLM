@@ -74,20 +74,18 @@ export const renderDashboard = () => `
         </article>
       </section>
 
-      <section class="dash-grid lower">
-        <article class="dash-panel">
-          <div class="dash-panel-head">
-            <div>
-              <h2>Spend by model</h2>
-              <p>Last 30 days</p>
-            </div>
-            <span id="spend-total">Loading</span>
+      <article class="dash-panel dash-wide" style="margin-top: 24px;">
+        <div class="dash-panel-head">
+          <div>
+            <h2>Spend by model</h2>
+            <p>Last 30 days</p>
           </div>
-          <div class="model-spend-list">
-            <p class="empty-state">Loading spend from backend...</p>
-          </div>
-        </article>
-      </section>
+          <span id="spend-total">Loading</span>
+        </div>
+        <div class="model-spend-list">
+          <p class="empty-state">Loading spend from backend...</p>
+        </div>
+      </article>
 
       <article class="dash-panel dash-keys dash-wide" id="api-keys-section" style="margin-top: 24px;">
         <!-- Header row -->
