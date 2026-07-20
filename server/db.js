@@ -306,23 +306,27 @@ export async function checkPgFreeRateLimit(key) {
   if (!pgPool || (key.plan || 'free') !== 'free') return null
 
   const rpm = Number(key.free_rpm_limit || freeRpmLimit)
-  const result = await pgPool.query(
-    `
-      select
-        count(*) filter (where created_at >= now() - interval '60 seconds') as minute_count
-      from rate_limit_events
-      where api_key_id = $1
-    `,
-    [key.id],
-  )
-  const minuteCount = Number(result.rows[0]?.minute_count || 0)
+  try {
+    const result = await pgPool.query(
+      `
+        select
+          count(*) filter (where created_at >= now() - interval '60 seconds') as minute_count
+        from rate_limit_events
+        where api_key_id = $1
+      `,
+      [key.id],
+    )
+    const minuteCount = Number(result.rows[0]?.minute_count || 0)
 
-  if (minuteCount >= rpm) return { status: 429, error: `Free plan limit reached: ${rpm} requests per minute.`, retryAfter: 60 }
+    if (minuteCount >= rpm) return { status: 429, error: `Free plan limit reached: ${rpm} requests per minute.`, retryAfter: 60 }
 
-  await pgPool.query(
-    'insert into rate_limit_events (api_key_id, workspace_id) values ($1, $2)',
-    [key.id, key.workspace_id],
-  )
+    await pgPool.query(
+      'insert into rate_limit_events (api_key_id, workspace_id) values ($1, $2)',
+      [key.id, key.workspace_id],
+    )
+  } catch (e) {
+    console.error('PostgreSQL rate limit check failed, bypassing:', e.message)
+  }
   return null
 }
 

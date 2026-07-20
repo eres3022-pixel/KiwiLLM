@@ -358,13 +358,17 @@ export async function proxyWorker(req, res, workerPath) {
         const usage = usageFromPayload(payload, req.body || {})
         const model = payload.model || req.body?.model || workerPath.replace('/v1/', '')
         if (pgPool) {
-          await recordPgUsage({
-            key,
-            model,
-            endpoint: workerPath,
-            usage: workerPath === '/v1/models' ? { inputTokens: 0, outputTokens: 0, totalTokens: 0 } : usage,
-            statusCode: response.status,
-          })
+          try {
+            await recordPgUsage({
+              key,
+              model,
+              endpoint: workerPath,
+              usage: workerPath === '/v1/models' ? { inputTokens: 0, outputTokens: 0, totalTokens: 0 } : usage,
+              statusCode: response.status,
+            })
+          } catch (e) {
+            console.error('Failed to record PG usage:', e.message)
+          }
         } else {
           const latestDb = await readDb()
           recordMeteredUsage(latestDb, {
