@@ -278,7 +278,7 @@ if (isDashboardPage) {
       tokens30d: number
     }
     stats: Array<{ label: string; value: string; note: string; trend: string }>
-    limits?: { plan: string; rpm: number; rpd: number }
+    limits?: { plan: string; rpm: number }
     keys: Array<{ id: string; name: string; key: string; scope: string; lastUsed: string }>
     usage: {
       tokenBars: number[]
@@ -316,7 +316,7 @@ if (isDashboardPage) {
       const spendTotal = document.querySelector<HTMLElement>('#spend-total')
 
       if (workspaceHealth) workspaceHealth.textContent = 'Live'
-      const limits = data.limits || { plan: 'Free', rpm: 10, rpd: 200 }
+      const limits = data.limits || { plan: 'Free', rpm: 10 }
       if (workspaceHealthNote) workspaceHealthNote.textContent = `${limits.plan} plan: ${limits.rpm} RPM (Credit-based)`
       if (tokenTotal) tokenTotal.textContent = `${data.workspace.tokens30d.toLocaleString()} tokens`
       if (requestTotal) requestTotal.textContent = `${data.workspace.requests30d.toLocaleString()} requests`
