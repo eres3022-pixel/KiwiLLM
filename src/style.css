@@ -4436,7 +4436,12 @@ code b {
 .invite-backdrop {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, #1b2838 0%, #0d1218 80%, #05080c 100%);
+  background: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    radial-gradient(circle at center, #1b2838 0%, #0d1218 70%, #05080c 100%);
+  background-size: 40px 40px, 40px 40px, 100% 100%;
+  background-position: center center;
 }
 
 .invite-dialog {
@@ -4488,9 +4493,9 @@ code b {
   display: flex;
   align-items: center;
   justify-content: center;
-  perspective: 1200px;
+  perspective: 1400px;
   margin: 0 auto;
-  max-width: 1000px;
+  max-width: 1200px;
   width: 100%;
 }
 
@@ -4505,24 +4510,24 @@ code b {
 
 .invite-3d-card {
   position: absolute;
-  width: 140px;
-  height: 80px;
-  border-radius: 12px;
+  width: 160px;
+  height: 90px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
   color: #fff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
   transform-style: preserve-3d;
   
-  /* Arc math using the custom property --arc-index */
-  transform: translateX(calc(var(--arc-index) * 220px)) 
-             translateY(calc(abs(var(--arc-index)) * 40px)) 
-             rotateZ(calc(var(--arc-index) * 15deg))
+  /* Deeper premium arc math */
+  transform: translateX(calc(var(--arc-index) * 290px)) 
+             translateY(calc(abs(var(--arc-index)) * 90px)) 
+             rotateZ(calc(var(--arc-index) * 22deg))
              scale(calc(1 - abs(var(--arc-index)) * 0.15));
   
-  opacity: calc(1 - abs(var(--arc-index)) * 0.2);
+  opacity: calc(1 - abs(var(--arc-index)) * 0.25);
   z-index: calc(10 - round(abs(var(--arc-index))));
 }
 

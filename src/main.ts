@@ -230,11 +230,13 @@ const inviteModal = document.getElementById('invite-modal')
 const openInviteModal = () => {
   if (!inviteModal) return
   inviteModal.hidden = false
+  document.body.style.overflow = 'hidden'
   requestAnimationFrame(() => inviteModal.classList.add('is-open'))
 }
 const closeInviteModal = () => {
   if (!inviteModal) return
   inviteModal.classList.remove('is-open')
+  document.body.style.overflow = ''
   window.setTimeout(() => { inviteModal.hidden = true }, 300)
 }
 
