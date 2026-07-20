@@ -19,11 +19,15 @@ const protectedApiPaths = new Set([
   '/api/keys',
   '/api/playground/run',
   '/api/playground/runs',
+  '/api/usage-logs',
   '/api/admin/overview',
   '/api/admin/redemption-codes',
 ])
 
-export const isProtectedApiPath = (path: string) => protectedApiPaths.has(path) || /^\/api\/keys\/[^\/]+\/revoke$/.test(path)
+export const isProtectedApiPath = (path: string) => {
+  const base = path.split('?')[0]
+  return protectedApiPaths.has(base) || /^\/api\/keys\/[^\/]+\/revoke$/.test(base)
+}
 export const isAdminApiPath = (path: string) => path.startsWith('/api/admin/')
 export const adminToken = () => window.sessionStorage.getItem('kiwi_admin_token') || ''
 export const productionApiOrigin =
