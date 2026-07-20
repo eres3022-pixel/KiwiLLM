@@ -28,6 +28,111 @@ if (pgPool) {
   })
 }
 
+let coreTablesReady = false
+export async function ensureCoreTables() {
+  if (!pgPool || coreTablesReady) return
+  try {
+    await pgPool.query(`
+      create table if not exists app_users (
+        id uuid primary key default gen_random_uuid(),
+        email text unique not null,
+        name text,
+        role text not null default 'user',
+        created_at timestamptz not null default now()
+      );
+      
+      create table if not exists workspaces (
+        id uuid primary key default gen_random_uuid(),
+        email text unique not null,
+        name text,
+        owner_user_id uuid references app_users(id),
+        plan text not null default 'free',
+        credit_balance numeric not null default 0,
+        credit_usd_balance numeric not null default 0,
+        free_rpm_limit integer not null default 5,
+        free_rpd_limit integer not null default 200,
+        created_at timestamptz not null default now()
+      );
+      
+      create table if not exists api_keys (
+        id uuid primary key default gen_random_uuid(),
+        workspace_id uuid references workspaces(id),
+        name text not null,
+        key_prefix text not null,
+        key_hash text unique not null,
+        key_preview text not null,
+        plan text not null default 'free',
+        scope text,
+        allowed_models text[] default '{}',
+        last_used_at timestamptz,
+        revoked_at timestamptz,
+        created_at timestamptz not null default now()
+      );
+      
+      create table if not exists usage_events (
+        id uuid primary key default gen_random_uuid(),
+        workspace_id uuid references workspaces(id),
+        api_key_id uuid references api_keys(id),
+        model text not null,
+        endpoint text not null,
+        input_tokens integer not null default 0,
+        output_tokens integer not null default 0,
+        total_tokens integer not null default 0,
+        credits_used numeric not null default 0,
+        usd_estimate numeric not null default 0,
+        status_code integer not null default 200,
+        created_at timestamptz not null default now()
+      );
+      
+      create table if not exists daily_usage (
+        workspace_id uuid references workspaces(id),
+        usage_date date not null,
+        requests integer not null default 0,
+        input_tokens integer not null default 0,
+        output_tokens integer not null default 0,
+        total_tokens integer not null default 0,
+        credits_used numeric not null default 0,
+        usd_estimate numeric not null default 0,
+        primary key (workspace_id, usage_date)
+      );
+      
+      create table if not exists model_usage (
+        workspace_id uuid references workspaces(id),
+        model text not null,
+        usage_date date not null,
+        requests integer not null default 0,
+        total_tokens integer not null default 0,
+        credits_used numeric not null default 0,
+        usd_estimate numeric not null default 0,
+        primary key (workspace_id, model, usage_date)
+      );
+      
+      create table if not exists rate_limit_events (
+        id uuid primary key default gen_random_uuid(),
+        api_key_id uuid references api_keys(id),
+        workspace_id uuid references workspaces(id),
+        created_at timestamptz not null default now()
+      );
+      
+      create table if not exists playground_runs (
+        id uuid primary key default gen_random_uuid(),
+        workspace_id uuid references workspaces(id),
+        title text,
+        model text not null,
+        total_tokens integer not null default 0,
+        created_at timestamptz not null default now()
+      );
+    `)
+    coreTablesReady = true
+  } catch (error) {
+    console.warn('Failed to ensure core tables:', error.message)
+  }
+}
+
+if (pgPool) {
+  ensureCoreTables().catch(console.error)
+}
+
 export const fallbackModels = [
   { id: 'auto', provider: 'Auto Router', type: 'Reasoning', context: '128k', input: 0, output: 0, status: 'Live' },
   { id: 'DeepSeek-V4-Flash', provider: 'DeepSeek', type: 'Text', context: '128k', input: 0.1, output: 0.2, status: 'Live' },
