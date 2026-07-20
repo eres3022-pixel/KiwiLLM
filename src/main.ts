@@ -509,9 +509,17 @@ if (isDashboardPage) {
     }
   })
 
+  // "+ Create API Key" scrolls to the section and focuses the input
+  document.querySelector<HTMLAnchorElement>('.key-create-btn')?.addEventListener('click', (e) => {
+    e.preventDefault()
+    const section = document.querySelector<HTMLElement>('#create-api-key')
+    section?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    setTimeout(() => document.querySelector<HTMLInputElement>('#key-name')?.focus(), 350)
+  })
+
   document.querySelector<HTMLButtonElement>('#create-key-button')?.addEventListener('click', async () => {
     const nameInput = document.querySelector<HTMLInputElement>('#key-name')
-    const name = nameInput?.value || 'Dashboard key'
+    const name = nameInput?.value.trim() || 'Dashboard key'
     const message = document.querySelector<HTMLElement>('#create-key-message')
     const button = document.querySelector<HTMLButtonElement>('#create-key-button')
     if (button) button.disabled = true

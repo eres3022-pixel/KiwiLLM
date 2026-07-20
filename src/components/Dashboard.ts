@@ -187,9 +187,7 @@ export const renderDashboard = () => `
           <input id="key-name" type="text" placeholder="Key name, e.g. codex-production" aria-label="Key name" />
           <button id="create-key-button" class="button button-kiwi" type="button">Create key</button>
         </div>
-        <div class="key-builder-footer">
-          <div id="create-key-message"></div>
-        </div>
+        <div id="create-key-message"></div>
       </section>
 
       <section class="community-banner">
