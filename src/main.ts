@@ -182,6 +182,37 @@ document.querySelectorAll<HTMLButtonElement>('[data-auth-signout]').forEach((but
 document.addEventListener('click', (event) => {
   if (!(event.target instanceof Element)) return
   if (!event.target.closest('[data-auth-account]')) closeAuthMenus()
+
+  const copyBtn = event.target.closest<HTMLButtonElement>('[data-copy-key]')
+  if (copyBtn) {
+    const textToCopy = copyBtn.dataset.copyKey || ''
+    if (textToCopy) {
+      navigator.clipboard.writeText(textToCopy)
+      const prevText = copyBtn.innerHTML
+      copyBtn.innerHTML = '✓ Copied!'
+      setTimeout(() => {
+        copyBtn.innerHTML = prevText
+      }, 1800)
+    }
+    return
+  }
+
+  const toggleBtn = event.target.closest<HTMLButtonElement>('[data-toggle-target]')
+  if (toggleBtn) {
+    const targetId = toggleBtn.dataset.toggleTarget
+    const codeNode = targetId ? document.getElementById(targetId) : null
+    if (codeNode) {
+      const full = toggleBtn.dataset.fullKey || ''
+      const masked = toggleBtn.dataset.maskedKey || ''
+      if (codeNode.textContent === full) {
+        codeNode.textContent = masked
+        toggleBtn.innerHTML = '👁️ Show'
+      } else {
+        codeNode.textContent = full
+        toggleBtn.innerHTML = '👁️ Hide'
+      }
+    }
+  }
 })
 
 document.addEventListener('keydown', (event) => {
@@ -342,10 +373,17 @@ if (isDashboardPage) {
                 .map(
                   (item) => `
                 <div class="key-row" data-key-id="${escapeHtml(item.id)}">
-                  <div><strong>${escapeHtml(item.name)}</strong><code>${escapeHtml(item.key)}</code></div>
-                  <span>${escapeHtml(item.scope)}</span>
-                  <small>${escapeHtml(item.lastUsed)}</small>
-                  <button class="revoke-key-button" type="button" data-revoke-key="${escapeHtml(item.id)}">Revoke</button>
+                  <div class="key-row-info">
+                    <strong>${escapeHtml(item.name)}</strong>
+                    <code>${escapeHtml(item.key)}</code>
+                    <div class="key-row-meta">
+                      <span>${escapeHtml(item.scope)}</span> • <small>${escapeHtml(item.lastUsed)}</small>
+                    </div>
+                  </div>
+                  <div class="key-actions">
+                    <button class="key-btn key-btn-copy" type="button" data-copy-key="${escapeHtml(item.key)}">📋 Copy</button>
+                    <button class="key-btn key-btn-revoke" type="button" data-revoke-key="${escapeHtml(item.id)}">🗑️ Revoke</button>
+                  </div>
                 </div>
               `,
                 )
@@ -427,17 +465,42 @@ if (isDashboardPage) {
   })
 
   document.querySelector<HTMLButtonElement>('#create-key-button')?.addEventListener('click', async () => {
-    const name = document.querySelector<HTMLInputElement>('#key-name')?.value || 'Dashboard key'
+    const nameInput = document.querySelector<HTMLInputElement>('#key-name')
+    const name = nameInput?.value || 'Dashboard key'
     const message = document.querySelector<HTMLElement>('#create-key-message')
+    const button = document.querySelector<HTMLButtonElement>('#create-key-button')
+    if (button) button.disabled = true
     try {
-      const created = await api<{ key: string }>('/api/keys', {
+      const created = await api<{ id: string; name: string; key: string; displayKey: string }>('/api/keys', {
         method: 'POST',
         body: JSON.stringify({ name, models: [] }),
       })
-      if (message) message.textContent = `Created key: ${created.key}`
+      if (nameInput) nameInput.value = ''
+      if (message) {
+        const fullKey = created.key || created.displayKey
+        const maskedKey = created.displayKey || fullKey
+        message.innerHTML = `
+          <div class="new-key-card">
+            <div class="new-key-header">
+              <span>✓ API Key Created: "${escapeHtml(created.name || name)}"</span>
+              <small>Copy this key now. Keep it secure.</small>
+            </div>
+            <div class="new-key-box">
+              <code class="new-key-code" id="new-key-display">${escapeHtml(fullKey)}</code>
+              <div class="new-key-actions">
+                <button class="key-btn key-btn-copy" type="button" data-copy-key="${escapeHtml(fullKey)}">📋 Copy</button>
+                <button class="key-btn key-btn-toggle" type="button" data-toggle-target="new-key-display" data-full-key="${escapeHtml(fullKey)}" data-masked-key="${escapeHtml(maskedKey)}">👁️ Hide</button>
+                <button class="key-btn key-btn-revoke" type="button" data-revoke-key="${escapeHtml(created.id)}">🗑️ Revoke</button>
+              </div>
+            </div>
+          </div>
+        `
+      }
       await hydrateDashboard()
     } catch (error) {
       if (message) message.textContent = error instanceof Error ? error.message : 'Could not create key.'
+    } finally {
+      if (button) button.disabled = false
     }
   })
 }
