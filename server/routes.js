@@ -305,26 +305,26 @@ router.post('/api/keys', requireAuth, async (req, res) => {
   const name = String(req.body.name || 'Untitled key').trim().slice(0, 80)
   const selectedModels = Array.isArray(req.body.models) && req.body.models.length ? req.body.models : []
 
+  let createdItem = null
   if (pgPool) {
     try {
-      const item = await createPgKey({ name, selectedModels, authUser: req.authUser })
+      createdItem = await createPgKey({ name, selectedModels, authUser: req.authUser })
       const workspace = await getDefaultWorkspace(pgPool, req.authUser)
       await recordAuditEvent({
         workspace,
         authUser: req.authUser,
         action: 'create_api_key',
-        metadata: { name, selectedModels, keyPreview: publicKey(item.key) },
+        metadata: { name, selectedModels, keyPreview: publicKey(createdItem.key) },
       })
-      return res.status(201).json({ ...item, displayKey: publicKey(item.key) })
     } catch (pgErr) {
       console.warn('PostgreSQL key creation failed, falling back to local DB:', pgErr.message)
     }
   }
 
   const db = await readDb()
-  const key = keyValue()
+  const key = createdItem ? createdItem.key : keyValue()
   const item = {
-    id: crypto.randomUUID(),
+    id: createdItem ? createdItem.id : crypto.randomUUID(),
     name,
     key,
     scope: selectedModels.length > 3 ? `${selectedModels.length} models` : selectedModels.length ? selectedModels.join(', ') : 'All live models',
@@ -334,6 +334,7 @@ router.post('/api/keys', requireAuth, async (req, res) => {
     createdAt: new Date().toISOString(),
   }
 
+  db.keys = db.keys.filter((existing) => existing.id !== item.id)
   db.keys.unshift(item)
   await writeDb(db)
   res.status(201).json({ ...item, key, displayKey: publicKey(key) })
