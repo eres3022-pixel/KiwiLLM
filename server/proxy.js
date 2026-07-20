@@ -328,28 +328,60 @@ export async function proxyWorker(req, res, workerPath) {
       res.setHeader('Cache-Control', 'no-cache, no-transform')
       res.setHeader('Connection', 'keep-alive')
 
-      const { Readable } = await import('node:stream')
+      const model = req.body?.model || workerPath.replace('/v1/', '')
+      let usage = null
+      let outputTokens = 0
+
       if (response.body) {
-        Readable.fromWeb(response.body).pipe(res)
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+
+        async function pump() {
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) {
+              res.end()
+              break
+            }
+            const chunk = decoder.decode(value, { stream: true })
+            res.write(value)
+
+            const lines = chunk.split('\n')
+            for (const line of lines) {
+              if (line.startsWith('data: ') && !line.includes('[DONE]')) {
+                try {
+                  const data = JSON.parse(line.slice(6))
+                  if (data.usage) usage = data.usage
+                  else if (data.choices?.[0]?.delta?.content) {
+                    outputTokens++
+                  }
+                } catch (e) {}
+              }
+            }
+          }
+
+          const inputTokens = usage?.prompt_tokens || estimateTokensFromRequest(req.body || {})
+          const outTokens = usage?.completion_tokens || outputTokens
+          const totalTokens = usage?.total_tokens || (inputTokens + outTokens)
+
+          if (pgPool) {
+            recordPgUsage({
+              key,
+              model,
+              endpoint: workerPath,
+              usage: { inputTokens, outputTokens: outTokens, totalTokens },
+              statusCode: response.status,
+            }).catch(() => {})
+          } else {
+            readDb().then((latestDb) => {
+              recordMeteredUsage(latestDb, { keyValue: userKey, model, tokens: totalTokens })
+              return writeDb(latestDb)
+            }).catch(() => {})
+          }
+        }
+        pump().catch(() => res.end())
       } else {
         res.end()
-      }
-
-      const model = req.body?.model || workerPath.replace('/v1/', '')
-      const tokens = estimateTokensFromRequest(req.body || {})
-      if (pgPool) {
-        recordPgUsage({
-          key,
-          model,
-          endpoint: workerPath,
-          usage: { inputTokens: tokens, outputTokens: tokens, totalTokens: tokens * 2 },
-          statusCode: response.status,
-        }).catch(() => {})
-      } else {
-        readDb().then((latestDb) => {
-          recordMeteredUsage(latestDb, { keyValue: userKey, model, tokens })
-          return writeDb(latestDb)
-        }).catch(() => {})
       }
       return
     }

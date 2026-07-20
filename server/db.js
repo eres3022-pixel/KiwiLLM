@@ -363,64 +363,91 @@ export function modelSpendUsd(model, tokens) {
   return Number(((tokens / 1000000) * perMillion).toFixed(4))
 }
 
-export async function recordPgUsage({ key, model, endpoint, usage, statusCode = 200 }) {
-  if (!pgPool) return
+export const pgUsageQueue = []
 
-  const totalTokens = Number(usage.totalTokens || 0)
-  const inputTokens = Number(usage.inputTokens || 0)
-  const outputTokens = Number(usage.outputTokens || 0)
-  const credits = creditCost(totalTokens)
-  const usd = modelSpendUsd(model, totalTokens)
-  const today = todayKey()
+if (pgPool) {
+  setInterval(flushPgUsage, 5000)
+}
 
-  await pgPool.query('begin')
+export async function flushPgUsage() {
+  if (pgUsageQueue.length === 0 || !pgPool) return
+  const batch = pgUsageQueue.splice(0, pgUsageQueue.length)
+  
+  const client = await pgPool.connect()
   try {
-    await pgPool.query(
-      `
-        insert into usage_events (
-          workspace_id, api_key_id, model, endpoint, input_tokens, output_tokens,
-          total_tokens, credits_used, usd_estimate, status_code
-        )
-        values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-      `,
-      [key.workspace_id, key.id === 'master' ? null : key.id, model, endpoint, inputTokens, outputTokens, totalTokens, credits, usd, statusCode],
-    )
-    await pgPool.query(
-      `
-        insert into daily_usage (workspace_id, usage_date, requests, input_tokens, output_tokens, total_tokens, credits_used, usd_estimate)
-        values ($1, $2, 1, $3, $4, $5, $6, $7)
-        on conflict (workspace_id, usage_date)
-        do update set
-          requests = daily_usage.requests + 1,
-          input_tokens = daily_usage.input_tokens + excluded.input_tokens,
-          output_tokens = daily_usage.output_tokens + excluded.output_tokens,
-          total_tokens = daily_usage.total_tokens + excluded.total_tokens,
-          credits_used = daily_usage.credits_used + excluded.credits_used,
-          usd_estimate = daily_usage.usd_estimate + excluded.usd_estimate
-      `,
-      [key.workspace_id, today, inputTokens, outputTokens, totalTokens, credits, usd],
-    )
-    await pgPool.query(
-      `
-        insert into model_usage (workspace_id, model, usage_date, requests, total_tokens, credits_used, usd_estimate)
-        values ($1, $2, $3, 1, $4, $5, $6)
-        on conflict (workspace_id, model, usage_date)
-        do update set
-          requests = model_usage.requests + 1,
-          total_tokens = model_usage.total_tokens + excluded.total_tokens,
-          credits_used = model_usage.credits_used + excluded.credits_used,
-          usd_estimate = model_usage.usd_estimate + excluded.usd_estimate
-      `,
-      [key.workspace_id, model, today, totalTokens, credits, usd],
-    )
-    if (key.id !== 'master') {
-      await pgPool.query('update api_keys set last_used_at = now() where id = $1', [key.id])
+    await client.query('begin')
+    
+    const dailyMap = {}
+    const modelMap = {}
+    const keyMap = new Set()
+    
+    for (const { key, model, endpoint, usage, statusCode } of batch) {
+      const totalTokens = Number(usage?.totalTokens || 0)
+      const inputTokens = Number(usage?.inputTokens || 0)
+      const outputTokens = Number(usage?.outputTokens || 0)
+      const credits = creditCost(totalTokens)
+      const usd = modelSpendUsd(model, totalTokens)
+      const today = todayKey()
+
+      await client.query(
+        `insert into usage_events (workspace_id, api_key_id, model, endpoint, input_tokens, output_tokens, total_tokens, credits_used, usd_estimate, status_code) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+        [key.workspace_id, key.id === 'master' ? null : key.id, model, endpoint, inputTokens, outputTokens, totalTokens, credits, usd, statusCode || 200]
+      )
+
+      const dKey = `${key.workspace_id}:${today}`
+      if (!dailyMap[dKey]) dailyMap[dKey] = { w: key.workspace_id, d: today, r: 0, i: 0, o: 0, t: 0, c: 0, u: 0 }
+      dailyMap[dKey].r++
+      dailyMap[dKey].i += inputTokens
+      dailyMap[dKey].o += outputTokens
+      dailyMap[dKey].t += totalTokens
+      dailyMap[dKey].c += credits
+      dailyMap[dKey].u += usd
+
+      const mKey = `${key.workspace_id}:${model}:${today}`
+      if (!modelMap[mKey]) modelMap[mKey] = { w: key.workspace_id, m: model, d: today, r: 0, t: 0, c: 0, u: 0 }
+      modelMap[mKey].r++
+      modelMap[mKey].t += totalTokens
+      modelMap[mKey].c += credits
+      modelMap[mKey].u += usd
+
+      if (key.id !== 'master') keyMap.add(key.id)
     }
-    await pgPool.query('commit')
+
+    for (const v of Object.values(dailyMap)) {
+      await client.query(`
+        insert into daily_usage (workspace_id, usage_date, requests, input_tokens, output_tokens, total_tokens, credits_used, usd_estimate)
+        values ($1, $2, $3, $4, $5, $6, $7, $8)
+        on conflict (workspace_id, usage_date)
+        do update set requests = daily_usage.requests + excluded.requests, input_tokens = daily_usage.input_tokens + excluded.input_tokens, output_tokens = daily_usage.output_tokens + excluded.output_tokens, total_tokens = daily_usage.total_tokens + excluded.total_tokens, credits_used = daily_usage.credits_used + excluded.credits_used, usd_estimate = daily_usage.usd_estimate + excluded.usd_estimate
+      `, [v.w, v.d, v.r, v.i, v.o, v.t, v.c, v.u])
+    }
+
+    for (const v of Object.values(modelMap)) {
+      await client.query(`
+        insert into model_usage (workspace_id, model, usage_date, requests, total_tokens, credits_used, usd_estimate)
+        values ($1, $2, $3, $4, $5, $6, $7)
+        on conflict (workspace_id, model, usage_date)
+        do update set requests = model_usage.requests + excluded.requests, total_tokens = model_usage.total_tokens + excluded.total_tokens, credits_used = model_usage.credits_used + excluded.credits_used, usd_estimate = model_usage.usd_estimate + excluded.usd_estimate
+      `, [v.w, v.m, v.d, v.r, v.t, v.c, v.u])
+    }
+
+    for (const kid of keyMap) {
+      await client.query('update api_keys set last_used_at = now() where id = $1', [kid])
+    }
+    
+    await client.query('commit')
   } catch (error) {
-    await pgPool.query('rollback')
-    throw error
+    await client.query('rollback')
+    console.error('Failed to flush PG usage batch:', error.message)
+    pgUsageQueue.unshift(...batch)
+  } finally {
+    client.release()
   }
+}
+
+export async function recordPgUsage(event) {
+  if (!pgPool) return
+  pgUsageQueue.push(event)
 }
 
 export async function getPgDashboard(authUser = null) {
