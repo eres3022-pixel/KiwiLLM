@@ -464,7 +464,7 @@ if (isDashboardPage) {
               .map(
                 (item) => `
                 <div>
-                  <header><span>${escapeHtml(item.model)}</span><b>$${item.spend.toFixed(2)}</b></header>
+                  <header><span>${escapeHtml(item.model)}</span><b>$${item.spend.toFixed(4)}</b></header>
                   <p>${item.requests.toLocaleString()} requests</p>
                   <i style="--fill:${item.width}%"></i>
                 </div>
