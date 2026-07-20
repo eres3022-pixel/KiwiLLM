@@ -2,6 +2,7 @@ export type TopUpPlan = {
   price: string
   name: string
   credits: string
+  bonus?: string
 }
 
 export const renderTopUpPage = (pageHeader: string, topUpPlans: TopUpPlan[]) => `
@@ -9,9 +10,9 @@ export const renderTopUpPage = (pageHeader: string, topUpPlans: TopUpPlan[]) => 
     ${pageHeader}
     <section class="content-shell">
       <div class="content-hero">
-        <p class="section-kicker">CREDITS</p>
-        <h1>Top up one Kiwi balance for every model route.</h1>
-        <p>Add credits to your workspace, then spend them across text, code, image, and video models without juggling provider balances.</p>
+        <p class="section-kicker">CREDIT PACKS</p>
+        <h1>Get Up to 16.6x Credit Value Bonus</h1>
+        <p>Top up real USD to receive multiplied credit value. Spend credits seamlessly across all 20+ LLM models billed strictly per 1 Million tokens.</p>
       </div>
 
       <section class="topup-checkout">
@@ -20,27 +21,29 @@ export const renderTopUpPage = (pageHeader: string, topUpPlans: TopUpPlan[]) => 
             .map(
               (plan, index) => `
                 <article class="${index === 3 ? 'is-featured' : ''}">
-                  <span>${index === 3 ? 'Best value' : 'Workspace pack'}</span>
-                  <h3>${plan.price} · ${plan.name}</h3>
-                  <p>${plan.credits}</p>
-                  <a href="/dashboard">Open dashboard checkout</a>
+                  <span>${plan.bonus || (index === 3 ? '16.6x Best Value' : 'Bonus Pack')}</span>
+                  <h3>${plan.price} USD ➔ ${plan.credits}</h3>
+                  <p>${plan.name}</p>
+                  <a href="/dashboard">Buy ${plan.price} Pack</a>
                 </article>
               `,
             )
             .join('')}
         </div>
-        <aside>
-          <h2>Payment setup</h2>
-          <p>Connect your production payment provider before launch. This page is wired for users to choose a pack and continue from the dashboard checkout surface.</p>
-          <div>
-            <b>Supported methods</b>
-            <span>Card, UPI, and USDT can be enabled by region.</span>
+
+        <aside class="custom-topup-aside">
+          <h2>Custom Amount</h2>
+          <p>Need a custom credit volume? Enter any USD amount below to calculate your bonus credits instantly.</p>
+          <div class="custom-calc-form">
+            <label for="custom-usd-input">Enter USD Amount ($)</label>
+            <input id="custom-usd-input" type="number" min="1" placeholder="e.g. 50" value="50" />
+            <div class="custom-calc-result">
+              <small>You will receive:</small>
+              <strong id="custom-calc-output">$750.00 Credits</strong>
+              <span>(15x bonus rate applied)</span>
+            </div>
+            <a class="button button-primary" href="/dashboard">Top Up Custom Amount</a>
           </div>
-          <div>
-            <b>After payment</b>
-            <span>Credits should be added through a signed backend confirmation, not client-only state.</span>
-          </div>
-          <a class="button button-primary" href="/dashboard">Go to dashboard</a>
         </aside>
       </section>
     </section>

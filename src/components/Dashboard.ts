@@ -126,29 +126,30 @@ export const renderDashboard = () => `
       <section class="topup-panel">
         <div class="dash-panel-head">
           <div>
-            <h2>Plans and top-up</h2>
-            <p>Add credits with crypto or card, then spend them across every enabled model.</p>
+            <h2>Credit Packs & Top Up</h2>
+            <p>Top up real USD to get up to 16.6x credit value bonus. Billed per 1M tokens.</p>
           </div>
-          <span>Credits never fragment by provider</span>
+          <span>Instant workspace credit updates</span>
         </div>
         <div class="topup-grid">
           ${topUpPlans
             .map(
               (plan) => `
                 <article>
-                  <h3>${plan.price} · ${plan.name}</h3>
-                  <p>${plan.credits}</p>
-                  <a href="/top-up">Top up with USDT →</a>
+                  <span class="badge-mint">${plan.bonus || 'Bonus Pack'}</span>
+                  <h3>${plan.price} USD ➔ ${plan.credits}</h3>
+                  <p>${plan.name}</p>
+                  <a href="/top-up">Top Up Pack →</a>
                 </article>
               `,
             )
             .join('')}
         </div>
         <div class="topup-included">
-          <h3>Included in every paid workspace</h3>
-          <p>High-effort coding models, image and video routes, per-key budgets, live metering, and shared team usage history.</p>
+          <h3>Custom Credit Amount</h3>
+          <p>Top up custom amounts from $1 to $5,000 with automatic high-volume credit multipliers applied instantly.</p>
         </div>
-        <small>Payment methods can vary by workspace region. Balance updates after payment confirmation.</small>
+        <small>Payment methods supported: Card, UPI, and Crypto (USDT). Balance updates upon confirmation.</small>
       </section>
 
       <section class="key-builder-panel" id="create-api-key">

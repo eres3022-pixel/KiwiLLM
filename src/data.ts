@@ -59,10 +59,10 @@ export const pageLinks = [
 export const dashboardPlaceholders = ['Credit balance', 'Requests', 'Tokens', 'Credits used']
 
 export const topUpPlans = [
-  { price: '$10', name: 'Seed', credits: '350 credits' },
-  { price: '$24', name: 'Grow', credits: '900 credits' },
-  { price: '$49', name: 'Scale', credits: '1,950 credits' },
-  { price: '$99', name: 'Launch', credits: '4,200 credits' },
+  { price: '$5', name: 'Starter Pack', credits: '$50 Credits', bonus: '10x Value Bonus' },
+  { price: '$10', name: 'Pro Pack', credits: '$100 Credits', bonus: '10x Value Bonus' },
+  { price: '$20', name: 'Ultra Pack', credits: '$250 Credits', bonus: '12.5x Value Bonus' },
+  { price: '$30', name: 'Max Pack', credits: '$500 Credits', bonus: '16.6x Best Value' },
 ]
 
 export const modelFilters = ['All', 'Text', 'Code', 'Reasoning', 'Image', 'Video']
