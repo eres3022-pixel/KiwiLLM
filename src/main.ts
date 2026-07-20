@@ -330,16 +330,14 @@ if (isDashboardPage) {
       const workspaceHealthNote = document.querySelector<HTMLElement>('#workspace-health-note')
       if (workspaceHealth) workspaceHealth.textContent = 'Sign in'
       if (workspaceHealthNote) workspaceHealthNote.textContent = 'Use Google or GitHub to open your Kiwi workspace.'
-      const keyPanel = document.querySelector<HTMLElement>('.dash-keys')
-      if (keyPanel && !keyPanel.querySelector('[data-auth-empty]')) {
-        keyPanel.querySelectorAll('.key-row, .empty-state').forEach((item) => item.remove())
-        keyPanel.insertAdjacentHTML('beforeend', '<p class="empty-state" data-auth-empty>Sign in from the account button to manage API keys.</p>')
+      const tableBody = document.querySelector<HTMLElement>('#key-table-body')
+      if (tableBody) {
+        tableBody.innerHTML = '<tr><td colspan="12" class="empty-state">Sign in from the account button to manage API keys.</td></tr>'
       }
       return
     }
 
     try {
-      document.querySelectorAll('.dash-keys [data-auth-empty]').forEach((el) => el.remove())
       const data = await api<DashboardPayload>('/api/dashboard')
       const workspaceHealth = document.querySelector<HTMLElement>('#workspace-health')
       const workspaceHealthNote = document.querySelector<HTMLElement>('#workspace-health-note')

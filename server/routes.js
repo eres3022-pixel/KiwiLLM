@@ -175,6 +175,10 @@ router.post('/v1/video/generations', (req, res) => {
 
 router.get('/api/dashboard', requireAuth, async (req, res) => {
   try {
+    // Always load local DB keys
+    const db = await readDb()
+    const localKeys = (db.keys || []).filter((k) => !k.revoked && !k.revokedAt)
+
     if (pgPool) {
       try {
         const data = await getPgDashboard(req.authUser)
@@ -184,8 +188,16 @@ router.get('/api/dashboard', requireAuth, async (req, res) => {
         const tokens30d = Number(data.workspace?.tokens30d || 0)
         const usedCredits30d = Number(data.workspace?.usedCredits30d || 0)
 
+        // Merge PG keys + any local-only keys (by id deduplication)
+        const pgKeyIds = new Set((data.keys || []).map((k) => k.id))
+        const localOnlyKeys = localKeys
+          .filter((k) => !pgKeyIds.has(k.id))
+          .map((k) => ({ ...k, key: publicKey(k.key) }))
+        const mergedKeys = [...(data.keys || []), ...localOnlyKeys]
+
         return res.json({
           ...data,
+          keys: mergedKeys,
           stats: [
             { label: 'Credit balance', value: `$${creditUsd.toFixed(2)}`, note: `${credits.toLocaleString()} credits available`, trend: 'Live' },
             { label: 'Requests', value: requests30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
@@ -198,7 +210,6 @@ router.get('/api/dashboard', requireAuth, async (req, res) => {
       }
     }
 
-    const db = await readDb()
     const workspace = db.workspace || {}
     const credits = Number(workspace.credits || 0)
     const creditUsd = Number(workspace.creditUsd || 0)
@@ -215,12 +226,8 @@ router.get('/api/dashboard', requireAuth, async (req, res) => {
         { label: 'Credits used', value: `$${(usedCredits30d / 50).toFixed(2)}`, note: 'Last 30 days', trend: 'Live' },
       ],
       usage: db.usage || { tokenBars: [], requestBars: [], spendByModel: [] },
-      limits: {
-        plan: 'Free',
-        rpm: freeRpmLimit,
-        rpd: freeRpdLimit,
-      },
-      keys: (db.keys || []).map((item) => ({ ...item, key: publicKey(item.key) })),
+      limits: { plan: 'Free', rpm: freeRpmLimit, rpd: freeRpdLimit },
+      keys: localKeys.map((item) => ({ ...item, key: publicKey(item.key) })),
     })
   } catch (error) {
     console.error('Error serving /api/dashboard:', error)
