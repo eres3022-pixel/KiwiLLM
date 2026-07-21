@@ -727,13 +727,31 @@ router.get('/api/invite/status', requireAuth, async (req, res) => {
     try {
       const workspace = await getDefaultWorkspace(pgPool, req.authUser)
       const prizeResult = await pgPool.query('select amount, created_at from prize_history where workspace_id = $1 order by created_at desc', [workspace.id])
-      return res.json({ drawsLeft: Number(workspace.draws_left || 0), history: prizeResult.rows.map(r => ({ amount: r.amount, createdAt: r.created_at })) })
+      const referredResult = await pgPool.query(`
+        select u.email, u.name
+        from referrals r
+        join workspaces w on r.referred_workspace_id = w.id
+        join app_users u on w.owner_user_id = u.id
+        where r.inviter_workspace_id = $1
+        order by r.created_at desc
+      `, [workspace.id])
+      
+      return res.json({ 
+        drawsLeft: Number(workspace.draws_left || 0), 
+        history: prizeResult.rows.map(r => ({ amount: r.amount, createdAt: r.created_at })),
+        referrals: referredResult.rows
+      })
     } catch (err) {
       console.warn('PG get invite status failed:', err.message)
     }
   }
   const db = await readDb()
-  res.json({ drawsLeft: db.workspace.drawsLeft || 0, history: db.prizeHistory || [] })
+  const localRefs = (db.referrals || []).filter(r => r.inviter_workspace_id === (db.workspace?.email || 'local-demo-ref'))
+  res.json({ 
+    drawsLeft: db.workspace.drawsLeft || 0, 
+    history: db.prizeHistory || [],
+    referrals: localRefs.map(r => ({ email: r.referred_workspace_id, name: '' }))
+  })
 })
 
 router.post('/api/invite/add-draw', requireAuth, async (req, res) => {

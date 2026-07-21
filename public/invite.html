@@ -257,14 +257,39 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-  }
-  .avatar-add{
-    width:30px; height:30px;
-    border-radius:50%;
-    background:rgba(255,255,255,0.08);
-    display:flex; align-items:center; justify-content:center;
-    color:var(--text-1);
-    font-size:16px;
+    .task-avatars {
+      display: flex;
+      align-items: center;
+    }
+    .task-avatars .avatar-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #3b82f6;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: -6px;
+      border: 1.5px solid #28303d;
+      z-index: 2;
+    }
+    .task-avatars .avatar-add {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: rgba(255,255,255,0.7);
+      margin-right: 8px;
+      z-index: 1;
+      border: 1.5px solid #28303d;
+    }
   }
   .btn-white{
     padding:8px 22px;
@@ -701,7 +726,9 @@
           Invite a friend to join KiwiLLM
         </div>
         <div class="task-footer">
-          <div class="avatar-add">+</div>
+          <div class="task-avatars" id="referredAvatars">
+            <div class="avatar-add">+</div>
+          </div>
           <button class="btn-white">Invite</button>
         </div>
       </div>
@@ -1001,6 +1028,25 @@
     if (res) {
       drawsLeft = res.drawsLeft || 0;
       updateDrawBtn();
+      if (res.referrals) {
+        var container = document.getElementById('referredAvatars');
+        if (container) {
+          var html = '';
+          var colors = ['#059669', '#3b82f6', '#4d7c0f', '#9333ea', '#be123c'];
+          for (var i = 0; i < Math.min(res.referrals.length, 5); i++) {
+            var email = res.referrals[i].email || '';
+            var name = res.referrals[i].name || email.split('@')[0] || '?';
+            var initial = name.charAt(0).toUpperCase();
+            var color = colors[i % colors.length];
+            html += '<div class="avatar-circle" style="background:' + color + ';" title="' + name + '">' + initial + '</div>';
+          }
+          if (res.referrals.length > 5) {
+            html += '<div class="avatar-circle" style="background:#4b5563;">+' + (res.referrals.length - 5) + '</div>';
+          }
+          html += '<div class="avatar-add">+</div>';
+          container.innerHTML = html;
+        }
+      }
       if (res.history) {
         myPrizesList = res.history.map(function(item) {
           var amount = item.amount;
