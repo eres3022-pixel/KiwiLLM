@@ -182,9 +182,38 @@ document.querySelectorAll<HTMLElement>('.dash-invite-card').forEach((btn) => {
 document.getElementById('invite-close-btn')?.addEventListener('click', closeInviteModal)
 document.getElementById('invite-close-bg')?.addEventListener('click', closeInviteModal)
 
-// Listen for close message posted from the invite iframe
-window.addEventListener('message', (e) => {
-  if (e.data === 'close-invite') closeInviteModal()
+// Listen for messages posted from the invite iframe
+window.addEventListener('message', async (e) => {
+  if (e.data === 'close-invite') {
+    closeInviteModal()
+    return
+  }
+
+  if (e.data?.action?.startsWith('invite-')) {
+    try {
+      let res;
+      if (e.data.action === 'invite-status') {
+        res = await api('/api/invite/status')
+      } else if (e.data.action === 'invite-add-draw') {
+        res = await api('/api/invite/add-draw', { method: 'POST' })
+      } else if (e.data.action === 'invite-draw') {
+        res = await api('/api/invite/draw', { method: 'POST' })
+        // Update dashboard balance in background
+        if (res?.amount) {
+          syncDashboardState().catch(console.error)
+        }
+      }
+      const iframe = document.getElementById('invite-frame') as HTMLIFrameElement
+      if (iframe?.contentWindow) {
+        iframe.contentWindow.postMessage({ id: e.data.id, response: res }, '*')
+      }
+    } catch (err: any) {
+      const iframe = document.getElementById('invite-frame') as HTMLIFrameElement
+      if (iframe?.contentWindow) {
+        iframe.contentWindow.postMessage({ id: e.data.id, error: err.message }, '*')
+      }
+    }
+  }
 })
 
 document.querySelectorAll<HTMLButtonElement>('[data-auth-provider]').forEach((button) => {

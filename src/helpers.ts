@@ -22,6 +22,9 @@ const protectedApiPaths = new Set([
   '/api/usage-logs',
   '/api/admin/overview',
   '/api/admin/redemption-codes',
+  '/api/invite/status',
+  '/api/invite/draw',
+  '/api/invite/add-draw',
 ])
 
 export const isProtectedApiPath = (path: string) => {

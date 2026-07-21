@@ -51,8 +51,11 @@ export async function ensureCoreTables() {
         credit_usd_balance numeric not null default 0,
         free_rpm_limit integer not null default 5,
         free_rpd_limit integer not null default 200,
+        draws_left integer not null default 3,
         created_at timestamptz not null default now()
       );
+      
+      alter table workspaces add column if not exists draws_left integer not null default 3;
       
       create table if not exists api_keys (
         id uuid primary key default gen_random_uuid(),
@@ -122,6 +125,13 @@ export async function ensureCoreTables() {
         total_tokens integer not null default 0,
         created_at timestamptz not null default now()
       );
+      
+      create table if not exists prize_history (
+        id uuid primary key default gen_random_uuid(),
+        workspace_id uuid references workspaces(id),
+        amount text not null,
+        created_at timestamptz not null default now()
+      );
     `)
     coreTablesReady = true
   } catch (error) {
@@ -171,7 +181,9 @@ export const seedDb = {
     usedUsd30d: 0,
     requests30d: 0,
     tokens30d: 0,
+    drawsLeft: 3,
   },
+  prizeHistory: [],
   keys: [],
   usage: {
     tokenBars: Array(12).fill(0),
@@ -968,7 +980,9 @@ export function normalizeDb(db) {
       ...seedDb.workspace,
       ...(hasLegacyUsage ? {} : db.workspace || {}),
       email: db.workspace?.email || workspaceEmail,
+      drawsLeft: db.workspace?.drawsLeft !== undefined ? db.workspace.drawsLeft : seedDb.workspace.drawsLeft,
     },
+    prizeHistory: Array.isArray(db.prizeHistory) ? db.prizeHistory : [],
     keys,
     usage: {
       ...seedDb.usage,

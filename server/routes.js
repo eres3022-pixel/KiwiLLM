@@ -604,3 +604,90 @@ router.get('/api/usage-logs', requireAuth, async (req, res) => {
   }
 })
 
+// --- Invite Draw Endpoints ---
+
+function pickPrize() {
+  const r = Math.random() * 100
+  let p = 0
+  if ((p += 0.2) >= r) return 1000
+  if ((p += 0.8) >= r) return 500
+  if ((p += 2.0) >= r) return 100
+  if ((p += 4.0) >= r) return 50
+  if ((p += 8.0) >= r) return 30
+  if ((p += 15.0) >= r) return 20
+  if ((p += 20.0) >= r) return 15
+  if ((p += 20.0) >= r) return 10
+  if ((p += 20.0) >= r) return 5
+  return 3
+}
+
+router.get('/api/invite/status', requireAuth, async (req, res) => {
+  if (pgPool) {
+    try {
+      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
+      const prizeResult = await pgPool.query('select amount, created_at from prize_history where workspace_id = $1 order by created_at desc', [workspace.id])
+      return res.json({ drawsLeft: Number(workspace.draws_left || 0), history: prizeResult.rows.map(r => ({ amount: r.amount, createdAt: r.created_at })) })
+    } catch (err) {
+      console.warn('PG get invite status failed:', err.message)
+    }
+  }
+  const db = await readDb()
+  res.json({ drawsLeft: db.workspace.drawsLeft || 0, history: db.prizeHistory || [] })
+})
+
+router.post('/api/invite/add-draw', requireAuth, async (req, res) => {
+  if (pgPool) {
+    try {
+      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
+      await pgPool.query('update workspaces set draws_left = draws_left + 1 where id = $1', [workspace.id])
+      return res.json({ ok: true })
+    } catch (err) {
+      console.warn('PG add draw failed:', err.message)
+    }
+  }
+  const db = await readDb()
+  db.workspace.drawsLeft = (db.workspace.drawsLeft || 0) + 1
+  await writeDb(db)
+  res.json({ ok: true })
+})
+
+router.post('/api/invite/draw', requireAuth, async (req, res) => {
+  if (pgPool) {
+    try {
+      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
+      if ((workspace.draws_left || 0) <= 0) {
+        return res.status(400).json({ error: 'No draws left.' })
+      }
+      const prizeAmount = pickPrize()
+      await pgPool.query('begin')
+      try {
+        await pgPool.query('update workspaces set draws_left = draws_left - 1, credit_balance = credit_balance + $1, credit_usd_balance = credit_usd_balance + $2 where id = $3', [prizeAmount, prizeAmount/50, workspace.id])
+        // credit_transactions might not exist depending on their schema but redemption uses it, we will wrap in try/catch if it doesn't
+        try {
+          await pgPool.query('insert into credit_transactions (workspace_id, type, credits, description) values ($1, $2, $3, $4)', [workspace.id, 'prize', prizeAmount, 'Won on spinning wheel'])
+        } catch(e) {}
+        await pgPool.query('insert into prize_history (workspace_id, amount) values ($1, $2)', [workspace.id, String(prizeAmount)])
+        await pgPool.query('commit')
+        return res.json({ amount: prizeAmount })
+      } catch (err) {
+        await pgPool.query('rollback')
+        throw err
+      }
+    } catch (err) {
+      console.warn('PG draw failed:', err.message)
+    }
+  }
+  const db = await readDb()
+  if ((db.workspace.drawsLeft || 0) <= 0) {
+    return res.status(400).json({ error: 'No draws left.' })
+  }
+  const prizeAmount = pickPrize()
+  db.workspace.drawsLeft -= 1
+  db.workspace.credits += prizeAmount
+  db.workspace.creditUsd = Number((db.workspace.creditUsd + prizeAmount / 50).toFixed(2))
+  if (!db.prizeHistory) db.prizeHistory = []
+  db.prizeHistory.unshift({ amount: String(prizeAmount), createdAt: new Date().toISOString() })
+  await writeDb(db)
+  res.json({ amount: prizeAmount })
+})
+

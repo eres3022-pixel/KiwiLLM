@@ -966,7 +966,7 @@
   }
 
   // ================= draw mechanic =================
-  var drawsLeft = 3; // demo starting balance so Draw Now can be tried immediately
+  var drawsLeft = 0;
   var drawBtn = document.getElementById('drawBtn');
   var drawsLeftNum = document.getElementById('drawsLeftNum');
   var toastEl = document.getElementById('toast');
@@ -974,6 +974,51 @@
   var resultAmount = document.getElementById('resultAmount');
   var resultClose = document.getElementById('resultClose');
   var resultCard = document.getElementById('resultCard');
+  
+  var messageIdCounter = 0;
+  function apiCall(action) {
+    return new Promise(function(resolve, reject) {
+      if (window.parent === window) {
+        if (action === 'invite-status') resolve({ drawsLeft: 3, history: [] });
+        else if (action === 'invite-add-draw') resolve({ ok: true });
+        else if (action === 'invite-draw') resolve({ amount: 15 });
+        return;
+      }
+      var msgId = ++messageIdCounter;
+      function listener(e) {
+        if (e.data && e.data.id === msgId) {
+          window.removeEventListener('message', listener);
+          if (e.data.error) reject(new Error(e.data.error));
+          else resolve(e.data.response);
+        }
+      }
+      window.addEventListener('message', listener);
+      window.parent.postMessage({ action: action, id: msgId }, '*');
+    });
+  }
+
+  apiCall('invite-status').then(function(res) {
+    if (res) {
+      drawsLeft = res.drawsLeft || 0;
+      updateDrawBtn();
+      if (res.history) {
+        myPrizesList = res.history.map(function(item) {
+          var amount = item.amount;
+          var newSrc = '/win-popup.png';
+          if (amount == '5') newSrc = '/win-popup-5.png';
+          else if (amount == '10') newSrc = '/win-popup-10.png';
+          else if (amount == '15') newSrc = '/win-popup-15.png';
+          else if (amount == '20') newSrc = '/win-popup-20.png';
+          else if (amount == '30') newSrc = '/win-popup-30.png';
+          else if (amount == '50') newSrc = '/win-popup-50.png';
+          else if (amount == '100') newSrc = '/win-popup-100.png';
+          else if (amount == '500') newSrc = '/win-popup-500.png';
+          else if (amount == '1000') newSrc = '/win-popup-1000.png';
+          return { amount: amount, imgSrc: newSrc, date: new Date(item.createdAt || Date.now()) };
+        });
+      }
+    }
+  }).catch(console.error);
 
   function updateDrawBtn(){
     drawsLeftNum.textContent = drawsLeft;
@@ -1029,26 +1074,10 @@
     toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2400);
   }
 
-  // Prize weights, one per ring-card, in DOM order (rc-1 .. rc-10 -> $15,$50,$30,$20,$365,$100,$3,$5,$7,$10).
-  // Shaped like the rules doc's tier table: common/cheap tiers most likely, the top tier very rare.
-  // Edit these numbers (they don't need to sum to exactly 100 -- pickPrizeIndex normalizes them).
-  // Weights for: $3, $5, $10, $15, $20, $30, $50, $100, $500, $1000
-  // Common tiers most likely, ultra-rare tiers ($500, $1000) very rare.
-  var PRIZE_WEIGHTS = [30, 25, 18, 12, 7, 4, 2.5, 1, 0.3, 0.2];
-
-  function pickPrizeIndex(){
-    var total = PRIZE_WEIGHTS.reduce(function(a, b){ return a + b; }, 0);
-    var r = Math.random() * total;
-    for (var i = 0; i < PRIZE_WEIGHTS.length; i++){
-      if (r < PRIZE_WEIGHTS[i]) return i;
-      r -= PRIZE_WEIGHTS[i];
-    }
-    return PRIZE_WEIGHTS.length - 1;
-  }
+  // The PRIZE_WEIGHTS and pickPrizeIndex logic have been securely moved to the backend.
 
   function runSpin(targetIndex){
-    spinning = true;
-    updateDrawBtn();
+    // Update UI state during animation
     if (idleRAF) cancelAnimationFrame(idleRAF);
 
     var startFront = lastTopIdx;
@@ -1128,17 +1157,44 @@
   });
 
   drawBtn.addEventListener('click', function(){
-    if (drawBtn.disabled) return;
-    drawsLeft -= 1;
-    updateDrawBtn();
-    runSpin(pickPrizeIndex());
+    if (drawBtn.disabled || spinning) return;
+    spinning = true;
+    drawBtn.disabled = true;
+    drawBtn.style.opacity = '0.5';
+    drawBtn.textContent = 'Spinning...';
+    
+    apiCall('invite-draw').then(function(res) {
+      if (res && res.amount) {
+        var targetIndex = 0;
+        for (var i = 0; i < cards.length; i++) {
+          if (cards[i].getAttribute('data-credits') == String(res.amount)) {
+            targetIndex = i;
+            break;
+          }
+        }
+        drawsLeft -= 1;
+        updateDrawBtn();
+        runSpin(targetIndex);
+      } else {
+        spinning = false;
+        updateDrawBtn();
+      }
+    }).catch(function(err) {
+      spinning = false;
+      updateDrawBtn();
+      showToast(err.message || "Failed to draw prize");
+    });
   });
 
   // ---- invite buttons: demo-grant a draw chance on click ----
   function grantDraw(msg){
-    drawsLeft += 1;
-    updateDrawBtn();
-    showToast(msg);
+    apiCall('invite-add-draw').then(function() {
+      drawsLeft += 1;
+      updateDrawBtn();
+      showToast(msg);
+    }).catch(function(err) {
+      showToast("Failed to add draw");
+    });
   }
 
   // ---- poster modal (join button) ----
