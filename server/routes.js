@@ -425,10 +425,14 @@ router.post('/api/keys/:id/revoke', requireAuth, async (req, res) => {
 
 router.post('/api/playground/run', requireAuth, async (req, res) => {
   const model = String(req.body.model || 'glm-4.7')
-  const prompt = String(req.body.prompt || '').slice(0, 2000)
-  const system = String(req.body.system || '').slice(0, 2000)
+  const messages = Array.isArray(req.body.messages) ? req.body.messages : []
+  const systemMsg = messages.find(m => m.role === 'system')
+  const userMsg = messages.find(m => m.role === 'user')
+  
+  const system = String(req.body.system || systemMsg?.content || '').slice(0, 2000)
+  const prompt = String(req.body.prompt || userMsg?.content || '').slice(0, 2000)
   const temperature = Number.isFinite(Number(req.body.temperature)) ? Number(req.body.temperature) : 0.7
-  const maxTokens = Number.isFinite(Number(req.body.maxTokens)) ? Number(req.body.maxTokens) : 2048
+  const maxTokens = Number.isFinite(Number(req.body.maxTokens || req.body.max_tokens)) ? Number(req.body.maxTokens || req.body.max_tokens) : 2048
 
   try {
     const activeKey = getRotatedWorkerApiKey() || workerApiKey
