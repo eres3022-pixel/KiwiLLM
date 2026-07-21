@@ -14,6 +14,14 @@ export const formatBigNumber = (num: number) => {
   return num.toLocaleString()
 }
 
+export const formatModelName = (id: string) => {
+  let name = id.split('/').pop() || id
+  if (name === 'xopqwen36v35b') return 'Qwen 3.6 35B'
+  if (name === 'auto') return 'Auto Router'
+  name = name.replace(/[-_]+/g, ' ')
+  return name.replace(/\b\w/g, (c) => c.toUpperCase()).replace(/Deepseek/i, 'DeepSeek')
+}
+
 export type AuthProfile = {
   name: string
   email: string

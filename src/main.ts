@@ -17,7 +17,7 @@ import { renderUsageLogs } from './components/UsageLogs'
 import { topUpPlans, pageLinks } from './data'
 import { currentSession, setCurrentSession, resolveAuthReady, authReady } from './state'
 import { brandMark, authAccountMarkup } from './icons'
-import { getAuthProfile, initialsFor, escapeHtml, api, pageHeader, adminToken, formatBigNumber } from './helpers'
+import { getAuthProfile, initialsFor, escapeHtml, api, pageHeader, adminToken, formatBigNumber, formatModelName } from './helpers'
 import { dashboardGreeting } from './helpers'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL
@@ -551,13 +551,7 @@ if (isDashboardPage) {
       updateBars('.dash-wide .dash-bars', data.usage.tokenBars)
       updateBars('.dash-panel:not(.dash-wide) .dash-bars', data.usage.requestBars)
 
-      const formatModelName = (id: string) => {
-        let name = id.split('/').pop() || id
-        if (name === 'xopqwen36v35b') return 'Qwen 3.6 35B'
-        if (name === 'auto') return 'Auto Router'
-        name = name.replace(/[-_]+/g, ' ')
-        return name.replace(/\b\w/g, (c) => c.toUpperCase()).replace(/Deepseek/i, 'DeepSeek')
-      }
+
 
       const spendList = document.querySelector<HTMLElement>('.model-spend-list')
       if (spendList) {
@@ -745,6 +739,8 @@ if (isAdminPage) {
       requests30d: number
       tokens30d: number
       creditsUsed30d: number
+      creditsBought?: number
+      revenue?: number
       playgroundRuns: number
       totalDraws: number
       totalReferrals: number
