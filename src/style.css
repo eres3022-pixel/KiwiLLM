@@ -129,20 +129,21 @@ a {
 
 .topbar {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 8px;
+  left: 50%;
   z-index: 10;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 56px;
-  padding: 8px 32px;
-  border-bottom: 1px solid var(--line);
+  width: min(760px, calc(100% - 32px));
+  min-height: 46px;
+  padding: 4px 5px 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
   background: rgba(8, 9, 9, 0.72);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, var(--shadow);
   backdrop-filter: blur(18px);
+  transform: translateX(-50%);
 }
 
 .brand,
@@ -181,9 +182,6 @@ a {
 }
 
 .nav-links {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
