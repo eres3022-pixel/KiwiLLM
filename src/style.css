@@ -136,6 +136,8 @@ a {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
   min-height: 56px;
   padding: 8px 32px;
   border-bottom: 1px solid var(--line);
