@@ -3041,7 +3041,8 @@ code b {
 
 .redeem-panel input,
 .key-builder-form input,
-.key-builder-form select {
+.key-builder-form select,
+.custom-calc-form input {
   width: 100%;
   min-height: 42px;
   padding: 0 14px;
@@ -3050,6 +3051,16 @@ code b {
   color: #fff;
   background: rgba(0, 0, 0, 0.28);
   font: 14px var(--sans);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.redeem-panel input:focus,
+.key-builder-form input:focus,
+.key-builder-form select:focus,
+.custom-calc-form input:focus {
+  outline: none;
+  border-color: rgba(202, 255, 31, 0.5);
+  box-shadow: 0 0 0 2px rgba(202, 255, 31, 0.15);
 }
 
 .redeem-panel button,
