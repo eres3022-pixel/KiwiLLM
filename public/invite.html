@@ -1204,6 +1204,12 @@
 
   function openPoster(){
     if (posterOverlay) posterOverlay.classList.add('show');
+    // Fetch it again just in case there was a race condition on load
+    apiCall('invite-my-ref').then(function(res) {
+      if (res && res.refCode) {
+        REFERRAL_LINK = window.location.origin + '/?ref=' + res.refCode;
+      }
+    }).catch(console.error);
   }
   function closePoster(){
     if (posterOverlay) posterOverlay.classList.remove('show');
