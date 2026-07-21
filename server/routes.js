@@ -229,9 +229,9 @@ router.get('/api/dashboard', requireAuth, async (req, res) => {
           keys: mergedKeys,
           stats: [
             { label: 'Credit balance', value: `$${creditUsd.toFixed(4)}`, note: 'Available balance', trend: 'Live' },
-            { label: 'Requests', value: requests30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
+            { label: 'Requests', value: requests30d.toLocaleString(), note: 'All time', trend: 'Live' },
             { label: 'Tokens', value: formatTokens(tokens30d), note: 'Input + output', trend: 'Live' },
-            { label: 'Credits used', value: `$${usedUsd30d.toFixed(4)}`, note: 'Last 30 days', trend: 'Live' },
+            { label: 'Credits used', value: `$${usedUsd30d.toFixed(4)}`, note: 'All time', trend: 'Live' },
           ],
         })
       } catch (pgErr) {
@@ -250,9 +250,9 @@ router.get('/api/dashboard', requireAuth, async (req, res) => {
       workspace,
       stats: [
         { label: 'Credit balance', value: `$${creditUsd.toFixed(4)}`, note: 'Available balance', trend: 'Live' },
-        { label: 'Requests', value: requests30d.toLocaleString(), note: 'Last 30 days', trend: 'Live' },
+        { label: 'Requests', value: requests30d.toLocaleString(), note: 'All time', trend: 'Live' },
         { label: 'Tokens', value: formatTokens(tokens30d), note: 'Input + output', trend: 'Live' },
-        { label: 'Credits used', value: `$${usedUsd30d.toFixed(4)}`, note: 'Last 30 days', trend: 'Live' },
+        { label: 'Credits used', value: `$${usedUsd30d.toFixed(4)}`, note: 'All time', trend: 'Live' },
       ],
       usage: db.usage || { tokenBars: [], requestBars: [], spendByModel: [] },
       limits: { plan: 'Free', rpm: freeRpmLimit, rpd: freeRpdLimit },

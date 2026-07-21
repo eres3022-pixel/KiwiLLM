@@ -89,7 +89,7 @@ export const renderDashboard = () => `
         <div class="dash-panel-head">
           <div>
             <h2>Spend by model</h2>
-            <p>Last 30 days</p>
+            <p>All time</p>
           </div>
           <span id="spend-total">Loading</span>
         </div>

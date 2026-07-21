@@ -633,7 +633,7 @@ export async function getPgDashboard(authUser = null) {
         coalesce(sum(credits_used), 0) as credits_used,
         coalesce(sum(usd_estimate), 0) as usd_estimate
       from daily_usage
-      where workspace_id = $1 and usage_date >= current_date - interval '29 days'
+      where workspace_id = $1
     `,
     [workspace.id],
   )
@@ -651,7 +651,7 @@ export async function getPgDashboard(authUser = null) {
     `
       select model, sum(requests) as requests, sum(usd_estimate) as spend
       from model_usage
-      where workspace_id = $1 and usage_date >= current_date - interval '29 days'
+      where workspace_id = $1
       group by model
       order by spend desc, requests desc
       limit 8
