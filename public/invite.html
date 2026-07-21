@@ -1186,22 +1186,21 @@
     });
   });
 
-  // ---- invite buttons: demo-grant a draw chance on click ----
-  function grantDraw(msg){
-    apiCall('invite-add-draw').then(function() {
-      drawsLeft += 1;
-      updateDrawBtn();
-      showToast(msg);
-    }).catch(function(err) {
-      showToast("Failed to add draw");
-    });
+  // ---- invite buttons ----
+  function showCopyMsg(msg){
+    showToast(msg);
   }
 
-  // ---- poster modal (join button) ----
   var posterOverlay = document.getElementById('posterOverlay');
   var posterCopyBtn = document.getElementById('posterCopyBtn');
   var posterCloseBtn = document.getElementById('posterCloseBtn');
-  var REFERRAL_LINK = window.location.origin + '/?ref=USER'; // placeholder — swap for real user referral token
+  var REFERRAL_LINK = window.location.origin + '/?ref=demo';
+  
+  apiCall('invite-my-ref').then(function(res) {
+    if (res && res.refCode) {
+      REFERRAL_LINK = window.location.origin + '/?ref=' + res.refCode;
+    }
+  }).catch(console.error);
 
   function openPoster(){
     if (posterOverlay) posterOverlay.classList.add('show');
@@ -1234,12 +1233,11 @@
   taskInviteBtns.forEach(function(btn, idx){
     btn.addEventListener('click', function(){
       if (idx === 0) {
-        // "Join KiwiLLM" — show poster with copy button
         openPoster();
       } else {
-        // "Top up credits" — copy link + grant draw
-        var msg = 'Invite link copied — +1 draw chance once your friend tops up (demo: granted now)';
-        grantDraw(msg);
+        navigator.clipboard.writeText(REFERRAL_LINK).then(function() {
+          showCopyMsg('Invite link copied — +1 draw chance when your friend buys API credits');
+        });
       }
     });
   });

@@ -24,6 +24,16 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PU
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 const supabase: SupabaseClient | null = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
 
+const urlParams = new URLSearchParams(window.location.search)
+const refParam = urlParams.get('ref')
+if (refParam) {
+  const expiry = Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+  window.localStorage.setItem('kiwi_referral', JSON.stringify({ code: refParam, expires: expiry }))
+  // clean up URL
+  const newUrl = window.location.pathname + window.location.search.replace(/[?&]ref=[^&]+/, '').replace(/^&/, '?')
+  window.history.replaceState({}, document.title, newUrl || '/')
+}
+
 const app = document.querySelector<HTMLDivElement>('#app')!
 const isDocsPage = window.location.pathname === '/docs'
 const isDashboardPage = window.location.pathname === '/dashboard'
@@ -137,6 +147,27 @@ const syncAuthUi = (session: Session | null) => {
   if (isDashboardPage || isAdminPage) {
     window.dispatchEvent(new CustomEvent('kiwi-auth-synced'))
   }
+  
+  if (session) {
+    try {
+      const storedRef = window.localStorage.getItem('kiwi_referral')
+      if (storedRef) {
+        const parsed = JSON.parse(storedRef)
+        if (parsed.expires > Date.now() && parsed.code) {
+          api('/api/referrals/claim', {
+            method: 'POST',
+            body: JSON.stringify({ inviter: parsed.code })
+          }).then((res: any) => {
+            if (res && (res.ok || res.reason === 'Already referred')) {
+              window.localStorage.removeItem('kiwi_referral')
+            }
+          }).catch(() => {})
+        } else {
+          window.localStorage.removeItem('kiwi_referral')
+        }
+      }
+    } catch(e) {}
+  }
 }
 
 document.querySelectorAll<HTMLElement>('[data-auth-open]').forEach((button) => {
@@ -194,6 +225,8 @@ window.addEventListener('message', async (e) => {
       let res;
       if (e.data.action === 'invite-status') {
         res = await api('/api/invite/status')
+      } else if (e.data.action === 'invite-my-ref') {
+        res = await api('/api/invite/my-ref')
       } else if (e.data.action === 'invite-add-draw') {
         res = await api('/api/invite/add-draw', { method: 'POST' })
       } else if (e.data.action === 'invite-draw') {

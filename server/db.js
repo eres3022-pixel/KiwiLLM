@@ -132,6 +132,15 @@ export async function ensureCoreTables() {
         amount text not null,
         created_at timestamptz not null default now()
       );
+      
+      create table if not exists referrals (
+        id uuid primary key default gen_random_uuid(),
+        referred_workspace_id uuid references workspaces(id) unique,
+        inviter_workspace_id uuid references workspaces(id),
+        api_key_reward_claimed boolean default false,
+        purchase_reward_claimed boolean default false,
+        created_at timestamptz not null default now()
+      );
     `)
     coreTablesReady = true
   } catch (error) {
@@ -184,6 +193,7 @@ export const seedDb = {
     drawsLeft: 3,
   },
   prizeHistory: [],
+  referrals: [],
   keys: [],
   usage: {
     tokenBars: Array(12).fill(0),
@@ -983,6 +993,7 @@ export function normalizeDb(db) {
       drawsLeft: db.workspace?.drawsLeft !== undefined ? db.workspace.drawsLeft : seedDb.workspace.drawsLeft,
     },
     prizeHistory: Array.isArray(db.prizeHistory) ? db.prizeHistory : [],
+    referrals: Array.isArray(db.referrals) ? db.referrals : [],
     keys,
     usage: {
       ...seedDb.usage,
