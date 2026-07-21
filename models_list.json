@@ -1,0 +1,866 @@
+[
+  {
+    "id": "llama-3.2-1b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "llama-3.1-8b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "llama-3.1-8b-awq",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "llama-3.1-8b-fp8",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "llama-3.3-70b-fp8",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "llama-3-8b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "llama-3-8b-awq",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "llama-4-scout",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "llama-2-7b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "llama-guard-3",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "qwq-32b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "qwen-2.5-coder",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "gemma-3-12b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "phi-2",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "llama",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "gpt-oss-120b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "gptossworker"
+  },
+  {
+    "id": "gpt-oss-20b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "gpt-5-nano",
+    "object": "model",
+    "created": 0,
+    "owned_by": "gptossworker"
+  },
+  {
+    "id": "claude-sonnet",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "claude-3-sonnet",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "claude-sonnet-4.5",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "chatai-gpt-4o-mini",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatai"
+  },
+  {
+    "id": "chatai-gpt-4o",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatai"
+  },
+  {
+    "id": "chatai-gpt-3.5-turbo",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatai"
+  },
+  {
+    "id": "chatai-claude-sonnet",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatai"
+  },
+  {
+    "id": "chatai-llama-3.1-8b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatai"
+  },
+  {
+    "id": "chatbotai-gpt-3.5-turbo",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatbotai"
+  },
+  {
+    "id": "chatbotai-gpt-4o-mini",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatbotai"
+  },
+  {
+    "id": "chatbotai-gpt-4o",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatbotai"
+  },
+  {
+    "id": "chatbotai-claude-3-sonnet",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatbotai"
+  },
+  {
+    "id": "chatbotai-llama-3.1-8b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatbotai"
+  },
+  {
+    "id": "openrouterhub-gpt-4o-mini",
+    "object": "model",
+    "created": 0,
+    "owned_by": "openrouterhub"
+  },
+  {
+    "id": "openrouterhub-gpt-4o",
+    "object": "model",
+    "created": 0,
+    "owned_by": "openrouterhub"
+  },
+  {
+    "id": "randomai-gpt-4o-mini",
+    "object": "model",
+    "created": 0,
+    "owned_by": "randomai"
+  },
+  {
+    "id": "randomai-gpt-4o",
+    "object": "model",
+    "created": 0,
+    "owned_by": "randomai"
+  },
+  {
+    "id": "randomai-gpt-3.5-turbo",
+    "object": "model",
+    "created": 0,
+    "owned_by": "randomai"
+  },
+  {
+    "id": "randomai-claude-sonnet",
+    "object": "model",
+    "created": 0,
+    "owned_by": "randomai"
+  },
+  {
+    "id": "randomai-gemini-pro",
+    "object": "model",
+    "created": 0,
+    "owned_by": "randomai"
+  },
+  {
+    "id": "svelteai-gpt-4o",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatai"
+  },
+  {
+    "id": "svelteai-gpt-4o-mini",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatai"
+  },
+  {
+    "id": "svelteai-gpt-4",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatbotai"
+  },
+  {
+    "id": "svelteai-gpt-3.5-turbo",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatai"
+  },
+  {
+    "id": "svelteai-gpt-3.5-16k",
+    "object": "model",
+    "created": 0,
+    "owned_by": "chatai"
+  },
+  {
+    "id": "groqw-llama-3.1-8b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "groqworker"
+  },
+  {
+    "id": "groqw-llama-3.3-70b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "groqworker"
+  },
+  {
+    "id": "groqw-llama-4-scout",
+    "object": "model",
+    "created": 0,
+    "owned_by": "groqworker"
+  },
+  {
+    "id": "nvidiaw-llama-3.1-8b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "nvidiaworker"
+  },
+  {
+    "id": "nvidiaw-llama-3.3-70b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "nvidiaworker"
+  },
+  {
+    "id": "gpt-oss-120b-p2",
+    "object": "model",
+    "created": 0,
+    "owned_by": "groqworker"
+  },
+  {
+    "id": "gemini-2.5-flash",
+    "object": "model",
+    "created": 0,
+    "owned_by": "gemini-openai"
+  },
+  {
+    "id": "gemini-2.5-flash-lite",
+    "object": "model",
+    "created": 0,
+    "owned_by": "gemini-openai"
+  },
+  {
+    "id": "claude-haiku-4-5",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "claude-opus-4-7",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "claude-opus-4-7-no-tools",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-llama-3.1-70b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-llama-3.2-11b-vision",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-llama-3.3-70b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-llama-4-maverick",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-gemma-4-31b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-gemma-3n-e2b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "google-gemma-2-9b-it",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "gemma-2-9b-it",
+    "object": "model",
+    "created": 0,
+    "owned_by": "freecf"
+  },
+  {
+    "id": "frenix-ministral-14b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-mistral-large",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-mistral-nemotron",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-mixtral-8x7b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-phi-4-multimodal",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-nemotron-mini-4b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-nemotron-nano-12b-vl",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-nemotron-nano-9b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-riva-translate",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-axion-1.5-pro",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-axion-1.5-pro-free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-glm-5",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-glm-4.7",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-minimax-m2.5",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-turbo",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-gemma-3-12b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-gemma-3-27b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-gemini-3-flash-preview",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-qwen3-coder-480b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-grok-4.1-fast",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-grok-4.3",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "frenix-grok-4.20-fast",
+    "object": "model",
+    "created": 0,
+    "owned_by": "frenix"
+  },
+  {
+    "id": "waspai-model",
+    "object": "model",
+    "created": 0,
+    "owned_by": "zerovai"
+  },
+  {
+    "id": "lordrouter-@cf/moonshotai/kimi-k2.5",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-@cf/moonshotai/kimi-k2.6",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-claude-opus-4-1",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-claude-opus-4-5",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-claude-opus-4-6",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-claude-opus-4-7",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-claude-sonnet-4-6",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-deepseek-r1",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-deepseek-v3",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-deepseek-v4-flash",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-deepseek-v4-pro",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gemini-2.5-pro",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gemini-3-pro",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gemini-3.1-flash-lite",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gemini-3.1-pro",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gemini-3.5-flash",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gemini-3.5-flash-thinking",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gemini-3.5-flash-thinking-lite",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gemini-auto",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gemini-flash-lite",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gemma-4-26b-a4b-it",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gemma-4-31b-it",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-google/gemma-4-26b-a4b-it:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-google/gemma-4-31b-it:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gpt-5",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gpt-5-5",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gpt-5-mini",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gpt-5-nano",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gpt-5.1",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gpt-5.3",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gpt-5.3-chat-latest",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gpt-5.4",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-gpt-5.5",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-grok-4",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-kimi-k2",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-liquid/lfm-2.5-1.2b-instruct:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-liquid/lfm-2.5-1.2b-thinking:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-llama-3.3-70b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-meta-llama/llama-3.2-3b-instruct:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-meta-llama/llama-3.3-70b-instruct:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-moonshotai/kimi-k2.6:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-nousresearch/hermes-3-llama-3.1-405b:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-nvidia/nemotron-3-nano-30b-a3b:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-nvidia/nemotron-3-super-120b-a12b:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-nvidia/nemotron-nano-12b-v2-vl:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-nvidia/nemotron-nano-9b-v2:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-o3",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-o3-mini",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-openai/gpt-oss-120b:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-openai/gpt-oss-20b:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-poolside/laguna-m.1:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-poolside/laguna-xs.2:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-qwen-3-max",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-qwen-qwq-32b",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-qwen/qwen3-coder:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-qwen/qwen3-next-80b-a3b-instruct:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-stepfun-ai/step-3.5-flash",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-stepfun-ai/step-3.7-flash",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  },
+  {
+    "id": "lordrouter-z-ai/glm-4.5-air:free",
+    "object": "model",
+    "created": 0,
+    "owned_by": "lordrouter"
+  }
+]
