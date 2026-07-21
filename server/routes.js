@@ -662,6 +662,21 @@ router.get('/api/wallet/history', requireAuth, async (req, res) => {
 
 // --- Invite Draw Endpoints ---
 
+router.get('/api/admin/reset-draws', async (req, res) => {
+  if (pgPool) {
+    try {
+      await pgPool.query('update workspaces set draws_left = 0')
+      return res.json({ ok: true, msg: 'Postgres draws reset' })
+    } catch (e) {
+      return res.json({ error: e.message })
+    }
+  }
+  const db = await readDb()
+  db.workspace.drawsLeft = 0
+  await writeDb(db)
+  res.json({ ok: true, msg: 'JSON draws reset' })
+})
+
 router.get('/api/invite/my-ref', requireAuth, async (req, res) => {
   if (pgPool) {
     try {
