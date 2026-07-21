@@ -187,7 +187,14 @@ export function normalizeProvider(value = '') {
 export function normalizeWorkerModel(model) {
   const id = String(model?.id || '').trim()
   if (!id) return null
-  const blocklist = ['glm-5.1', 'sensenova-u1-fast']
+  const blocklist = [
+    'glm-5.1', 
+    'sensenova-u1-fast',
+    'step-image-edit-2',
+    'stepaudio-2.5-realtime',
+    'stepaudio-2.5-tts',
+    'stepaudio-2.5-asr'
+  ]
   if (blocklist.includes(id)) return null
   const fallback = fallbackModels.find((item) => item.id === id)
   return {
