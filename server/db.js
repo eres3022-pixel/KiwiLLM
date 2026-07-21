@@ -345,8 +345,8 @@ export async function getDefaultWorkspace(client = pgPool, authUser = null) {
 
     workspaceResult = await client.query(
       `
-        insert into workspaces (name, email, owner_user_id, plan, credit_balance, credit_usd_balance, free_rpm_limit, free_rpd_limit)
-        values ($1, $2, $3, 'free', 1000, 20.00, $4, $5)
+        insert into workspaces (name, email, owner_user_id, plan, credit_balance, credit_usd_balance, free_rpm_limit, free_rpd_limit, draws_left)
+        values ($1, $2, $3, 'free', 1000, 20.00, $4, $5, 0)
         returning *
       `,
       [`${authName(authUser)} Workspace`, authUser.email, appUser.id, freeRpmLimit, freeRpdLimit],
