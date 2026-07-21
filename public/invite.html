@@ -1079,37 +1079,45 @@
     cards[targetIndex].classList.add('winning');
     var credits = cards[targetIndex].getAttribute('data-credits');
     var resultImg = document.getElementById('resultImg');
-    if (resultImg) {
-      if (credits === '5') {
-        resultImg.src = '/win-popup-5.png';
-      } else if (credits === '10') {
-        resultImg.src = '/win-popup-10.png';
-      } else if (credits === '15') {
-        resultImg.src = '/win-popup-15.png';
-      } else if (credits === '20') {
-        resultImg.src = '/win-popup-20.png';
-      } else if (credits === '30') {
-        resultImg.src = '/win-popup-30.png';
-      } else if (credits === '50') {
-        resultImg.src = '/win-popup-50.png';
-      } else if (credits === '100') {
-        resultImg.src = '/win-popup-100.png';
-      } else if (credits === '500') {
-        resultImg.src = '/win-popup-500.png';
-      } else if (credits === '1000') {
-        resultImg.src = '/win-popup-1000.png';
-      } else {
-        resultImg.src = '/win-popup.png';
-      }
-    }
     
-    myPrizesList.push({
-      amount: credits,
-      imgSrc: resultImg ? resultImg.src : '/win-popup.png'
-    });
+    function showOverlay() {
+      myPrizesList.push({
+        amount: credits,
+        imgSrc: resultImg ? resultImg.src : '/win-popup.png',
+        date: new Date()
+      });
+      resultOverlay.classList.add('show');
+      updateDrawBtn();
+    }
 
-    resultOverlay.classList.add('show');
-    updateDrawBtn();
+    if (resultImg) {
+      var newSrc = '/win-popup.png';
+      if (credits === '5') newSrc = '/win-popup-5.png';
+      else if (credits === '10') newSrc = '/win-popup-10.png';
+      else if (credits === '15') newSrc = '/win-popup-15.png';
+      else if (credits === '20') newSrc = '/win-popup-20.png';
+      else if (credits === '30') newSrc = '/win-popup-30.png';
+      else if (credits === '50') newSrc = '/win-popup-50.png';
+      else if (credits === '100') newSrc = '/win-popup-100.png';
+      else if (credits === '500') newSrc = '/win-popup-500.png';
+      else if (credits === '1000') newSrc = '/win-popup-1000.png';
+
+      // Hide the image momentarily or just wait for load
+      resultImg.style.opacity = '0';
+      
+      resultImg.onload = function() {
+        resultImg.style.opacity = '1';
+        showOverlay();
+      };
+      resultImg.onerror = function() {
+        resultImg.style.opacity = '1';
+        showOverlay(); // fallback if image fails
+      };
+
+      resultImg.src = newSrc;
+    } else {
+      showOverlay();
+    }
   }
 
   resultClose.addEventListener('click', function(){
