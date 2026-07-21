@@ -226,7 +226,7 @@ export const renderHome = () => `
 
       <div class="included-panel reveal-item">
         <h3>Frontier models included</h3>
-        <p>Claude, GPT, Gemini, Qwen, Kimi, GLM, and private routes for high-effort coding and agent sessions.</p>
+        <p>DeepSeek, Qwen, Kimi, GLM, Step, and SenseNova models for high-effort coding and agent sessions.</p>
         <small>Payment method: card, UPI, or USDT credits depending on workspace region.</small>
       </div>
 
