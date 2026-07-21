@@ -643,6 +643,23 @@ router.get('/api/usage-logs', requireAuth, async (req, res) => {
   }
 })
 
+// --- Wallet Endpoints ---
+
+router.get('/api/wallet/history', requireAuth, async (req, res) => {
+  if (pgPool) {
+    try {
+      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
+      const result = await pgPool.query('select type, credits, description, created_at from credit_transactions where workspace_id = $1 order by created_at desc limit 50', [workspace.id])
+      return res.json({ transactions: result.rows.map(r => ({ type: r.type, credits: Number(r.credits), description: r.description, createdAt: r.created_at })) })
+    } catch (err) {
+      console.warn('PG wallet history failed:', err.message)
+    }
+  }
+  const db = await readDb()
+  const tx = db.creditTransactions || []
+  res.json({ transactions: tx.slice(0, 50) })
+})
+
 // --- Invite Draw Endpoints ---
 
 router.get('/api/invite/my-ref', requireAuth, async (req, res) => {
@@ -789,6 +806,8 @@ router.post('/api/invite/draw', requireAuth, async (req, res) => {
   db.workspace.creditUsd = Number((db.workspace.creditUsd + prizeUsd).toFixed(2))
   if (!db.prizeHistory) db.prizeHistory = []
   db.prizeHistory.unshift({ amount: String(prizeAmount), createdAt: new Date().toISOString() })
+  if (!db.creditTransactions) db.creditTransactions = []
+  db.creditTransactions.unshift({ type: 'prize', credits: prizeCredits, description: 'Won on spinning wheel', createdAt: new Date().toISOString() })
   await writeDb(db)
   res.json({ amount: prizeAmount })
 })

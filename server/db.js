@@ -141,6 +141,15 @@ export async function ensureCoreTables() {
         purchase_reward_claimed boolean default false,
         created_at timestamptz not null default now()
       );
+      
+      create table if not exists credit_transactions (
+        id uuid primary key default gen_random_uuid(),
+        workspace_id uuid references workspaces(id),
+        type text not null,
+        credits numeric not null,
+        description text,
+        created_at timestamptz not null default now()
+      );
     `)
     coreTablesReady = true
   } catch (error) {
@@ -194,6 +203,7 @@ export const seedDb = {
   },
   prizeHistory: [],
   referrals: [],
+  creditTransactions: [],
   keys: [],
   usage: {
     tokenBars: Array(12).fill(0),
@@ -994,6 +1004,7 @@ export function normalizeDb(db) {
     },
     prizeHistory: Array.isArray(db.prizeHistory) ? db.prizeHistory : [],
     referrals: Array.isArray(db.referrals) ? db.referrals : [],
+    creditTransactions: Array.isArray(db.creditTransactions) ? db.creditTransactions : [],
     keys,
     usage: {
       ...seedDb.usage,

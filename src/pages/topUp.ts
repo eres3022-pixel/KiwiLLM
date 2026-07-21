@@ -46,6 +46,28 @@ export const renderTopUpPage = (pageHeader: string, topUpPlans: TopUpPlan[]) => 
           </div>
         </aside>
       </section>
+
+      <section class="transaction-history" style="margin-top: 4rem;">
+        <div class="content-hero" style="text-align: left; margin-bottom: 2rem;">
+          <p class="section-kicker">HISTORY</p>
+          <h2>Wallet Transactions</h2>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th style="text-align: right;">Amount</th>
+              </tr>
+            </thead>
+            <tbody id="wallet-history-body">
+              <tr><td colspan="4" class="empty-state">Loading transactions...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </section>
   </main>
 `

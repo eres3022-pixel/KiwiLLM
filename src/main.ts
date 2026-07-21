@@ -599,11 +599,17 @@ if (isDashboardPage) {
         method: 'POST',
         body: JSON.stringify({ code: input?.value }),
       })
-      if (message) message.textContent = `Success. Added ${result.creditsAdded} credits to your workspace.`
-      if (input) input.value = ''
-      await hydrateDashboard()
+      if (message) {
+        message.className = 'redeem-success'
+        message.textContent = `Success! Added $${(result.creditsAdded / 50).toFixed(2)} to your balance.`
+        input!.value = ''
+        hydrateDashboard().catch(console.error)
+      }
     } catch (error) {
-      if (message) message.textContent = error instanceof Error ? error.message : 'Could not redeem code.'
+      if (message) {
+        message.className = 'redeem-error'
+        message.textContent = error instanceof Error ? error.message : 'Invalid code'
+      }
     }
   })
 
@@ -959,6 +965,48 @@ if (isAdminPage) {
     hydrateAdmin().catch(console.error)
   })
   hydrateAdmin().catch(console.error)
+}
+
+if (isTopUpPage) {
+  const hydrateWalletHistory = async () => {
+    if (!currentSession) {
+      const tbody = document.getElementById('wallet-history-body')
+      if (tbody) tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Please sign in to view transaction history.</td></tr>'
+      return
+    }
+    try {
+      const data = await api<{ transactions: any[] }>('/api/wallet/history')
+      const tbody = document.getElementById('wallet-history-body')
+      if (!tbody) return
+      
+      if (!data.transactions || data.transactions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No transactions yet.</td></tr>'
+        return
+      }
+      
+      tbody.innerHTML = data.transactions.map(tx => {
+        const date = new Date(tx.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+        const typeStr = tx.type === 'prize' ? 'Prize' : tx.type === 'purchase' ? 'Purchase' : tx.type
+        const amountStr = tx.credits > 0 ? `+${tx.credits.toLocaleString()}` : tx.credits.toLocaleString()
+        const amountColor = tx.credits > 0 ? '#10b981' : (tx.credits < 0 ? '#ef4444' : 'inherit')
+        
+        return `
+          <tr>
+            <td style="color: var(--text-secondary);">${date}</td>
+            <td>${escapeHtml(tx.description || '')}</td>
+            <td><span class="badge badge-outline">${escapeHtml(typeStr)}</span></td>
+            <td style="text-align: right; color: ${amountColor}; font-weight: 500;">${amountStr}</td>
+          </tr>
+        `
+      }).join('')
+    } catch (e) {
+      const tbody = document.getElementById('wallet-history-body')
+      if (tbody) tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Failed to load transactions.</td></tr>'
+    }
+  }
+
+  hydrateWalletHistory()
+  window.addEventListener('kiwi-auth-synced', hydrateWalletHistory)
 }
 
 if (isPlaygroundPage) {
