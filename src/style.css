@@ -133,8 +133,8 @@ a {
   left: 0;
   right: 0;
   z-index: 10;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
   box-sizing: border-box;
@@ -181,6 +181,11 @@ a {
 }
 
 .nav-links {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
   justify-content: center;
   gap: 12px;
   color: var(--muted);
