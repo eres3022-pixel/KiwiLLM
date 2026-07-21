@@ -610,14 +610,14 @@ function pickPrize() {
   const r = Math.random() * 100
   let p = 0
   if ((p += 0.2) >= r) return 1000
-  if ((p += 0.8) >= r) return 500
-  if ((p += 2.0) >= r) return 100
-  if ((p += 4.0) >= r) return 50
-  if ((p += 8.0) >= r) return 30
-  if ((p += 15.0) >= r) return 20
-  if ((p += 20.0) >= r) return 15
-  if ((p += 20.0) >= r) return 10
-  if ((p += 20.0) >= r) return 5
+  if ((p += 0.3) >= r) return 500
+  if ((p += 1.0) >= r) return 100
+  if ((p += 2.5) >= r) return 50
+  if ((p += 4.0) >= r) return 30
+  if ((p += 7.0) >= r) return 20
+  if ((p += 12.0) >= r) return 15
+  if ((p += 18.0) >= r) return 10
+  if ((p += 25.0) >= r) return 5
   return 3
 }
 
