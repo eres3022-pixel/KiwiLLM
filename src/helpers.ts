@@ -7,6 +7,12 @@ export const escapeHtml = (value: string) =>
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
 
+export const formatBigNumber = (num: number) => {
+  if (num >= 1e9) return (num / 1e9).toFixed(2).replace(/\.?0+$/, '') + 'B'
+  if (num >= 1e6) return (num / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'M'
+  return num.toLocaleString()
+}
+
 export type AuthProfile = {
   name: string
   email: string

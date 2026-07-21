@@ -17,7 +17,7 @@ import { renderUsageLogs } from './components/UsageLogs'
 import { topUpPlans, pageLinks } from './data'
 import { currentSession, setCurrentSession, resolveAuthReady, authReady } from './state'
 import { brandMark, authAccountMarkup } from './icons'
-import { getAuthProfile, initialsFor, escapeHtml, api, pageHeader, adminToken } from './helpers'
+import { getAuthProfile, initialsFor, escapeHtml, api, pageHeader, adminToken, formatBigNumber } from './helpers'
 import { dashboardGreeting } from './helpers'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL
@@ -567,7 +567,7 @@ if (isDashboardPage) {
                 (item) => `
                 <div>
                   <header><span title="${escapeHtml(item.model)}">${escapeHtml(formatModelName(item.model))}</span><b>$${item.spend.toFixed(4)}</b></header>
-                  <p>${item.requests.toLocaleString()} requests</p>
+                  <p>${formatBigNumber(item.requests)} requests</p>
                   <i style="--fill:${item.width}%"></i>
                 </div>
               `,
@@ -787,14 +787,14 @@ if (isAdminPage) {
       const adminEmail = currentSession?.user.email || document.querySelector<HTMLInputElement>('#admin-email')?.value || 'admin'
       setAdminStatus('Verified admin', `${adminEmail} has backend admin access.`)
       const statMap: Record<string, string> = {
-        Workspaces: data.summary.workspaces.toLocaleString(),
-        Users: data.summary.users.toLocaleString(),
-        'Active keys': data.summary.activeKeys.toLocaleString(),
-        'Requests 30d': data.summary.requests30d.toLocaleString(),
-        'Tokens 30d': data.summary.tokens30d.toLocaleString(),
-        'Credits used': data.summary.creditsUsed30d.toLocaleString(),
-        'Total draws': data.summary.totalDraws.toLocaleString(),
-        'Total referrals': data.summary.totalReferrals.toLocaleString(),
+        Workspaces: formatBigNumber(data.summary.workspaces),
+        Users: formatBigNumber(data.summary.users),
+        'Active keys': formatBigNumber(data.summary.activeKeys),
+        'Requests 30d': formatBigNumber(data.summary.requests30d),
+        'Tokens 30d': formatBigNumber(data.summary.tokens30d),
+        'Credits used': '$' + data.summary.creditsUsed30d.toFixed(2),
+        'Total draws': formatBigNumber(data.summary.totalDraws),
+        'Total referrals': formatBigNumber(data.summary.totalReferrals),
       }
       document.querySelectorAll<HTMLElement>('[data-admin-stat]').forEach((node) => {
         const key = node.dataset.adminStat || ''
@@ -810,9 +810,9 @@ if (isAdminPage) {
               .map(
                 (item) => `
                   <div class="admin-list-row">
-                    <strong>${escapeHtml(item.model)}</strong>
-                    <span>${item.requests.toLocaleString()} requests</span>
-                    <small>${item.tokens.toLocaleString()} tokens · $${item.spend.toFixed(4)}</small>
+                    <strong>${escapeHtml(formatModelName(item.model))}</strong>
+                    <span>${formatBigNumber(item.requests)} requests</span>
+                    <small>${formatBigNumber(item.tokens)} tokens · $${item.spend.toFixed(4)}</small>
                   </div>
                 `,
               )
