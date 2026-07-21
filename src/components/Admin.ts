@@ -41,7 +41,7 @@ export const renderAdmin = () => `
       </section>
 
       <section class="dash-stats admin-stats" aria-label="Admin statistics">
-        ${['Workspaces', 'Users', 'Active keys', 'Total requests', 'Total tokens', 'Credits used', 'Total draws', 'Total referrals']
+        ${['Workspaces', 'Users', 'Active keys', 'Total requests', 'Total tokens', 'Credits used', 'Credits bought', 'Revenue', 'Total draws', 'Total referrals']
           .map(
             (label) => `
               <article>

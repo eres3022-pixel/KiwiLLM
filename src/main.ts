@@ -793,6 +793,8 @@ if (isAdminPage) {
         'Total requests': formatBigNumber(data.summary.requests30d),
         'Total tokens': formatBigNumber(data.summary.tokens30d),
         'Credits used': '$' + data.summary.creditsUsed30d.toFixed(2),
+        'Credits bought': formatBigNumber(data.summary.creditsBought || 0),
+        'Revenue': '$' + (data.summary.revenue || 0).toFixed(2),
         'Total draws': formatBigNumber(data.summary.totalDraws),
         'Total referrals': formatBigNumber(data.summary.totalReferrals),
       }

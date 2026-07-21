@@ -758,6 +758,8 @@ export async function getAdminOverview() {
         requests30d: db.workspace.requests30d,
         tokens30d: db.workspace.tokens30d,
         creditsUsed30d: db.workspace.usedCredits30d,
+        creditsBought: 0,
+        revenue: 0,
         playgroundRuns: db.runs.length,
       },
       keys: db.keys.slice(0, 25).map((item) => ({
@@ -871,7 +873,9 @@ export async function getAdminOverview() {
       requests30d: Number(usageTotals.rows[0]?.requests || 0),
       tokens30d: Number(usageTotals.rows[0]?.tokens || 0),
       creditsUsed30d: Number(usageTotals.rows[0]?.credits || 0),
-      playgroundRuns: Number(runs.rowCount || 0),
+      creditsBought: 0,
+      revenue: 0,
+      playgroundRuns: Number(runs.rows.length || 0),
     },
     usageByModel: modelUsage.rows.map((row) => ({
       model: row.model,
