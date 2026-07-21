@@ -47,6 +47,11 @@ app.use((error, _req, res, next) => {
 
 app.use((req, res) => {
   if (existsSync(distPath) && !req.path.startsWith('/api') && !req.path.startsWith('/v1') && req.path !== '/health') {
+    // Serve specific HTML files (e.g. /invite.html) directly if they exist
+    const specificFile = join(distPath, req.path)
+    if (req.path !== '/' && req.path.endsWith('.html') && existsSync(specificFile)) {
+      return res.sendFile(specificFile)
+    }
     return res.sendFile(join(distPath, 'index.html'))
   }
   res.status(200).json({ status: 'Kiwi LLM API is running', message: 'Ready to receive requests.' })

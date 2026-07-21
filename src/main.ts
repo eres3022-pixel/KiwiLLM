@@ -81,9 +81,7 @@ document.body.insertAdjacentHTML(
     </div>
 
     <div class="invite-modal" id="invite-modal" hidden>
-      <iframe src="/invite.html" style="width: 100%; height: 100%; border: none; background: transparent;"></iframe>
-      <!-- Invisible close overlay to capture clicks exactly over the HTML's close button (top: 28px; right: 32px;) -->
-      <button id="invite-close-btn" style="position: absolute; top: 28px; right: 32px; width: 34px; height: 34px; opacity: 0; cursor: pointer; z-index: 99999;" aria-label="Close invite modal"></button>
+      <iframe src="/invite.html" id="invite-frame" style="width: 100%; height: 100%; border: none; background: transparent;"></iframe>
     </div>
   `,
 )
@@ -183,6 +181,11 @@ document.querySelectorAll<HTMLElement>('.dash-invite-card').forEach((btn) => {
 })
 document.getElementById('invite-close-btn')?.addEventListener('click', closeInviteModal)
 document.getElementById('invite-close-bg')?.addEventListener('click', closeInviteModal)
+
+// Listen for close message posted from the invite iframe
+window.addEventListener('message', (e) => {
+  if (e.data === 'close-invite') closeInviteModal()
+})
 
 document.querySelectorAll<HTMLButtonElement>('[data-auth-provider]').forEach((button) => {
   button.addEventListener('click', async () => {

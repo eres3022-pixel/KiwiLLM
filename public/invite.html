@@ -948,6 +948,16 @@
 
   updateDrawBtn();
 
+  // ---- topbar close button → tell parent to close the modal ----
+  var topbarBtns = document.querySelectorAll('.topbar .icon-btn');
+  // The second icon-btn is the Close (×) button
+  var topbarCloseBtn = topbarBtns[1];
+  if (topbarCloseBtn) {
+    topbarCloseBtn.addEventListener('click', function(){
+      window.parent.postMessage('close-invite', '*');
+    });
+  }
+
   // ---- details panel ----
   var detailsOverlay = document.getElementById('detailsOverlay');
   var detailsBtn = document.getElementById('detailsBtn');
