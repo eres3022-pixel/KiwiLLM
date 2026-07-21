@@ -8,7 +8,6 @@ export const renderDocs = () => `
       <a class="docs-logo" href="/">${brandMark}<span>Kiwi LLM</span></a>
       <span>Docs</span>
       <nav>
-        <a href="/playground">Playground</a>
         <a href="/dashboard">Dashboard</a>
         <a href="/models">Models</a>
       </nav>

@@ -16,8 +16,6 @@ export const renderHome = () => `
         <span aria-hidden="true"></span>
         <a href="/docs">Docs</a>
         <span aria-hidden="true"></span>
-        <a href="/playground">Playground</a>
-        <span aria-hidden="true"></span>
         <a href="#pricing">Pricing</a>
       </div>
       <div class="nav-actions">

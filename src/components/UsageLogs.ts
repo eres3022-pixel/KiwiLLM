@@ -11,7 +11,6 @@ export const renderUsageLogs = () => `
         <a href="/dashboard">Dashboard</a>
         <a href="/usage" class="nav-active">Usage</a>
         <a href="/models">Models</a>
-        <a href="/playground">Playground</a>
         <a href="/docs">Docs</a>
         <a href="/top-up">Wallet</a>
       </nav>

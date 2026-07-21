@@ -52,7 +52,6 @@ export const footerColumns = [
 export const pageLinks = [
   { label: 'Docs', href: '/docs' },
   { label: 'Models', href: '/models' },
-  { label: 'Playground', href: '/playground' },
   { label: 'Top up', href: '/top-up' },
 ]
 
