@@ -1057,6 +1057,24 @@ if (isTopUpPage) {
 
   hydrateWalletHistory()
   window.addEventListener('kiwi-auth-synced', hydrateWalletHistory)
+
+  // Top Up Modal Logic
+  const contactModal = document.querySelector('.contact-modal')
+  const contactBackdrop = document.getElementById('contact-backdrop')
+  const contactClose = document.getElementById('contact-close')
+  
+  const openContactModal = () => contactModal?.classList.add('is-open')
+  const closeContactModal = () => contactModal?.classList.remove('is-open')
+  
+  document.querySelectorAll('.buy-topup-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault()
+      openContactModal()
+    })
+  })
+  
+  contactBackdrop?.addEventListener('click', closeContactModal)
+  contactClose?.addEventListener('click', closeContactModal)
 }
 
 if (isPlaygroundPage) {
