@@ -342,10 +342,6 @@ router.post('/api/keys', requireAuth, async (req, res) => {
   const selectedModels = Array.isArray(req.body.models) && req.body.models.length ? req.body.models : []
 
   const db = await readDb()
-  const activeLocalKeys = (db.keys || []).filter((k) => !k.revoked && !k.revokedAt)
-  if (activeLocalKeys.length >= 2) {
-    return res.status(400).json({ error: 'Free plan limit: Maximum 2 active API keys allowed. Please revoke an existing key first.' })
-  }
 
   let createdItem = null
   if (pgPool) {
@@ -363,6 +359,13 @@ router.post('/api/keys', requireAuth, async (req, res) => {
         return res.status(400).json({ error: pgErr.message })
       }
       console.warn('PostgreSQL key creation failed, falling back to local DB:', pgErr.message)
+    }
+  }
+
+  if (!pgPool) {
+    const activeLocalKeys = (db.keys || []).filter((k) => !k.revoked && !k.revokedAt)
+    if (activeLocalKeys.length >= 2) {
+      return res.status(400).json({ error: 'Free plan limit: Maximum 2 active API keys allowed. Please revoke an existing key first.' })
     }
   }
 
