@@ -501,6 +501,68 @@
     border:1px solid rgba(255,255,255,0.1);
   }
   .poster-btn-close:hover{ background:rgba(255,255,255,0.12); color:var(--text-0); border-color:rgba(255,255,255,0.2); transform:translateY(-2px); }
+
+  /* ---------- my prizes modal ---------- */
+  .my-prizes-overlay{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.6);
+    backdrop-filter:blur(5px);
+    z-index:300;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.25s ease;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .my-prizes-overlay.show{ opacity:1; pointer-events:auto; }
+  .my-prizes-panel{
+    width:90%; max-width:600px; max-height:80vh;
+    background:#161616;
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:12px;
+    display:flex; flex-direction:column;
+    overflow:hidden;
+    transform:translateY(20px);
+    transition:transform 0.3s cubic-bezier(.34,1.56,.64,1);
+    box-shadow:0 30px 80px rgba(0,0,0,0.8);
+  }
+  .my-prizes-overlay.show .my-prizes-panel{ transform:translateY(0); }
+  .mp-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 24px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+  }
+  .mp-header h2{ margin:0; font-size:16px; font-weight:600; color:var(--text-0); }
+  .mp-close{
+    background:transparent; border:none; color:var(--text-2); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:color 0.15s;
+  }
+  .mp-close:hover{ color:var(--text-0); }
+  .mp-body{
+    padding:24px; overflow-y:auto;
+  }
+  .mp-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:16px;
+  }
+  .mp-card{
+    background:#252525;
+    border-radius:12px;
+    padding:20px;
+    text-align:center;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .mp-card-img{
+    width:100%; height:100px; object-fit:contain; margin-bottom:16px;
+  }
+  .mp-card-title{
+    font-family:var(--serif); font-size:18px; font-weight:700; color:#fff; margin-bottom:12px;
+  }
+  .mp-card-desc{
+    font-size:12px; color:var(--text-2); line-height:1.6;
+  }
+  .mp-empty{
+    text-align:center; color:var(--text-2); font-size:14px; padding:40px 0;
+    grid-column: 1 / -1;
+  }
 </style>
 </head>
 <body>
@@ -777,10 +839,25 @@
   </button>
 </div>
 
+<div class="my-prizes-overlay" id="myPrizesOverlay">
+  <div class="my-prizes-panel">
+    <div class="mp-header">
+      <h2>My Prizes</h2>
+      <button class="mp-close" id="myPrizesClose">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="mp-body">
+      <div class="mp-grid" id="mpGrid"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   var cards = Array.prototype.slice.call(document.querySelectorAll('.ring-card'));
   var N = cards.length; // 10
+  var myPrizesList = [];
 
   // ---- real orbit parameters (percent of .stage box) ----
   var CX = 50, CY = 44, RX = 42, RY = 15;
@@ -900,10 +977,51 @@
 
   function updateDrawBtn(){
     drawsLeftNum.textContent = drawsLeft;
-    drawBtn.disabled = drawsLeft <= 0 || spinning;
+    if(drawsLeft <= 0){
+      drawBtn.disabled = true;
+      drawBtn.style.opacity = '0.5';
+      drawBtn.textContent = 'No Draws Left';
+    } else {
+      drawBtn.disabled = false;
+      drawBtn.style.opacity = '1';
+      drawBtn.textContent = 'Draw Now';
+    }
   }
 
-  var toastTimer = null;
+  // --- My Prizes logic ---
+  var myPrizesBtn = document.querySelector('.my-prizes');
+  var myPrizesOverlay = document.getElementById('myPrizesOverlay');
+  var myPrizesClose = document.getElementById('myPrizesClose');
+  var mpGrid = document.getElementById('mpGrid');
+
+  if (myPrizesBtn && myPrizesOverlay) {
+    myPrizesBtn.style.cursor = 'pointer';
+    myPrizesBtn.addEventListener('click', function() {
+      mpGrid.innerHTML = '';
+      if (myPrizesList.length === 0) {
+        mpGrid.innerHTML = '<div class="mp-empty">You haven\'t won any prizes yet. Spin the wheel!</div>';
+      } else {
+        var expiry = new Date();
+        expiry.setFullYear(expiry.getFullYear() + 1);
+        var expiryStr = expiry.toISOString().split('T')[0];
+        myPrizesList.forEach(function(prize) {
+          var card = document.createElement('div');
+          card.className = 'mp-card';
+          card.innerHTML = 
+            '<img class="mp-card-img" src="' + prize.imgSrc + '" />' +
+            '<div class="mp-card-title">$' + prize.amount + ' API Credits</div>' +
+            '<div class="mp-card-desc">Credits added to balance<br/>Valid until ' + expiryStr + '</div>';
+          mpGrid.appendChild(card);
+        });
+      }
+      myPrizesOverlay.classList.add('show');
+    });
+
+    myPrizesClose.addEventListener('click', function() {
+      myPrizesOverlay.classList.remove('show');
+    });
+  }
+
   function showToast(msg){
     toastEl.textContent = msg;
     toastEl.classList.add('show');
@@ -984,6 +1102,12 @@
         resultImg.src = '/win-popup.png';
       }
     }
+    
+    myPrizesList.push({
+      amount: credits,
+      imgSrc: resultImg ? resultImg.src : '/win-popup.png'
+    });
+
     resultOverlay.classList.add('show');
     updateDrawBtn();
   }
