@@ -25,6 +25,8 @@ const protectedApiPaths = new Set([
   '/api/invite/status',
   '/api/invite/draw',
   '/api/invite/add-draw',
+  '/api/invite/my-ref',
+  '/api/referrals/claim',
 ])
 
 export const isProtectedApiPath = (path: string) => {
