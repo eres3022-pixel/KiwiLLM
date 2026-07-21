@@ -757,12 +757,14 @@ router.post('/api/invite/draw', requireAuth, async (req, res) => {
         return res.status(400).json({ error: 'No draws left.' })
       }
       const prizeAmount = pickPrize()
+      const prizeUsd = prizeAmount
+      const prizeCredits = prizeUsd * 50
       await pgPool.query('begin')
       try {
-        await pgPool.query('update workspaces set draws_left = draws_left - 1, credit_balance = credit_balance + $1, credit_usd_balance = credit_usd_balance + $2 where id = $3', [prizeAmount, prizeAmount/50, workspace.id])
+        await pgPool.query('update workspaces set draws_left = draws_left - 1, credit_balance = credit_balance + $1, credit_usd_balance = credit_usd_balance + $2 where id = $3', [prizeCredits, prizeUsd, workspace.id])
         // credit_transactions might not exist depending on their schema but redemption uses it, we will wrap in try/catch if it doesn't
         try {
-          await pgPool.query('insert into credit_transactions (workspace_id, type, credits, description) values ($1, $2, $3, $4)', [workspace.id, 'prize', prizeAmount, 'Won on spinning wheel'])
+          await pgPool.query('insert into credit_transactions (workspace_id, type, credits, description) values ($1, $2, $3, $4)', [workspace.id, 'prize', prizeCredits, 'Won on spinning wheel'])
         } catch(e) {}
         await pgPool.query('insert into prize_history (workspace_id, amount) values ($1, $2)', [workspace.id, String(prizeAmount)])
         await pgPool.query('commit')
@@ -780,9 +782,11 @@ router.post('/api/invite/draw', requireAuth, async (req, res) => {
     return res.status(400).json({ error: 'No draws left.' })
   }
   const prizeAmount = pickPrize()
+  const prizeUsd = prizeAmount
+  const prizeCredits = prizeUsd * 50
   db.workspace.drawsLeft -= 1
-  db.workspace.credits += prizeAmount
-  db.workspace.creditUsd = Number((db.workspace.creditUsd + prizeAmount / 50).toFixed(2))
+  db.workspace.credits += prizeCredits
+  db.workspace.creditUsd = Number((db.workspace.creditUsd + prizeUsd).toFixed(2))
   if (!db.prizeHistory) db.prizeHistory = []
   db.prizeHistory.unshift({ amount: String(prizeAmount), createdAt: new Date().toISOString() })
   await writeDb(db)
