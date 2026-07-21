@@ -551,6 +551,14 @@ if (isDashboardPage) {
       updateBars('.dash-wide .dash-bars', data.usage.tokenBars)
       updateBars('.dash-panel:not(.dash-wide) .dash-bars', data.usage.requestBars)
 
+      const formatModelName = (id: string) => {
+        let name = id.split('/').pop() || id
+        if (name === 'xopqwen36v35b') return 'Qwen 3.6 35B'
+        if (name === 'auto') return 'Auto Router'
+        name = name.replace(/[-_]+/g, ' ')
+        return name.replace(/\b\w/g, (c) => c.toUpperCase()).replace(/Deepseek/i, 'DeepSeek')
+      }
+
       const spendList = document.querySelector<HTMLElement>('.model-spend-list')
       if (spendList) {
         spendList.innerHTML = data.usage.spendByModel.length
@@ -558,7 +566,7 @@ if (isDashboardPage) {
               .map(
                 (item) => `
                 <div>
-                  <header><span>${escapeHtml(item.model)}</span><b>$${item.spend.toFixed(4)}</b></header>
+                  <header><span title="${escapeHtml(item.model)}">${escapeHtml(formatModelName(item.model))}</span><b>$${item.spend.toFixed(4)}</b></header>
                   <p>${item.requests.toLocaleString()} requests</p>
                   <i style="--fill:${item.width}%"></i>
                 </div>
