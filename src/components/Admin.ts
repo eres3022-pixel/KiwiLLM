@@ -41,11 +41,14 @@ export const renderAdmin = () => `
       </section>
 
       <section class="dash-stats admin-stats" aria-label="Admin statistics">
-        ${['Workspaces', 'Users', 'Active keys', 'Requests 30d', 'Tokens 30d', 'Credits used', 'Total draws', 'Total referrals']
+        ${['Workspaces', 'Users', 'Active keys', 'Total requests', 'Total tokens', 'Credits used', 'Total draws', 'Total referrals']
           .map(
             (label) => `
               <article>
-                <div><span>${label}</span><b>Live</b></div>
+                <div>
+                  <span>${label}</span>
+                  <b>Live</b>
+                </div>
                 <strong data-admin-stat="${label}">...</strong>
                 <p>Loading admin data</p>
               </article>

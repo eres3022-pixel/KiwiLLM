@@ -809,12 +809,10 @@ export async function getAdminOverview() {
         coalesce(sum(total_tokens), 0)::bigint as tokens,
         coalesce(sum(credits_used), 0)::numeric as credits
       from daily_usage
-      where usage_date >= current_date - interval '29 days'
     `),
     pgPool.query(`
       select model, sum(requests)::int as requests, sum(total_tokens)::bigint as tokens, sum(usd_estimate)::numeric as spend
       from model_usage
-      where usage_date >= current_date - interval '29 days'
       group by model
       order by requests desc, tokens desc
       limit 10
