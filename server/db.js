@@ -792,9 +792,11 @@ export async function getAdminOverview() {
 
   await ensureAuditTable()
   await ensureRedemptionTables()
-  const [workspaceCount, userCount, keyCounts, usageTotals, modelUsage, auditEvents, runs, recentKeys, redemptionCodes] = await Promise.all([
+  const [workspaceCount, userCount, drawsTotal, referralCount, keyCounts, usageTotals, modelUsage, auditEvents, runs, recentKeys, redemptionCodes, recentReferrals, recentPrizes] = await Promise.all([
     pgPool.query('select count(*)::int as count from workspaces'),
     pgPool.query('select count(*)::int as count from app_users'),
+    pgPool.query('select coalesce(sum(draws_left), 0)::int as count from workspaces'),
+    pgPool.query('select count(*)::int as count from referrals'),
     pgPool.query(`
       select
         count(*) filter (where revoked_at is null)::int as active,
@@ -843,12 +845,29 @@ export async function getAdminOverview() {
       order by created_at desc
       limit 25
     `),
+    pgPool.query(`
+      select r.created_at, i.email as inviter_email, ref.email as referred_email, r.api_key_reward_claimed, r.purchase_reward_claimed
+      from referrals r
+      join workspaces i on i.id = r.inviter_workspace_id
+      join workspaces ref on ref.id = r.referred_workspace_id
+      order by r.created_at desc
+      limit 25
+    `),
+    pgPool.query(`
+      select p.amount, p.created_at, w.email as workspace_email
+      from prize_history p
+      join workspaces w on w.id = p.workspace_id
+      order by p.created_at desc
+      limit 25
+    `),
   ])
 
   return {
     summary: {
       workspaces: Number(workspaceCount.rows[0]?.count || 0),
       users: Number(userCount.rows[0]?.count || 0),
+      totalDraws: Number(drawsTotal.rows[0]?.count || 0),
+      totalReferrals: Number(referralCount.rows[0]?.count || 0),
       activeKeys: Number(keyCounts.rows[0]?.active || 0),
       revokedKeys: Number(keyCounts.rows[0]?.revoked || 0),
       requests30d: Number(usageTotals.rows[0]?.requests || 0),
@@ -890,6 +909,18 @@ export async function getAdminOverview() {
       maxRedemptions: Number(row.max_redemptions || 0),
       redeemedCount: Number(row.redeemed_count || 0),
       expiresAt: row.expires_at,
+      createdAt: row.created_at,
+    })),
+    referrals: recentReferrals.rows.map((row) => ({
+      inviterEmail: row.inviter_email,
+      referredEmail: row.referred_email,
+      apiKeyReward: row.api_key_reward_claimed,
+      purchaseReward: row.purchase_reward_claimed,
+      createdAt: row.created_at,
+    })),
+    prizes: recentPrizes.rows.map((row) => ({
+      workspaceEmail: row.workspace_email,
+      amount: row.amount,
       createdAt: row.created_at,
     })),
   }

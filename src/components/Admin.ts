@@ -41,7 +41,7 @@ export const renderAdmin = () => `
       </section>
 
       <section class="dash-stats admin-stats" aria-label="Admin statistics">
-        ${['Workspaces', 'Users', 'Active keys', 'Requests 30d', 'Tokens 30d', 'Credits used']
+        ${['Workspaces', 'Users', 'Active keys', 'Requests 30d', 'Tokens 30d', 'Credits used', 'Total draws', 'Total referrals']
           .map(
             (label) => `
               <article>
@@ -142,6 +142,28 @@ export const renderAdmin = () => `
             <span id="admin-run-count">Loading</span>
           </div>
           <div class="admin-list" id="admin-runs"></div>
+        </article>
+
+        <article class="dash-panel">
+          <div class="dash-panel-head">
+            <div>
+              <h2>Recent Prizes</h2>
+              <p>Rewards spun on the wheel</p>
+            </div>
+            <span id="admin-prize-count">Loading</span>
+          </div>
+          <div class="admin-list" id="admin-prizes"></div>
+        </article>
+
+        <article class="dash-panel">
+          <div class="dash-panel-head">
+            <div>
+              <h2>Recent Referrals</h2>
+              <p>Inviter &rarr; Invitee mapping</p>
+            </div>
+            <span id="admin-referral-count">Loading</span>
+          </div>
+          <div class="admin-list" id="admin-referrals"></div>
         </article>
       </section>
     </section>

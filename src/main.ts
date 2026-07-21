@@ -738,12 +738,16 @@ if (isAdminPage) {
       tokens30d: number
       creditsUsed30d: number
       playgroundRuns: number
+      totalDraws: number
+      totalReferrals: number
     }
     usageByModel: Array<{ model: string; requests: number; tokens: number; spend: number }>
     keys: Array<{ name: string; workspace: string; preview: string; scope: string; lastUsed: string | null; createdAt: string; revoked: boolean }>
     audit: Array<{ actor: string; action: string; metadata: Record<string, unknown>; createdAt: string }>
     runs: Array<{ title: string; model: string; tokens: number; createdAt: string }>
     redemptionCodes: Array<{ code: string; credits: number; maxRedemptions: number; redeemedCount: number; expiresAt: string | null; createdAt: string | null }>
+    prizes: Array<{ amount: string; workspaceEmail: string; createdAt: string }>
+    referrals: Array<{ inviterEmail: string; referredEmail: string; apiKeyReward: boolean; purchaseReward: boolean; createdAt: string }>
   }
 
   const adminDate = (value: string | null) => (value ? new Date(value).toLocaleString() : 'Never')
@@ -781,6 +785,8 @@ if (isAdminPage) {
         'Requests 30d': data.summary.requests30d.toLocaleString(),
         'Tokens 30d': data.summary.tokens30d.toLocaleString(),
         'Credits used': data.summary.creditsUsed30d.toLocaleString(),
+        'Total draws': data.summary.totalDraws.toLocaleString(),
+        'Total referrals': data.summary.totalReferrals.toLocaleString(),
       }
       document.querySelectorAll<HTMLElement>('[data-admin-stat]').forEach((node) => {
         const key = node.dataset.adminStat || ''
@@ -875,16 +881,54 @@ if (isAdminPage) {
           : '<p class="empty-state">No playground runs yet.</p>'
       }
 
+      const prizes = document.querySelector<HTMLElement>('#admin-prizes')
+      if (prizes) {
+        prizes.innerHTML = data.prizes.length
+          ? data.prizes
+              .map(
+                (item) => `
+                  <div class="admin-list-row">
+                    <strong>$${escapeHtml(item.amount)} won</strong>
+                    <span>${escapeHtml(item.workspaceEmail)}</span>
+                    <small>${adminDate(item.createdAt)}</small>
+                  </div>
+                `,
+              )
+              .join('')
+          : '<p class="empty-state">No prizes won yet.</p>'
+      }
+
+      const referrals = document.querySelector<HTMLElement>('#admin-referrals')
+      if (referrals) {
+        referrals.innerHTML = data.referrals.length
+          ? data.referrals
+              .map(
+                (item) => `
+                  <div class="admin-list-row">
+                    <strong>${escapeHtml(item.referredEmail)}</strong>
+                    <span>Invited by ${escapeHtml(item.inviterEmail)}</span>
+                    <small>${adminDate(item.createdAt)}</small>
+                  </div>
+                `,
+              )
+              .join('')
+          : '<p class="empty-state">No referrals yet.</p>'
+      }
+
       const modelCount = document.querySelector<HTMLElement>('#admin-model-count')
       const keyCount = document.querySelector<HTMLElement>('#admin-key-count')
       const auditCount = document.querySelector<HTMLElement>('#admin-audit-count')
       const runCount = document.querySelector<HTMLElement>('#admin-run-count')
       const codeCount = document.querySelector<HTMLElement>('#admin-code-count')
+      const prizeCount = document.querySelector<HTMLElement>('#admin-prize-count')
+      const referralCount = document.querySelector<HTMLElement>('#admin-referral-count')
       if (modelCount) modelCount.textContent = `${data.usageByModel.length} models`
       if (keyCount) keyCount.textContent = `${data.keys.length} keys`
       if (auditCount) auditCount.textContent = `${data.audit.length} events`
       if (runCount) runCount.textContent = `${data.runs.length} runs`
       if (codeCount) codeCount.textContent = `${data.redemptionCodes.length} codes`
+      if (prizeCount) prizeCount.textContent = `${data.prizes.length} prizes`
+      if (referralCount) referralCount.textContent = `${data.referrals.length} referrals`
     } catch (error) {
       setAdminStatus('Access blocked', error instanceof Error ? error.message : 'Could not load admin data.')
     }
