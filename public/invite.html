@@ -597,6 +597,29 @@
     text-align:center; color:var(--text-2); font-size:14px; padding:40px 0;
     grid-column: 1 / -1;
   }
+
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .content { width: 92%; top: 4%; }
+    .content h1 { font-size: 26px; }
+    .content .sub { font-size: 13.5px; margin-bottom: 0; }
+    .bottom-section { width: 94%; bottom: 20px; }
+    .task-row { flex-direction: column; gap: 10px; }
+    .task-card { padding: 16px; }
+    .ring-card { transform: scale(0.85); transform-origin: center; }
+    .details-body { padding: 24px 20px 40px; }
+    .details-header { padding: 20px; }
+  }
+
+  @media (min-width: 769px) {
+    .content { top: 12%; }
+    .bottom-section { bottom: auto; top: 72%; }
+  }
+  
+  @media (min-width: 1400px) {
+    .content { top: 15%; }
+    .bottom-section { top: 75%; }
+  }
 </style>
 </head>
 <body>
@@ -896,7 +919,10 @@
   var myPrizesList = [];
 
   // ---- real orbit parameters (percent of .stage box) ----
-  var CX = 50, CY = 44, RX = 42, RY = 15;
+  var CX = 50, CY = 44, RY = 15;
+  var RX = window.innerWidth < 768 ? 26 : 42;
+  window.addEventListener('resize', function() { RX = window.innerWidth < 768 ? 26 : 42; });
+  
   var HOLD = 3, TRAVEL = 1, STEP = HOLD + TRAVEL, PEAK_DEG = 270;
 
   function easeInOutCubic(x){
