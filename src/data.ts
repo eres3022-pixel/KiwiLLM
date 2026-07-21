@@ -35,10 +35,10 @@ export const docFeatures = [
 ]
 
 export const pricingPlans = [
-  { price: '$10', name: 'Seed', credits: '350 credits' },
-  { price: '$24', name: 'Grow', credits: '900 credits' },
-  { price: '$49', name: 'Scale', credits: '1,950 credits' },
-  { price: '$99', name: 'Launch', credits: '4,200 credits', badge: 'BEST VALUE' },
+  { price: '$5', name: 'Starter', credits: '$50 Credits' },
+  { price: '$10', name: 'Pro', credits: '$100 Credits' },
+  { price: '$20', name: 'Ultra', credits: '$250 Credits' },
+  { price: '$30', name: 'Max', credits: '$500 Credits', badge: 'BEST VALUE' },
 ]
 
 export const footerColumns = [
