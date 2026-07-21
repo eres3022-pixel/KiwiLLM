@@ -37,7 +37,7 @@ export const renderDashboard = () => `
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17l2 2v2h14v-2l-3-3"/><path d="M14 11V7a2 2 0 0 0-4 0v4"/><circle cx="12" cy="7" r="2"/></svg>
             <div>
               <strong>Invite to Earn</strong>
-              <small>Up to 1-year Kiwi Credits</small>
+              <small>Draw for free API credits</small>
             </div>
             <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </a>
