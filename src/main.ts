@@ -222,7 +222,7 @@ window.addEventListener('message', async (e) => {
 
   if (e.data?.action?.startsWith('invite-')) {
     try {
-      let res;
+      let res: any;
       if (e.data.action === 'invite-status') {
         res = await api('/api/invite/status')
       } else if (e.data.action === 'invite-my-ref') {
@@ -233,7 +233,7 @@ window.addEventListener('message', async (e) => {
         res = await api('/api/invite/draw', { method: 'POST' })
         // Update dashboard balance in background
         if (res?.amount) {
-          syncDashboardState().catch(console.error)
+          window.dispatchEvent(new CustomEvent('kiwi-auth-synced'))
         }
       }
       const iframe = document.getElementById('invite-frame') as HTMLIFrameElement
