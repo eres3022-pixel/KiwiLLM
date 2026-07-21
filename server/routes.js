@@ -386,44 +386,6 @@ router.post('/api/keys', requireAuth, async (req, res) => {
   db.keys.unshift(item)
   await writeDb(db)
 
-  // --- Grant Referral Reward for API Key Creation ---
-  try {
-    let wsId = null
-    if (pgPool) {
-      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
-      wsId = workspace?.id
-    } else {
-      wsId = db.workspace?.email
-    }
-    
-    if (wsId) {
-      if (pgPool) {
-        const ref = await pgPool.query('select * from referrals where referred_workspace_id = $1 and api_key_reward_claimed = false', [wsId])
-        if (ref.rowCount) {
-          await pgPool.query('begin')
-          try {
-            await pgPool.query('update workspaces set draws_left = draws_left + 1 where id = $1', [wsId])
-            await pgPool.query('update workspaces set draws_left = draws_left + 1 where id = $1', [ref.rows[0].inviter_workspace_id])
-            await pgPool.query('update referrals set api_key_reward_claimed = true where id = $1', [ref.rows[0].id])
-            await pgPool.query('commit')
-          } catch (e) {
-            await pgPool.query('rollback')
-            throw e
-          }
-        }
-      } else {
-        const ref = (db.referrals || []).find(r => r.referred_workspace_id === wsId && !r.api_key_reward_claimed)
-        if (ref) {
-          ref.api_key_reward_claimed = true
-          db.workspace.drawsLeft = (db.workspace.drawsLeft || 0) + 1
-          await writeDb(db)
-        }
-      }
-    }
-  } catch (err) {
-    console.warn('Failed to process referral reward:', err)
-  }
-
   res.status(201).json({ ...item, key, displayKey: publicKey(key) })
 })
 
@@ -703,11 +665,19 @@ router.post('/api/referrals/claim', requireAuth, async (req, res) => {
       
       const existing = await pgPool.query('select * from referrals where referred_workspace_id = $1', [workspace.id])
       if (existing.rowCount === 0) {
-        // Ensure inviter exists
         const inviter = await pgPool.query('select id from workspaces where id = $1', [inviterCode])
         if (inviter.rowCount) {
-          await pgPool.query('insert into referrals (referred_workspace_id, inviter_workspace_id) values ($1, $2)', [workspace.id, inviter.rows[0].id])
-          return res.json({ ok: true })
+          await pgPool.query('begin')
+          try {
+            await pgPool.query('insert into referrals (referred_workspace_id, inviter_workspace_id, api_key_reward_claimed) values ($1, $2, true)', [workspace.id, inviter.rows[0].id])
+            await pgPool.query('update workspaces set draws_left = draws_left + 1 where id = $1', [workspace.id])
+            await pgPool.query('update workspaces set draws_left = draws_left + 1 where id = $1', [inviter.rows[0].id])
+            await pgPool.query('commit')
+            return res.json({ ok: true })
+          } catch (e) {
+            await pgPool.query('rollback')
+            throw e
+          }
         }
       }
       return res.json({ ok: false, reason: 'Already referred or invalid inviter' })
@@ -726,10 +696,12 @@ router.post('/api/referrals/claim', requireAuth, async (req, res) => {
     db.referrals.push({
       referred_workspace_id: myId,
       inviter_workspace_id: inviterCode,
-      api_key_reward_claimed: false,
+      api_key_reward_claimed: true,
       purchase_reward_claimed: false,
       created_at: new Date().toISOString()
     })
+    db.workspace.drawsLeft = (db.workspace.drawsLeft || 0) + 1
+    // Note: in local JSON db, we can't easily update the inviter's workspace, but PG handles it correctly.
     await writeDb(db)
     return res.json({ ok: true })
   }
