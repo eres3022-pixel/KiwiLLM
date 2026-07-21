@@ -221,12 +221,8 @@ router.get('/api/dashboard', requireAuth, async (req, res) => {
         const tokens30d = Number(data.workspace?.tokens30d || 0)
         const usedUsd30d = Number(data.workspace?.usedUsd30d || 0)
 
-        // Merge PG keys + any local-only keys (by id deduplication)
-        const pgKeyIds = new Set((data.keys || []).map((k) => k.id))
-        const localOnlyKeys = localKeys
-          .filter((k) => !pgKeyIds.has(k.id))
-          .map((k) => ({ ...k, key: publicKey(k.key) }))
-        const mergedKeys = [...(data.keys || []), ...localOnlyKeys]
+        // Use only Postgres keys to prevent leaking local JSON keys across users
+        const mergedKeys = data.keys || []
 
         return res.json({
           ...data,
