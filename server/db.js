@@ -51,11 +51,11 @@ export async function ensureCoreTables() {
         credit_usd_balance numeric not null default 0,
         free_rpm_limit integer not null default 5,
         free_rpd_limit integer not null default 200,
-        draws_left integer not null default 3,
+        draws_left integer not null default 0,
         created_at timestamptz not null default now()
       );
       
-      alter table workspaces add column if not exists draws_left integer not null default 3;
+      alter table workspaces add column if not exists draws_left integer not null default 0;
       
       create table if not exists api_keys (
         id uuid primary key default gen_random_uuid(),
@@ -199,7 +199,7 @@ export const seedDb = {
     usedUsd30d: 0,
     requests30d: 0,
     tokens30d: 0,
-    drawsLeft: 3,
+    drawsLeft: 0,
   },
   prizeHistory: [],
   referrals: [],
