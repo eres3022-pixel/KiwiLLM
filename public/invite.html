@@ -979,7 +979,7 @@
   function apiCall(action) {
     return new Promise(function(resolve, reject) {
       if (window.parent === window) {
-        if (action === 'invite-status') resolve({ drawsLeft: 3, history: [] });
+        if (action === 'invite-status') resolve({ drawsLeft: 0, history: [] });
         else if (action === 'invite-add-draw') resolve({ ok: true });
         else if (action === 'invite-draw') resolve({ amount: 15 });
         return;
