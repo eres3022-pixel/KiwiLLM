@@ -24,7 +24,7 @@ export const renderTopUpPage = (pageHeader: string, topUpPlans: TopUpPlan[]) => 
                   <span>${plan.bonus || (index === 3 ? '16.6x Best Value' : 'Bonus Pack')}</span>
                   <h3>${plan.price} USD ➔ ${plan.credits}</h3>
                   <p>${plan.name}</p>
-                  <a href="#" class="buy-topup-btn" style="display:inline-block; margin-top:8px;">Buy ${plan.price} Pack</a>
+                  <a href="#" class="button ${index === 3 ? 'button-primary' : 'button-light'} buy-topup-btn" style="width: 100%; margin-top: 14px;">Buy ${plan.price} Pack</a>
                 </article>
               `,
             )
