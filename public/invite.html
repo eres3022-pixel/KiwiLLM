@@ -733,7 +733,7 @@
         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
       </svg>
-      <span>Copy Invite Link</span>
+      <span id="posterCopyText">Loading...</span>
     </button>
     <button class="poster-btn poster-btn-close" id="posterCloseBtn">Close</button>
   </div>
@@ -1195,10 +1195,26 @@
   var posterCopyBtn = document.getElementById('posterCopyBtn');
   var posterCloseBtn = document.getElementById('posterCloseBtn');
   var REFERRAL_LINK = window.location.origin + '/?ref=demo';
+  var posterCopyText = document.getElementById('posterCopyText');
   
+  function updateCopyBtn() {
+    if (posterCopyText) {
+      if (REFERRAL_LINK.endsWith('demo')) {
+        posterCopyText.textContent = 'Loading...';
+        if (posterCopyBtn) posterCopyBtn.style.opacity = '0.5';
+        if (posterCopyBtn) posterCopyBtn.style.pointerEvents = 'none';
+      } else {
+        posterCopyText.textContent = 'Copy Invite Link';
+        if (posterCopyBtn) posterCopyBtn.style.opacity = '1';
+        if (posterCopyBtn) posterCopyBtn.style.pointerEvents = 'auto';
+      }
+    }
+  }
+
   apiCall('invite-my-ref').then(function(res) {
     if (res && res.refCode) {
       REFERRAL_LINK = window.location.origin + '/?ref=' + res.refCode;
+      updateCopyBtn();
     }
   }).catch(console.error);
 
@@ -1208,6 +1224,7 @@
     apiCall('invite-my-ref').then(function(res) {
       if (res && res.refCode) {
         REFERRAL_LINK = window.location.origin + '/?ref=' + res.refCode;
+        updateCopyBtn();
       }
     }).catch(console.error);
   }
@@ -1226,7 +1243,7 @@
       navigator.clipboard.writeText(REFERRAL_LINK).then(function(){
         posterCopyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
         setTimeout(function(){ 
-          posterCopyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg><span>Copy Invite Link</span>'; 
+          posterCopyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg><span id="posterCopyText">Copy Invite Link</span>'; 
         }, 2000);
         showToast('Invite link copied to clipboard!');
       }).catch(function(){

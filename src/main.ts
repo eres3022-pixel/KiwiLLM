@@ -91,7 +91,7 @@ document.body.insertAdjacentHTML(
     </div>
 
     <div class="invite-modal" id="invite-modal" hidden>
-      <iframe src="/invite.html" id="invite-frame" style="width: 100%; height: 100%; border: none; background: transparent;"></iframe>
+      <iframe src="/invite.html?v=2" id="invite-frame" style="width: 100%; height: 100%; border: none; background: transparent;"></iframe>
     </div>
   `,
 )
