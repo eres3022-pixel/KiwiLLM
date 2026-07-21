@@ -24,7 +24,7 @@ export const renderTopUpPage = (pageHeader: string, topUpPlans: TopUpPlan[]) => 
                   <span>${plan.bonus || (index === 3 ? '16.6x Best Value' : 'Bonus Pack')}</span>
                   <h3>${plan.price} USD ➔ ${plan.credits}</h3>
                   <p>${plan.name}</p>
-                  <button type="button" class="buy-topup-btn">Buy ${plan.price} Pack</button>
+                  <a href="#" class="buy-topup-btn" style="display:inline-block; margin-top:8px;">Buy ${plan.price} Pack</a>
                 </article>
               `,
             )
@@ -47,7 +47,25 @@ export const renderTopUpPage = (pageHeader: string, topUpPlans: TopUpPlan[]) => 
         </aside>
       </section>
 
-      <section class="transaction-history" style="margin-top: 4rem;">
+      <section class="topup-features" style="margin-top: 4rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;">
+        <div style="padding: 24px; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; background: rgba(0,0,0,0.3);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--kiwi)" stroke-width="2" style="margin-bottom: 16px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <h3 style="color: #fff; font-size: 16px; margin-bottom: 8px;">Never Expires</h3>
+          <p style="color: var(--text-2); font-size: 14px; line-height: 1.5;">Your purchased credits remain in your wallet forever. No monthly resets, no expiration dates.</p>
+        </div>
+        <div style="padding: 24px; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; background: rgba(0,0,0,0.3);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--kiwi)" stroke-width="2" style="margin-bottom: 16px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          <h3 style="color: #fff; font-size: 16px; margin-bottom: 8px;">Priority Routing</h3>
+          <p style="color: var(--text-2); font-size: 14px; line-height: 1.5;">Paid workspaces bypass rate limits and queue times during high-traffic periods.</p>
+        </div>
+        <div style="padding: 24px; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; background: rgba(0,0,0,0.3);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--kiwi)" stroke-width="2" style="margin-bottom: 16px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <h3 style="color: #fff; font-size: 16px; margin-bottom: 8px;">Enterprise SLA</h3>
+          <p style="color: var(--text-2); font-size: 14px; line-height: 1.5;">99.9% guaranteed uptime for production APIs with direct access to engineer support.</p>
+        </div>
+      </section>
+
+      <section class="transaction-history" style="margin-top: 5rem;">
         <div class="content-hero" style="text-align: left; margin-bottom: 2rem;">
           <p class="section-kicker">HISTORY</p>
           <h2>Wallet Transactions</h2>
