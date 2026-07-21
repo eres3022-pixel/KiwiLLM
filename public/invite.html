@@ -768,7 +768,7 @@
 
 <div class="result-overlay" id="resultOverlay">
   <div class="result-win-img-wrap" id="resultCard">
-    <img src="/win-popup.png" alt="You Won!" />
+    <img src="/win-popup.png" alt="You Won!" id="resultImg" />
     <div class="result-win-badge" id="resultAmount">$3 Credits</div>
   </div>
   <button class="result-nice-btn" id="resultClose">Nice! 🎉</button>
@@ -958,6 +958,14 @@
     cards[targetIndex].classList.add('winning');
     var credits = cards[targetIndex].getAttribute('data-credits');
     resultAmount.textContent = '$' + credits + ' Credits';
+    var resultImg = document.getElementById('resultImg');
+    if (resultImg) {
+      if (credits === '5') {
+        resultImg.src = '/win-popup-5.png';
+      } else {
+        resultImg.src = '/win-popup.png';
+      }
+    }
     resultOverlay.classList.add('show');
     updateDrawBtn();
   }
