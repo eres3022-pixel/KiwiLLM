@@ -57,17 +57,6 @@ export const renderStatusPage = (pageHeader: string) => `
         </div>
       </div>
 
-      <div class="ping-test-banner" style="margin-top: 32px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px; background: rgba(0, 0, 0, 0.3); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
-        <div>
-          <h3 style="margin: 0 0 6px 0; color: #fff; font-size: 18px;">Browser-to-Gateway Ping Test</h3>
-          <p style="margin: 0; color: var(--text-2); font-size: 14px;">Test your browser's real-time round-trip latency to the Kiwi LLM API gateway.</p>
-        </div>
-        <div style="display: flex; align-items: center; gap: 16px;">
-          <strong id="ping-result-badge" style="font-size: 20px; color: var(--kiwi); display: none;">-- ms</strong>
-          <button type="button" class="button button-primary" id="run-ping-btn">Run Live Ping Test</button>
-        </div>
-      </div>
-
       <section class="models-status-section" style="margin-top: 48px;">
         <div class="section-title-row" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
           <h2>Model Routes Health</h2>

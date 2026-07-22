@@ -57,6 +57,19 @@ export const renderAdmin = () => `
           .join('')}
       </section>
 
+      <section class="dash-panel admin-ping-panel" style="margin-top: 24px; margin-bottom: 24px;">
+        <div class="dash-panel-head" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h2 style="margin: 0; color: #fff; font-size: 18px;">Gateway Health & Live Ping Probe</h2>
+            <p style="margin: 4px 0 0 0; color: var(--text-2); font-size: 13px;">Test real-time round-trip latency to the production API gateway (Protected Admin Probe).</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <strong id="admin-ping-result" style="font-size: 18px; color: var(--kiwi); display: none;">-- ms</strong>
+            <button type="button" class="button button-primary" id="admin-run-ping-btn">Run Admin Gateway Ping</button>
+          </div>
+        </div>
+      </section>
+
       <section class="admin-grid">
         <article class="dash-panel">
           <div class="dash-panel-head">

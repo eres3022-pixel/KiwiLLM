@@ -805,6 +805,29 @@ if (isAdminPage) {
         if (cardNote) cardNote.textContent = key === 'Active keys' ? `${data.summary.revokedKeys.toLocaleString()} revoked` : 'Across Kiwi production'
       })
 
+      // Admin Gateway Ping Button
+      const adminPingBtn = document.getElementById('admin-run-ping-btn')
+      const adminPingBadge = document.getElementById('admin-ping-result')
+      if (adminPingBtn && adminPingBadge) {
+        adminPingBtn.addEventListener('click', async () => {
+          adminPingBtn.textContent = 'Probing...'
+          adminPingBtn.setAttribute('disabled', 'true')
+          const start = performance.now()
+          try {
+            await fetch('/api/status')
+            const ping = Math.round(performance.now() - start)
+            adminPingBadge.textContent = `${ping} ms`
+            adminPingBadge.style.display = 'inline-block'
+          } catch (err) {
+            adminPingBadge.textContent = 'Error'
+            adminPingBadge.style.display = 'inline-block'
+          } finally {
+            adminPingBtn.textContent = 'Run Admin Gateway Ping'
+            adminPingBtn.removeAttribute('disabled')
+          }
+        })
+      }
+
       const modelUsage = document.querySelector<HTMLElement>('#admin-model-usage')
       if (modelUsage) {
         modelUsage.innerHTML = data.usageByModel.length
@@ -1133,29 +1156,6 @@ if (isStatusPage) {
   }
 
   hydrateStatus()
-
-  // Live Ping Test Button
-  const pingBtn = document.getElementById('run-ping-btn')
-  const pingBadge = document.getElementById('ping-result-badge')
-  if (pingBtn && pingBadge) {
-    pingBtn.addEventListener('click', async () => {
-      pingBtn.textContent = 'Testing...'
-      pingBtn.setAttribute('disabled', 'true')
-      const start = performance.now()
-      try {
-        await fetch('/api/status')
-        const ping = Math.round(performance.now() - start)
-        pingBadge.textContent = `${ping} ms`
-        pingBadge.style.display = 'inline-block'
-      } catch (err) {
-        pingBadge.textContent = 'Error'
-        pingBadge.style.display = 'inline-block'
-      } finally {
-        pingBtn.textContent = 'Run Live Ping Test'
-        pingBtn.removeAttribute('disabled')
-      }
-    })
-  }
 }
 
 if (isPlaygroundPage) {
