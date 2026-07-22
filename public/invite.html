@@ -1060,12 +1060,23 @@
   var resultCard = document.getElementById('resultCard');
   
   var messageIdCounter = 0;
-  function apiCall(action) {
+  var API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000'
+    : 'https://api.kiwillm.in';
+
+  function apiCall(action, opts) {
     return new Promise(function(resolve, reject) {
       if (window.parent === window) {
-        if (action === 'invite-status') resolve({ drawsLeft: 0, history: [] });
-        else if (action === 'invite-add-draw') resolve({ ok: true });
-        else if (action === 'invite-draw') resolve({ amount: 15 });
+        // Direct load — call real API
+        var url = API_BASE + '/api/invite/' + action.replace('invite-', '');
+        var fetchOpts = Object.assign({ credentials: 'include' }, opts || {});
+        fetch(url, fetchOpts)
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            if (d && d.error) reject(new Error(d.error));
+            else resolve(d);
+          })
+          .catch(reject);
         return;
       }
       var msgId = ++messageIdCounter;
