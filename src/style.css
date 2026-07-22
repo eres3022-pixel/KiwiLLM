@@ -4745,6 +4745,48 @@ code b {
 }
 
 /* Status Page Styling */
+.status-page .data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.status-page .data-table th {
+  padding: 16px 24px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-page .data-table th:last-child {
+  text-align: right;
+}
+
+.status-page .data-table td {
+  padding: 18px 24px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.status-page .data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.status-page .data-table tr:hover td {
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .status-overall-banner {
   margin-top: 24px;
   padding: 24px 28px;
@@ -4881,13 +4923,13 @@ code b {
 
 .uptime-bars-wrap {
   display: flex;
-  gap: 2px;
+  gap: 3px;
   align-items: center;
 }
 
 .uptime-mini-bar {
-  width: 4px;
-  height: 18px;
+  width: 5px;
+  height: 20px;
   border-radius: 2px;
 }
 
