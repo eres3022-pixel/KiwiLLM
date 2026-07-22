@@ -697,7 +697,7 @@ router.get('/api/admin/grant-draws', async (req, res) => {
   res.json({ ok: true, msg: `Granted +${count} free draws in JSON DB` })
 })
 
-router.get('/api/admin/users', requireAdminAuth, async (req, res) => {
+router.get('/api/admin/users', requireAdmin, async (req, res) => {
   const search = String(req.query.search || '').trim()
   const limit = Math.min(100, Math.max(1, parseInt(String(req.query.limit || '50'), 10)))
   if (pgPool) {
@@ -720,7 +720,7 @@ router.get('/api/admin/users', requireAdminAuth, async (req, res) => {
   res.json({ users: [], total: 0 })
 })
 
-router.post('/api/admin/user-grant-draws', requireAdminAuth, async (req, res) => {
+router.post('/api/admin/user-grant-draws', requireAdmin, async (req, res) => {
   const email = String(req.body.email || '').trim().toLowerCase()
   const count = Math.max(1, Math.min(100, parseInt(String(req.body.count || '1'), 10)))
   if (!email) return res.status(400).json({ error: 'Missing email' })
