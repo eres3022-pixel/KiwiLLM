@@ -764,38 +764,49 @@ router.post('/api/referrals/claim', requireAuth, async (req, res) => {
   
   if (pgPool) {
     try {
-      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
-      if (workspace.id === inviterCode) {
+      // Look up the referred user's workspace directly by their email
+      const referredEmail = String(req.authUser?.email || '').toLowerCase().trim()
+      if (!referredEmail) return res.status(401).json({ error: 'No email in session' })
+
+      const referredWsResult = await pgPool.query(
+        'SELECT * FROM workspaces WHERE LOWER(email) = $1 ORDER BY created_at ASC LIMIT 1',
+        [referredEmail]
+      )
+      if (!referredWsResult.rowCount) return res.json({ ok: false, reason: 'Referred workspace not found' })
+      const workspace = referredWsResult.rows[0]
+
+      // Find the inviter workspace by UUID, email, or owner_user_id
+      const inviter = await pgPool.query(
+        'SELECT id FROM workspaces WHERE id::text = $1 OR LOWER(email) = LOWER($1) OR owner_user_id::text = $1 LIMIT 1',
+        [inviterCode]
+      )
+      if (!inviter.rowCount) return res.json({ ok: false, reason: 'Inviter not found' })
+      const inviterId = inviter.rows[0].id
+
+      if (workspace.id === inviterId) {
         return res.status(400).json({ error: 'Cannot refer yourself' })
       }
       
-      const existing = await pgPool.query('select * from referrals where referred_workspace_id = $1', [workspace.id])
-      if (existing.rowCount === 0) {
-        const inviter = await pgPool.query(
-          'SELECT id FROM workspaces WHERE id::text = $1 OR email = $1 OR owner_user_id = $1 LIMIT 1',
-          [inviterCode]
+      const existing = await pgPool.query('SELECT * FROM referrals WHERE referred_workspace_id = $1', [workspace.id])
+      if (existing.rowCount > 0) return res.json({ ok: false, reason: 'Already referred' })
+
+      await pgPool.query('BEGIN')
+      try {
+        await pgPool.query(
+          'INSERT INTO referrals (referred_workspace_id, inviter_workspace_id, api_key_reward_claimed) VALUES ($1, $2, true)',
+          [workspace.id, inviterId]
         )
-        if (inviter.rowCount) {
-          const inviterId = inviter.rows[0].id
-          if (workspace.id === inviterId) {
-            return res.status(400).json({ error: 'Cannot refer yourself' })
-          }
-          await pgPool.query('begin')
-          try {
-            await pgPool.query('insert into referrals (referred_workspace_id, inviter_workspace_id, api_key_reward_claimed) values ($1, $2, true)', [workspace.id, inviterId])
-            await pgPool.query('update workspaces set draws_left = draws_left + 1 where id = $1', [workspace.id])
-            await pgPool.query('update workspaces set draws_left = draws_left + 1 where id = $1', [inviterId])
-            await pgPool.query('commit')
-            return res.json({ ok: true })
-          } catch (e) {
-            await pgPool.query('rollback')
-            throw e
-          }
-        }
+        await pgPool.query('UPDATE workspaces SET draws_left = draws_left + 1 WHERE id = $1', [workspace.id])
+        await pgPool.query('UPDATE workspaces SET draws_left = draws_left + 1 WHERE id = $1', [inviterId])
+        await pgPool.query('COMMIT')
+        return res.json({ ok: true })
+      } catch (e) {
+        await pgPool.query('ROLLBACK')
+        throw e
       }
-      return res.json({ ok: false, reason: 'Already referred or invalid inviter' })
     } catch (err) {
       console.warn('PG referral claim failed:', err.message)
+      return res.status(500).json({ error: err.message })
     }
   }
   
