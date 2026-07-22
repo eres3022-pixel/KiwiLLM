@@ -698,16 +698,22 @@ router.get('/api/admin/grant-draws', async (req, res) => {
 })
 
 router.get('/api/invite/my-ref', requireAuth, async (req, res) => {
-  if (pgPool) {
-    try {
-      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
-      return res.json({ refCode: workspace.id })
-    } catch (err) {
-      console.warn('PG my-ref failed:', err.message)
+  try {
+    if (pgPool) {
+      try {
+        const workspace = await getDefaultWorkspace(pgPool, req.authUser)
+        if (workspace && workspace.id) {
+          return res.json({ refCode: workspace.id })
+        }
+      } catch (err) {
+        console.warn('PG my-ref failed:', err.message)
+      }
     }
+    const db = await readDb()
+    return res.json({ refCode: db.workspace?.email || req.authUser || 'local-demo-ref' })
+  } catch (err) {
+    return res.json({ refCode: req.authUser || 'local-demo-ref' })
   }
-  const db = await readDb()
-  res.json({ refCode: db.workspace?.email || 'local-demo-ref' })
 })
 
 router.post('/api/referrals/claim', requireAuth, async (req, res) => {

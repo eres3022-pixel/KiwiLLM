@@ -1343,26 +1343,29 @@
   }
   if (posterCopyBtn) {
     posterCopyBtn.addEventListener('click', function(){
-      posterCopyBtn.innerHTML = '<span>Copying...</span>';
+      var linkToCopy = REFERRAL_LINK || (window.location.origin + '/?ref=KW-INVITE');
+      var handleSuccess = function() {
+        if (posterCopyBtn) {
+          posterCopyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
+          setTimeout(function(){ 
+            updateCopyBtn();
+          }, 3000);
+        }
+        showCopyMsg("Referral link copied to clipboard!");
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(linkToCopy).then(handleSuccess).catch(handleSuccess);
+      } else {
+        handleSuccess();
+      }
+
+      // Refresh refCode silently in background
       apiCall('invite-my-ref').then(function(res) {
-        var finalLink = (res && res.refCode) ? (window.location.origin + '/?ref=' + res.refCode) : REFERRAL_LINK;
-        REFERRAL_LINK = finalLink;
-        navigator.clipboard.writeText(finalLink).then(function(){
-          posterCopyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
-          setTimeout(function(){ 
-            updateCopyBtn();
-          }, 3000);
-          showCopyMsg("Referral link copied to clipboard!");
-        });
-      }).catch(function() {
-        navigator.clipboard.writeText(REFERRAL_LINK).then(function(){
-          posterCopyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
-          setTimeout(function(){ 
-            updateCopyBtn();
-          }, 3000);
-          showCopyMsg("Referral link copied to clipboard!");
-        });
-      });
+        if (res && res.refCode) {
+          REFERRAL_LINK = window.location.origin + '/?ref=' + res.refCode;
+        }
+      }).catch(function(e) { console.warn(e); });
     });
   }
 

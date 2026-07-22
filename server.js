@@ -16,16 +16,23 @@ app.use((req, res, next) => {
   }
   next()
 })
-const corsMiddleware = cors({
-  origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true)
-    return callback(new Error('CORS origin not allowed'))
-  },
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Authorization', 'Content-Type', 'x-api-key', 'anthropic-version'],
-  maxAge: 86400,
+app.use((req, res, next) => {
+  const origin = req.headers.origin
+  if (origin) {
+    if (origin.endsWith('kiwillm.in') || origin.endsWith('vercel.app') || allowedOrigins.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin)
+      res.setHeader('Access-Control-Allow-Credentials', 'true')
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
+      res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, x-api-key, anthropic-version')
+    }
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+  }
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204)
+  }
+  next()
 })
-app.use(['/api', '/v1'], corsMiddleware)
 app.use(express.json({ limit: '1mb' }))
 
 import { join } from 'node:path'
