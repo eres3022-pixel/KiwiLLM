@@ -8,6 +8,7 @@ export const renderUsageLogs = () => `
         <span>Kiwi LLM</span>
       </a>
       <nav>
+        <a class="nav-spin-badge" href="/invite">🎁 Spin & Earn ($1000 Prize)</a>
         <a href="/dashboard">Dashboard</a>
         <a href="/usage" class="nav-active">Usage</a>
         <a href="/models">Models</a>

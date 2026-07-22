@@ -119,14 +119,14 @@ export const dashboardGreeting = () => {
   return 'Good night'
 }
 
-export const pageHeader = (brandMark: string, pageLinks: {label: string, href: string}[], authAccountMarkup: any) => `
+export const pageHeader = (brandMark: string, pageLinks: {label: string, href: string, badge?: boolean}[], authAccountMarkup: any) => `
   <header class="dash-nav">
     <a class="footer-brand" href="/" aria-label="Kiwi LLM home">
       ${brandMark}
       <span>Kiwi LLM</span>
     </a>
     <nav>
-      ${pageLinks.map((link) => `<a href="${link.href}">${link.label}</a>`).join('')}
+      ${pageLinks.map((link) => `<a class="${link.badge ? 'nav-spin-badge' : ''}" href="${link.href}">${link.label}</a>`).join('')}
     </nav>
     ${authAccountMarkup(true)}
   </header>
