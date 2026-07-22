@@ -4,6 +4,7 @@ import { createClient, type Session, type SupabaseClient, type User } from '@sup
 import { pageNotFound, renderSupportPage, supportPages } from './pages/supportPages'
 import { renderRefundPolicyPage } from './pages/refundPolicy'
 import { renderTopUpPage } from './pages/topUp'
+import { renderStatusPage } from './pages/status'
 import { applySeo } from './seo'
 
 import { renderHome } from './components/Home'
@@ -43,6 +44,7 @@ const isAdminPage = window.location.pathname === '/admin'
 const isUsagePage = window.location.pathname === '/usage'
 const isTopUpPage = window.location.pathname === '/top-up'
 const isRefundPage = window.location.pathname === '/refund-policy'
+const isStatusPage = window.location.pathname === '/status'
 const supportPage = supportPages[window.location.pathname]
 applySeo(window.location.pathname)
 app.innerHTML = isDocsPage
@@ -59,11 +61,13 @@ app.innerHTML = isDocsPage
             ? renderUsageLogs()
             : isTopUpPage
               ? renderTopUpPage(pageHeader(brandMark, pageLinks, authAccountMarkup), topUpPlans)
-              : isRefundPage
-                ? renderRefundPolicyPage()
-                : supportPage || window.location.pathname !== '/'
-                ? renderSupportPage(supportPage || pageNotFound, pageHeader(brandMark, pageLinks, authAccountMarkup))
-                : renderHome()
+              : isStatusPage
+                ? renderStatusPage(pageHeader(brandMark, pageLinks, authAccountMarkup))
+                : isRefundPage
+                  ? renderRefundPolicyPage()
+                  : supportPage || window.location.pathname !== '/'
+                  ? renderSupportPage(supportPage || pageNotFound, pageHeader(brandMark, pageLinks, authAccountMarkup))
+                  : renderHome()
 
 document.body.insertAdjacentHTML(
   'beforeend',
@@ -1090,6 +1094,68 @@ if (isTopUpPage) {
       closeContactModal()
     }
   })
+}
+
+if (isStatusPage) {
+  const hydrateStatus = async () => {
+    try {
+      const data = await api<{
+        overall: string
+        uptimePercent: number
+        services: Record<string, { status: string; label: string; latencyMs: number }>
+        models: Array<{ id: string; provider: string; type: string; status: string; latencyMs: number; uptime30d: number[] }>
+      }>('/api/status')
+
+      const tbody = document.getElementById('status-models-tbody')
+      if (tbody && Array.isArray(data.models)) {
+        tbody.innerHTML = data.models
+          .map((m) => {
+            const bars = (m.uptime30d || Array(30).fill(100))
+              .map((u) => `<span class="uptime-mini-bar ${u >= 99.9 ? 'is-good' : 'is-warn'}" title="${u}%"></span>`)
+              .join('')
+
+            return `
+              <tr>
+                <td style="font-weight: 600; color: #fff;">${escapeHtml(formatModelName(m.id))}</td>
+                <td><span class="badge badge-outline">${escapeHtml(m.provider)}</span></td>
+                <td>${escapeHtml(m.type)}</td>
+                <td><span class="badge" style="background: rgba(202, 255, 31, 0.15); color: var(--kiwi); border: 1px solid rgba(202, 255, 31, 0.3);">${m.latencyMs} ms</span></td>
+                <td><div class="uptime-bars-wrap">${bars}</div></td>
+                <td style="text-align: right;"><span class="status-badge ${m.status === 'operational' ? 'is-operational' : 'is-degraded'}">${m.status === 'operational' ? 'Operational' : 'Degraded'}</span></td>
+              </tr>
+            `
+          })
+          .join('')
+      }
+    } catch (err) {
+      console.warn('Failed to load live status:', err)
+    }
+  }
+
+  hydrateStatus()
+
+  // Live Ping Test Button
+  const pingBtn = document.getElementById('run-ping-btn')
+  const pingBadge = document.getElementById('ping-result-badge')
+  if (pingBtn && pingBadge) {
+    pingBtn.addEventListener('click', async () => {
+      pingBtn.textContent = 'Testing...'
+      pingBtn.setAttribute('disabled', 'true')
+      const start = performance.now()
+      try {
+        await fetch('/api/status')
+        const ping = Math.round(performance.now() - start)
+        pingBadge.textContent = `${ping} ms`
+        pingBadge.style.display = 'inline-block'
+      } catch (err) {
+        pingBadge.textContent = 'Error'
+        pingBadge.style.display = 'inline-block'
+      } finally {
+        pingBtn.textContent = 'Run Live Ping Test'
+        pingBtn.removeAttribute('disabled')
+      }
+    })
+  }
 }
 
 if (isPlaygroundPage) {

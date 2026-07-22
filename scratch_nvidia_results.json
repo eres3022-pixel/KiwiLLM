@@ -1,0 +1,624 @@
+{
+  "total": 107,
+  "workingCount": 27,
+  "failedCount": 80,
+  "working": [
+    {
+      "model": "nvidia/nemotron-mini-4b-instruct",
+      "latency": 737,
+      "status": "WORKING"
+    },
+    {
+      "model": "abacusai/dracarys-llama-3.1-70b-instruct",
+      "latency": 750,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/gliner-pii",
+      "latency": 757,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/llama-3.1-nemoguard-8b-topic-control",
+      "latency": 781,
+      "status": "WORKING"
+    },
+    {
+      "model": "meta/llama-3.2-11b-vision-instruct",
+      "latency": 803,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/nvidia-nemotron-nano-9b-v2",
+      "latency": 831,
+      "status": "WORKING"
+    },
+    {
+      "model": "sarvamai/sarvam-m",
+      "latency": 862,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/llama-3.1-nemotron-safety-guard-8b-v3",
+      "latency": 867,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/llama-3.1-nemotron-nano-vl-8b-v1",
+      "latency": 879,
+      "status": "WORKING"
+    },
+    {
+      "model": "upstage/solar-10.7b-instruct",
+      "latency": 896,
+      "status": "WORKING"
+    },
+    {
+      "model": "meta/llama-guard-4-12b",
+      "latency": 943,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/llama-3.1-nemoguard-8b-content-safety",
+      "latency": 960,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/nemotron-3-nano-30b-a3b",
+      "latency": 972,
+      "status": "WORKING"
+    },
+    {
+      "model": "meta/llama-3.1-8b-instruct",
+      "latency": 987,
+      "status": "WORKING"
+    },
+    {
+      "model": "stepfun-ai/step-3.5-flash",
+      "latency": 988,
+      "status": "WORKING"
+    },
+    {
+      "model": "google/gemma-3n-e2b-it",
+      "latency": 989,
+      "status": "WORKING"
+    },
+    {
+      "model": "mistralai/mistral-nemotron",
+      "latency": 990,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+      "latency": 1042,
+      "status": "WORKING"
+    },
+    {
+      "model": "google/gemma-2-2b-it",
+      "latency": 1074,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/riva-translate-4b-instruct-v1.1",
+      "latency": 1087,
+      "status": "WORKING"
+    },
+    {
+      "model": "mistralai/mixtral-8x7b-instruct-v0.1",
+      "latency": 1133,
+      "status": "WORKING"
+    },
+    {
+      "model": "openai/gpt-oss-20b",
+      "latency": 1301,
+      "status": "WORKING"
+    },
+    {
+      "model": "mistralai/mistral-small-4-119b-2603",
+      "latency": 1303,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/llama-3.3-nemotron-super-49b-v1",
+      "latency": 1306,
+      "status": "WORKING"
+    },
+    {
+      "model": "google/gemma-3n-e4b-it",
+      "latency": 1307,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/nemotron-nano-12b-v2-vl",
+      "latency": 1345,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "latency": 1593,
+      "status": "WORKING"
+    }
+  ],
+  "failed": [
+    {
+      "model": "ai21labs/jamba-1.5-mini-instruct",
+      "latency": 604,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "baichuan-inc/baichuan2-13b-chat",
+      "latency": 868,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "deepseek-ai/deepseek-r1-distill-llama-8b",
+      "latency": 683,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "deepseek-ai/deepseek-v3.1-terminus",
+      "latency": 714,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "google/gemma-2-27b-it",
+      "latency": 667,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "google/gemma-2-9b-it",
+      "latency": 671,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "google/gemma-3-1b-it",
+      "latency": 646,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "google/gemma-3-4b-it",
+      "latency": 857,
+      "status": "FAILED",
+      "code": 404
+    },
+    {
+      "model": "google/gemma-3-27b-it",
+      "latency": 743,
+      "status": "FAILED",
+      "code": 410
+    },
+    {
+      "model": "google/gemma-4-31b-it",
+      "latency": 6002,
+      "status": "FAILED",
+      "err": "AbortError"
+    },
+    {
+      "model": "google/gemma-7b",
+      "latency": 933,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "google/shieldgemma-9b",
+      "latency": 658,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "gotocompany/gemma-2-9b-cpt-sahabatai-instruct",
+      "latency": 657,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "ibm/granite-guardian-3.0-8b",
+      "latency": 857,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "igenius/italia_10b_instruct_16k",
+      "latency": 621,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "institute-of-science-tokyo/llama-3.1-swallow-70b-instruct-v0.1",
+      "latency": 663,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "institute-of-science-tokyo/llama-3.1-swallow-8b-instruct-v0.1",
+      "latency": 720,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "marin/marin-8b-instruct",
+      "latency": 662,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "mediatek/breeze-7b-instruct",
+      "latency": 932,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "meta/llama-3.1-405b-instruct",
+      "latency": 702,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "meta/llama-3.1-70b-instruct",
+      "latency": 6001,
+      "status": "FAILED",
+      "err": "AbortError"
+    },
+    {
+      "model": "meta/llama-3.2-1b-instruct",
+      "latency": 6002,
+      "status": "FAILED",
+      "err": "AbortError"
+    },
+    {
+      "model": "meta/llama-3.2-3b-instruct",
+      "latency": 6002,
+      "status": "FAILED",
+      "err": "AbortError"
+    },
+    {
+      "model": "meta/llama-3.2-90b-vision-instruct",
+      "latency": 6002,
+      "status": "FAILED",
+      "err": "AbortError"
+    },
+    {
+      "model": "meta/llama-3.3-70b-instruct",
+      "latency": 6002,
+      "status": "FAILED",
+      "err": "AbortError"
+    },
+    {
+      "model": "meta/llama-4-maverick-17b-128e-instruct",
+      "latency": 6002,
+      "status": "FAILED",
+      "err": "AbortError"
+    },
+    {
+      "model": "meta/llama3-70b-instruct",
+      "latency": 656,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "meta/llama3-8b-instruct",
+      "latency": 785,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "microsoft/phi-3-medium-128k-instruct",
+      "latency": 959,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "microsoft/phi-3-medium-4k-instruct",
+      "latency": 605,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "microsoft/phi-3-mini-128k-instruct",
+      "latency": 600,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "microsoft/phi-3-mini-4k-instruct",
+      "latency": 758,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "microsoft/phi-3-small-128k-instruct",
+      "latency": 707,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "microsoft/phi-3-small-8k-instruct",
+      "latency": 667,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "microsoft/phi-3.5-mini-instruct",
+      "latency": 660,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "microsoft/phi-3.5-vision-instruct",
+      "latency": 867,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "microsoft/phi-4-mini-flash-reasoning",
+      "latency": 671,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "microsoft/phi-4-mini-instruct",
+      "latency": 1077,
+      "status": "FAILED",
+      "code": 410
+    },
+    {
+      "model": "microsoft/phi-4-multimodal-instruct",
+      "latency": 678,
+      "status": "FAILED",
+      "code": 410
+    },
+    {
+      "model": "minimaxai/minimax-m2.5",
+      "latency": 854,
+      "status": "FAILED",
+      "code": 410
+    },
+    {
+      "model": "mistralai/devstral-2-123b-instruct-2512",
+      "latency": 716,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "mistralai/magistral-small-2506",
+      "latency": 653,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "mistralai/mamba-codestral-7b-v0.1",
+      "latency": 640,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "mistralai/mathstral-7b-v0.1",
+      "latency": 689,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "mistralai/ministral-14b-instruct-2512",
+      "latency": 6002,
+      "status": "FAILED",
+      "err": "AbortError"
+    },
+    {
+      "model": "mistralai/mistral-7b-instruct-v0.2",
+      "latency": 680,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "mistralai/mistral-7b-instruct-v0.3",
+      "latency": 1061,
+      "status": "FAILED",
+      "code": 404
+    },
+    {
+      "model": "mistralai/mistral-large-3-675b-instruct-2512",
+      "latency": 6002,
+      "status": "FAILED",
+      "err": "AbortError"
+    },
+    {
+      "model": "mistralai/mistral-small-24b-instruct",
+      "latency": 640,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "mistralai/mixtral-8x22b-instruct-v0.1",
+      "latency": 661,
+      "status": "FAILED",
+      "code": 410
+    },
+    {
+      "model": "moonshotai/kimi-k2-instruct",
+      "latency": 704,
+      "status": "FAILED",
+      "code": 410
+    },
+    {
+      "model": "moonshotai/kimi-k2-instruct-0905",
+      "latency": 658,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "moonshotai/kimi-k2-thinking",
+      "latency": 688,
+      "status": "FAILED",
+      "code": 410
+    },
+    {
+      "model": "nvidia/llama-3.1-nemotron-70b-reward",
+      "latency": 660,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "nvidia/llama-3.1-nemotron-nano-8b-v1",
+      "latency": 6001,
+      "status": "FAILED",
+      "err": "AbortError"
+    },
+    {
+      "model": "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+      "latency": 870,
+      "status": "FAILED",
+      "code": 404
+    },
+    {
+      "model": "nvidia/llama3-chatqa-1.5-8b",
+      "latency": 914,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "nvidia/nemotron-4-mini-hindi-4b-instruct",
+      "latency": 652,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "nvidia/nemotron-content-safety-reasoning-4b",
+      "latency": 724,
+      "status": "FAILED",
+      "code": 410
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "latency": 6001,
+      "status": "FAILED",
+      "err": "AbortError"
+    },
+    {
+      "model": "opengpt-x/teuken-7b-instruct-commercial-v0.4",
+      "latency": 660,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "qwen/qwen2-7b-instruct",
+      "latency": 668,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "qwen/qwen2.5-7b-instruct",
+      "latency": 601,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "qwen/qwen2.5-coder-32b-instruct",
+      "latency": 793,
+      "status": "FAILED",
+      "code": 410
+    },
+    {
+      "model": "qwen/qwen2.5-coder-7b-instruct",
+      "latency": 656,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "qwen/qwen3-coder-480b-a35b-instruct",
+      "latency": 729,
+      "status": "FAILED",
+      "code": 410
+    },
+    {
+      "model": "qwen/qwen3-next-80b-a3b-instruct",
+      "latency": 6001,
+      "status": "FAILED",
+      "err": "AbortError"
+    },
+    {
+      "model": "qwen/qwen3-next-80b-a3b-thinking",
+      "latency": 643,
+      "status": "FAILED",
+      "code": 410
+    },
+    {
+      "model": "qwen/qwen3.5-397b-a17b",
+      "latency": 6001,
+      "status": "FAILED",
+      "err": "AbortError"
+    },
+    {
+      "model": "rakuten/rakutenai-7b-chat",
+      "latency": 698,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "rakuten/rakutenai-7b-instruct",
+      "latency": 643,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "speakleash/bielik-11b-v2.3-instruct",
+      "latency": 746,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "speakleash/bielik-11b-v2.6-instruct",
+      "latency": 767,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "stockmark/stockmark-2-100b-instruct",
+      "latency": 729,
+      "status": "FAILED",
+      "code": 410
+    },
+    {
+      "model": "thudm/chatglm3-6b",
+      "latency": 638,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "tiiuae/falcon3-7b-instruct",
+      "latency": 767,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "tokyotech-llm/llama-3-swallow-70b-instruct-v0.1",
+      "latency": 833,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "utter-project/eurollm-9b-instruct",
+      "latency": 667,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "yentinglin/llama-3-taiwan-70b-instruct",
+      "latency": 909,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "z-ai/glm4.7",
+      "latency": 792,
+      "status": "FAILED",
+      "code": 410
+    }
+  ]
+}

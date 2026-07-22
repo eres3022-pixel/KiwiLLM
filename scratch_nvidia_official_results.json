@@ -1,0 +1,781 @@
+{
+  "totalModelsCount": 118,
+  "workingCount": 33,
+  "failedCount": 85,
+  "working": [
+    {
+      "model": "openai/gpt-oss-20b",
+      "latency": 357,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-8d48676a1bedd8f4\",\"object\":\"chat.completion\",\"created\":1784708977,\"model\":\"openai/gp"
+    },
+    {
+      "model": "nvidia/riva-translate-4b-instruct-v1.1",
+      "latency": 392,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-aecd73cc58bf45c2b9c5470d380ee0bb\",\"object\":\"chat.completion\",\"created\":1784708977,\"m"
+    },
+    {
+      "model": "meta/llama-3.1-8b-instruct",
+      "latency": 416,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-a750dd50-8053-4830-913b-31e89e18fc28\",\"choices\":[{\"index\":0,\"message\":{\"content\":\"Ho"
+    },
+    {
+      "model": "meta/llama-guard-4-12b",
+      "latency": 445,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-4ea56f5641714b6b8160d4bbf3e27576\",\"object\":\"chat.completion\",\"created\":1784708937,\"m"
+    },
+    {
+      "model": "nvidia/gliner-pii",
+      "latency": 470,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-3efcd8732fc0\",\"object\":\"chat.completion\",\"created\":1784708957,\"model\":\"nvidia/gliner"
+    },
+    {
+      "model": "meta/llama-3.2-11b-vision-instruct",
+      "latency": 479,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-da99fee1314944569e40b84504e33aa7\",\"object\":\"chat.completion\",\"created\":1784708937,\"m"
+    },
+    {
+      "model": "nvidia/llama-3.1-nemoguard-8b-topic-control",
+      "latency": 481,
+      "status": "WORKING",
+      "response": "{\"id\":\"chat-e8f3f185c7784dcdb917c7ab1e9305fb\",\"object\":\"chat.completion\",\"created\":1784708957,\"model"
+    },
+    {
+      "model": "nvidia/ising-calibration-1-35b-a3b",
+      "latency": 486,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-bc69142e5dd06377\",\"object\":\"chat.completion\",\"created\":1784708957,\"model\":\"nvidia/is"
+    },
+    {
+      "model": "nvidia/llama-3.1-nemoguard-8b-content-safety",
+      "latency": 505,
+      "status": "WORKING",
+      "response": "{\"id\":\"chat-b0cb4e2b49f04bf5976650322d390f38\",\"object\":\"chat.completion\",\"created\":1784708957,\"model"
+    },
+    {
+      "model": "nvidia/nvidia-nemotron-nano-9b-v2",
+      "latency": 538,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-b0840199e970bcae\",\"object\":\"chat.completion\",\"created\":1784708977,\"model\":\"nvidia/nv"
+    },
+    {
+      "model": "stepfun-ai/step-3.5-flash",
+      "latency": 573,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-9fe8566f7a2266c3\",\"object\":\"chat.completion\",\"created\":1784708987,\"model\":\"stepfun-a"
+    },
+    {
+      "model": "nvidia/llama-3.1-nemotron-nano-vl-8b-v1",
+      "latency": 591,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-ee7d3e76242f4654b96f31a29631edbc\",\"object\":\"chat.completion\",\"created\":1784708957,\"m"
+    },
+    {
+      "model": "nvidia/llama-3.1-nemotron-safety-guard-8b-v3",
+      "latency": 592,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-35d05c89f6cd458e9fdeea2ff6e7d7c1\",\"object\":\"chat.completion\",\"created\":1784708957,\"m"
+    },
+    {
+      "model": "upstage/solar-10.7b-instruct",
+      "latency": 670,
+      "status": "WORKING",
+      "response": "{\"id\":\"cmpl-3cf238b44a0645e49c69a82a63c62fd4\",\"object\":\"chat.completion\",\"created\":1784708987,\"model"
+    },
+    {
+      "model": "sarvamai/sarvam-m",
+      "latency": 701,
+      "status": "WORKING",
+      "response": "{\"id\":\"chat-29e8cc3e81fd4f3cbdba05d63c3fa069\",\"object\":\"chat.completion\",\"created\":1784708987,\"model"
+    },
+    {
+      "model": "thinkingmachines/inkling",
+      "latency": 734,
+      "status": "WORKING",
+      "response": "{\"id\":\"87f8f2559f022e90\",\"choices\":[{\"index\":0,\"message\":{\"content\":null,\"role\":\"assistant\",\"reasoni"
+    },
+    {
+      "model": "abacusai/dracarys-llama-3.1-70b-instruct",
+      "latency": 771,
+      "status": "WORKING",
+      "response": "{\"id\":\"62f8761a8109419cba60beb663ad9dd2\",\"object\":\"chat.completion\",\"created\":1784708917,\"model\":\"ab"
+    },
+    {
+      "model": "nvidia/nemotron-mini-4b-instruct",
+      "latency": 823,
+      "status": "WORKING",
+      "response": "{\"id\":\"chat-84073fb07316449bbe316a4bf50cb19b\",\"object\":\"chat.completion\",\"created\":1784708968,\"model"
+    },
+    {
+      "model": "google/gemma-2-2b-it",
+      "latency": 846,
+      "status": "WORKING",
+      "response": "{\"id\":\"fdd86e44-1351-49f4-9243-b08e2f8e52a2\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"co"
+    },
+    {
+      "model": "nvidia/nemotron-3-nano-30b-a3b",
+      "latency": 874,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-55c817c0-b5d2-4672-a561-aa7d9835f8a6\",\"choices\":[{\"index\":0,\"message\":{\"content\":\"Ok"
+    },
+    {
+      "model": "poolside/laguna-xs-2.1",
+      "latency": 890,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-83d08afa-8254-41d2-9712-c75c633eb609\",\"choices\":[{\"index\":0,\"message\":{\"content\":\"He"
+    },
+    {
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "latency": 903,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-5b52ee00-2708-489d-901e-c9f6f9627b54\",\"choices\":[{\"index\":0,\"message\":{\"content\":\"Ok"
+    },
+    {
+      "model": "nvidia/nemotron-3.5-content-safety",
+      "latency": 935,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-8b30c4890c15a488\",\"object\":\"chat.completion\",\"created\":1784708968,\"model\":\"nvidia/ne"
+    },
+    {
+      "model": "mistralai/mistral-nemotron",
+      "latency": 962,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-f565339793c94e2c9b7fc70a7558b4e6\",\"object\":\"chat.completion\",\"created\":1784708948,\"m"
+    },
+    {
+      "model": "mistralai/mistral-small-4-119b-2603",
+      "latency": 962,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-bc2dd477eaefa6ed\",\"object\":\"chat.completion\",\"created\":1784708948,\"model\":\"mistralai"
+    },
+    {
+      "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+      "latency": 968,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-7ba2426c-758a-4969-b11d-c8a7aa6db35e\",\"choices\":[{\"index\":0,\"message\":{\"content\":\"He"
+    },
+    {
+      "model": "nvidia/nemotron-nano-12b-v2-vl",
+      "latency": 1008,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-179f5a8b971241ec8b518e7b8d5a2283\",\"object\":\"chat.completion\",\"created\":1784708968,\"m"
+    },
+    {
+      "model": "google/gemma-3n-e4b-it",
+      "latency": 1066,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-77f57e45571947d78b4cd57360a6d993\",\"object\":\"chat.completion\",\"created\":1784708928,\"m"
+    },
+    {
+      "model": "google/gemma-3n-e2b-it",
+      "latency": 1083,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-7c2b07a94b5140cd83dc247baa596a42\",\"object\":\"chat.completion\",\"created\":1784708928,\"m"
+    },
+    {
+      "model": "stepfun-ai/step-3.7-flash",
+      "latency": 1124,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-88082ba10899ab0b\",\"object\":\"chat.completion\",\"created\":1784708988,\"prompt_routed_exp"
+    },
+    {
+      "model": "mistralai/mixtral-8x7b-instruct-v0.1",
+      "latency": 1362,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-899e3d5070e105d6\",\"object\":\"chat.completion\",\"created\":1784708948,\"model\":\"stg/mistr"
+    },
+    {
+      "model": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+      "latency": 3928,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-89cd8dbee0957765\",\"object\":\"chat.completion\",\"created\":1784708957,\"model\":\"nvidia/ll"
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "latency": 6638,
+      "status": "WORKING",
+      "response": "{\"id\":\"chatcmpl-9552dbd9dee07d27\",\"object\":\"chat.completion\",\"created\":1784708983,\"model\":\"openai/gp"
+    }
+  ],
+  "failed": [
+    {
+      "model": "01-ai/yi-large",
+      "latency": 258,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '23bd454d-b225-49a3-8118-582a62fc51b8': Not fou"
+    },
+    {
+      "model": "adept/fuyu-8b",
+      "latency": 255,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'e598bfc1-b058-41af-869d-556d3c7e1b48': Not fou"
+    },
+    {
+      "model": "ai21labs/jamba-1.5-large-instruct",
+      "latency": 255,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '6497fc2b-7ff8-4019-8946-123dccbfc863': Not fou"
+    },
+    {
+      "model": "aisingapore/sea-lion-7b-instruct",
+      "latency": 248,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '02f84bf4-c1a1-489b-a9de-ac3e8dcdec14': Not fou"
+    },
+    {
+      "model": "baai/bge-m3",
+      "latency": 212,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "bigcode/starcoder2-15b",
+      "latency": 220,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "bytedance/seed-oss-36b-instruct",
+      "latency": 10005,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "databricks/dbrx-instruct",
+      "latency": 254,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '3d6c2ff8-8bfc-4d10-8fd0-b7337288e869': Not fou"
+    },
+    {
+      "model": "deepseek-ai/deepseek-coder-6.7b-instruct",
+      "latency": 255,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'e503b15c-62b0-4d69-b532-a88f0bfa2656': Not fou"
+    },
+    {
+      "model": "deepseek-ai/deepseek-v4-flash",
+      "latency": 445,
+      "status": "FAILED",
+      "code": 503,
+      "response": "{\"error\":{\"message\":\"ResourceExhausted: Worker local total request limit reached (3334/48)\",\"type\":\""
+    },
+    {
+      "model": "deepseek-ai/deepseek-v4-pro",
+      "latency": 10004,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "google/codegemma-1.1-7b",
+      "latency": 255,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'e2d298c5-204e-4213-b921-9f492cc9011b': Not fou"
+    },
+    {
+      "model": "google/codegemma-7b",
+      "latency": 265,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '7dfc10a8-3cc4-448e-97c1-2213308dc222': Not fou"
+    },
+    {
+      "model": "google/deplot",
+      "latency": 255,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '784a8ca4-ea7d-4c93-bb46-ec027c3fae47': Not fou"
+    },
+    {
+      "model": "google/diffusiongemma-26b-a4b-it",
+      "latency": 10007,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "google/gemma-2b",
+      "latency": 569,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '04174188-f742-4069-9e72-d77c2b77d3cb': Not fou"
+    },
+    {
+      "model": "google/gemma-3-12b-it",
+      "latency": 568,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'ee47df99-c92b-4dc9-b3a7-f3fb0f087b73': Not fou"
+    },
+    {
+      "model": "google/gemma-3-4b-it",
+      "latency": 569,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'c322f327-55a3-4af3-a91f-c757e2b8b135': Not fou"
+    },
+    {
+      "model": "google/gemma-4-31b-it",
+      "latency": 10007,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "google/recurrentgemma-2b",
+      "latency": 662,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '2f495340-a99f-4b4b-89bd-1beb003dd896': Not fou"
+    },
+    {
+      "model": "ibm/granite-3.0-3b-a800m-instruct",
+      "latency": 568,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '67324577-3f91-4aa6-b750-97468262530d': Not fou"
+    },
+    {
+      "model": "ibm/granite-3.0-8b-instruct",
+      "latency": 662,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '5a24a4f0-2d59-46b3-ac65-42307f2633d1': Not fou"
+    },
+    {
+      "model": "ibm/granite-34b-code-instruct",
+      "latency": 564,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '4df48b4f-e3c5-4ade-82c7-c06b65e25d18': Not fou"
+    },
+    {
+      "model": "ibm/granite-8b-code-instruct",
+      "latency": 674,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'af7b6f03-f615-4c5f-86c6-388bd35cede0': Not fou"
+    },
+    {
+      "model": "meta/codellama-70b",
+      "latency": 659,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'f6b06895-d073-4714-8bb2-26c09e9f6597': Not fou"
+    },
+    {
+      "model": "meta/llama-3.1-70b-instruct",
+      "latency": 10007,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "meta/llama-3.2-1b-instruct",
+      "latency": 10014,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "meta/llama-3.2-3b-instruct",
+      "latency": 10014,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "meta/llama-3.2-90b-vision-instruct",
+      "latency": 10014,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "meta/llama-3.3-70b-instruct",
+      "latency": 10015,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "meta/llama-4-maverick-17b-128e-instruct",
+      "latency": 10015,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "meta/llama2-70b",
+      "latency": 241,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '2fddadfb-7e76-4c8a-9b82-f7d3fab94471': Not fou"
+    },
+    {
+      "model": "microsoft/kosmos-2",
+      "latency": 235,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '6018fed7-f227-48dc-99bc-3fd4264d5037': Not fou"
+    },
+    {
+      "model": "microsoft/phi-3-vision-128k-instruct",
+      "latency": 239,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '20f2537e-8593-4eb9-ad40-60eee3bbaa55': Not fou"
+    },
+    {
+      "model": "microsoft/phi-3.5-moe-instruct",
+      "latency": 252,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'e6cab982-62f4-481e-9a7a-3dedb87dbd01': Not fou"
+    },
+    {
+      "model": "minimaxai/minimax-m2.7",
+      "latency": 10015,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "minimaxai/minimax-m3",
+      "latency": 10014,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "mistralai/codestral-22b-instruct-v0.1",
+      "latency": 251,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '9a10b012-e6df-46fd-83b2-700dcbc75814': Not fou"
+    },
+    {
+      "model": "mistralai/ministral-14b-instruct-2512",
+      "latency": 10002,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "mistralai/mistral-7b-instruct-v0.3",
+      "latency": 679,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'cd89bd68-13e3-47a9-861e-9a62e6e14b05': Not fou"
+    },
+    {
+      "model": "mistralai/mistral-large",
+      "latency": 655,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '767b5b9a-3f9d-4c1d-86e8-fa861988cee7': Not fou"
+    },
+    {
+      "model": "mistralai/mistral-large-2-instruct",
+      "latency": 654,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '7fadd4de-e22a-48e4-90e9-f02ef14a74b9': Not fou"
+    },
+    {
+      "model": "mistralai/mistral-large-3-675b-instruct-2512",
+      "latency": 10001,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "mistralai/mistral-medium-3.5-128b",
+      "latency": 10001,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "mistralai/mixtral-8x22b-v0.1",
+      "latency": 677,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '39655fc1-9ebc-4b24-963e-6915ea6680de': Not fou"
+    },
+    {
+      "model": "moonshotai/kimi-k2.6",
+      "latency": 653,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '23d4f03a-b8a6-4adb-a183-7daa083a09cc': Not fou"
+    },
+    {
+      "model": "nv-mistralai/mistral-nemo-12b-instruct",
+      "latency": 676,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'f8c05193-d2e2-4f0f-bb4d-7ad70070002b': Not fou"
+    },
+    {
+      "model": "nvidia/ai-synthetic-video-detector",
+      "latency": 783,
+      "status": "FAILED",
+      "code": 500,
+      "response": "{\"type\":\"urn:nvcf-worker-service:problem-details:internal-server-error\",\"title\":\"Internal Server Err"
+    },
+    {
+      "model": "nvidia/cosmos-reason2-8b",
+      "latency": 629,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'e199b43b-6c62-4a63-9379-f60e1a953236': Not fou"
+    },
+    {
+      "model": "nvidia/embed-qa-4",
+      "latency": 629,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "nvidia/llama-3.1-nemotron-51b-instruct",
+      "latency": 305,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '5beba52c-65a9-4f46-8cd9-656689a1b205': Not fou"
+    },
+    {
+      "model": "nvidia/llama-3.1-nemotron-70b-instruct",
+      "latency": 307,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '9b96341b-9791-4db9-a00d-4e43aa192a39': Not fou"
+    },
+    {
+      "model": "nvidia/llama-3.1-nemotron-nano-8b-v1",
+      "latency": 10016,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+      "latency": 295,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '84bf12ff-edbd-4435-baea-0fa6a7453d2e': Not fou"
+    },
+    {
+      "model": "nvidia/llama-3.2-nemoretriever-1b-vlm-embed-v1",
+      "latency": 282,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "nvidia/llama-3.2-nv-embedqa-1b-v1",
+      "latency": 272,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "nvidia/llama-3.3-nemotron-super-49b-v1",
+      "latency": 10016,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "nvidia/llama-nemotron-embed-1b-v2",
+      "latency": 283,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "nvidia/llama-nemotron-embed-vl-1b-v2",
+      "latency": 646,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "nvidia/llama3-chatqa-1.5-70b",
+      "latency": 668,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '46594287-38b9-481c-a37f-baa02f2d3ba1': Not fou"
+    },
+    {
+      "model": "nvidia/mistral-nemo-minitron-8b-8k-instruct",
+      "latency": 669,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '5aa06dd2-0a02-4a5d-be4c-bf88e956965d': Not fou"
+    },
+    {
+      "model": "nvidia/nemoretriever-parse",
+      "latency": 770,
+      "status": "FAILED",
+      "code": 400,
+      "response": "{\"object\":\"error\",\"message\":\"Content cannot be a plain string. The model does not support text input"
+    },
+    {
+      "model": "nvidia/nemotron-3-embed-1b",
+      "latency": 644,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "nvidia/nemotron-3-ultra-550b-a55b",
+      "latency": 10005,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "nvidia/nemotron-4-340b-instruct",
+      "latency": 670,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'b0fcd392-e905-4ab4-8eb9-aeae95c30b37': Not fou"
+    },
+    {
+      "model": "nvidia/nemotron-4-340b-reward",
+      "latency": 669,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'c53ee0e9-bad9-4e09-b365-52c9d6b71254': Not fou"
+    },
+    {
+      "model": "nvidia/nemotron-nano-3-30b-a3b",
+      "latency": 780,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"error\":{\"message\":\"Model not found\",\"type\":\"Not Found\",\"code\":404}}"
+    },
+    {
+      "model": "nvidia/nemotron-parse",
+      "latency": 313,
+      "status": "FAILED",
+      "code": 400,
+      "response": "{\"object\":\"error\",\"message\":\"Content cannot be a plain string. The model does not support text input"
+    },
+    {
+      "model": "nvidia/neva-22b",
+      "latency": 168,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'bc205f8e-1740-40df-8d32-c4321763498a': Not fou"
+    },
+    {
+      "model": "nvidia/nv-embed-v1",
+      "latency": 142,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "nvidia/nv-embedcode-7b-v1",
+      "latency": 155,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "nvidia/nv-embedqa-e5-v5",
+      "latency": 162,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "nvidia/nv-embedqa-mistral-7b-v2",
+      "latency": 148,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "nvidia/nvclip",
+      "latency": 206,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "nvidia/riva-translate-4b-instruct",
+      "latency": 208,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'f35337fa-b4dd-4996-bcba-5476ee01171d': Not fou"
+    },
+    {
+      "model": "nvidia/vila",
+      "latency": 202,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '1c8df143-2303-419b-8b28-b4dd82cfe113': Not fou"
+    },
+    {
+      "model": "qwen/qwen3-next-80b-a3b-instruct",
+      "latency": 10014,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "qwen/qwen3.5-397b-a17b",
+      "latency": 10008,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "snowflake/arctic-embed-l",
+      "latency": 365,
+      "status": "FAILED",
+      "code": 404,
+      "response": "404 page not found\n"
+    },
+    {
+      "model": "writer/palmyra-creative-122b",
+      "latency": 386,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '00bdd0a7-e38f-4423-9007-c4d8730a3f78': Not fou"
+    },
+    {
+      "model": "writer/palmyra-fin-70b-32k",
+      "latency": 401,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '316490c6-f1ed-41f9-9da8-3fa9e885653b': Not fou"
+    },
+    {
+      "model": "writer/palmyra-med-70b",
+      "latency": 377,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'aab71274-5281-4941-b0b8-20f339d1fc7e': Not fou"
+    },
+    {
+      "model": "writer/palmyra-med-70b-32k",
+      "latency": 402,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'd6faa974-3591-49a4-963d-97221d074b2e': Not fou"
+    },
+    {
+      "model": "z-ai/glm-5.2",
+      "latency": 10007,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "zyphra/zamba2-7b-instruct",
+      "latency": 399,
+      "status": "FAILED",
+      "code": 404,
+      "response": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '8378ffb2-51b0-4140-9684-dda1889373e6': Not fou"
+    }
+  ]
+}

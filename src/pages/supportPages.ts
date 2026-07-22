@@ -28,7 +28,6 @@ export const supportPages: Record<string, SupportPage> = {
   '/privacy': privacyPage,
   '/terms': termsPage,
   '/security': securityPage,
-  '/status': statusPage,
   '/support': supportPageContent,
   '/contact': contactPage,
   '/creator-program': creatorProgramPage,

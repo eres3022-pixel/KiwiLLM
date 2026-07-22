@@ -1,0 +1,164 @@
+{
+  "working": [
+    {
+      "model": "bytedance/seed-oss-36b-instruct",
+      "latency": 1017,
+      "status": "WORKING"
+    },
+    {
+      "model": "deepseek-ai/deepseek-v4-flash",
+      "latency": 12935,
+      "status": "WORKING"
+    },
+    {
+      "model": "meta/llama-3.2-3b-instruct",
+      "latency": 7043,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/llama-3.3-nemotron-super-49b-v1",
+      "latency": 1223,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/nemotron-3-ultra-550b-a55b",
+      "latency": 858,
+      "status": "WORKING"
+    }
+  ],
+  "results": [
+    {
+      "model": "bytedance/seed-oss-36b-instruct",
+      "latency": 1017,
+      "status": "WORKING"
+    },
+    {
+      "model": "deepseek-ai/deepseek-v4-flash",
+      "latency": 12935,
+      "status": "WORKING"
+    },
+    {
+      "model": "deepseek-ai/deepseek-v4-pro",
+      "latency": 35004,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "google/diffusiongemma-26b-a4b-it",
+      "latency": 35003,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "google/gemma-4-31b-it",
+      "latency": 35003,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "meta/llama-3.1-70b-instruct",
+      "latency": 35003,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "meta/llama-3.2-1b-instruct",
+      "latency": 35004,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "meta/llama-3.2-3b-instruct",
+      "latency": 7043,
+      "status": "WORKING"
+    },
+    {
+      "model": "meta/llama-3.2-90b-vision-instruct",
+      "latency": 35004,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "meta/llama-3.3-70b-instruct",
+      "latency": 35003,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "meta/llama-4-maverick-17b-128e-instruct",
+      "latency": 35003,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "minimaxai/minimax-m2.7",
+      "latency": 35003,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "minimaxai/minimax-m3",
+      "latency": 196,
+      "status": "FAILED",
+      "code": 400
+    },
+    {
+      "model": "mistralai/ministral-14b-instruct-2512",
+      "latency": 35003,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "mistralai/mistral-large-3-675b-instruct-2512",
+      "latency": 35003,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "mistralai/mistral-medium-3.5-128b",
+      "latency": 35004,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "nvidia/ai-synthetic-video-detector",
+      "latency": 345,
+      "status": "FAILED",
+      "code": 500
+    },
+    {
+      "model": "nvidia/llama-3.1-nemotron-nano-8b-v1",
+      "latency": 35004,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "nvidia/llama-3.3-nemotron-super-49b-v1",
+      "latency": 1223,
+      "status": "WORKING"
+    },
+    {
+      "model": "nvidia/nemotron-3-ultra-550b-a55b",
+      "latency": 858,
+      "status": "WORKING"
+    },
+    {
+      "model": "qwen/qwen3-next-80b-a3b-instruct",
+      "latency": 35004,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "qwen/qwen3.5-397b-a17b",
+      "latency": 35004,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "z-ai/glm-5.2",
+      "latency": 35004,
+      "status": "FAILED",
+      "error": "AbortError"
+    }
+  ]
+}

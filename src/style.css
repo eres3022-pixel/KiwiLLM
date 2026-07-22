@@ -4744,3 +4744,159 @@ code b {
   }
 }
 
+/* Status Page Styling */
+.status-overall-banner {
+  margin-top: 24px;
+  padding: 24px 28px;
+  border-radius: 16px;
+  border: 1px solid rgba(202, 255, 31, 0.35);
+  background: linear-gradient(180deg, rgba(202, 255, 31, 0.08), rgba(0, 0, 0, 0.35));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.status-overall-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.status-overall-left h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 22px;
+}
+
+.status-overall-left small {
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.status-indicator-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.status-indicator-dot.is-operational {
+  background: var(--kiwi);
+  box-shadow: 0 0 12px var(--kiwi);
+}
+
+.status-indicator-dot.is-operational::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--kiwi);
+  opacity: 0.5;
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.status-overall-right {
+  text-align: right;
+}
+
+.status-overall-right strong {
+  display: block;
+  font-size: 26px;
+  color: var(--kiwi);
+  font-weight: 800;
+}
+
+.status-overall-right span {
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+.status-services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.status-service-card {
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.service-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.service-card-head span {
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.service-latency {
+  font-size: 20px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.status-service-card small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-badge.is-operational {
+  background: rgba(202, 255, 31, 0.15);
+  color: var(--kiwi);
+  border: 1px solid rgba(202, 255, 31, 0.3);
+}
+
+.status-badge.is-degraded {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.uptime-bars-wrap {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.uptime-mini-bar {
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+}
+
+.uptime-mini-bar.is-good {
+  background: var(--kiwi);
+  opacity: 0.85;
+}
+
+.uptime-mini-bar.is-warn {
+  background: #f59e0b;
+}
+

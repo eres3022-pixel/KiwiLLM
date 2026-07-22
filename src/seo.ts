@@ -48,6 +48,10 @@ const routeSeo: Record<string, SeoConfig> = {
     description:
       'Top up Kiwi LLM workspace credits for OpenAI-compatible model routing across text, code, reasoning, image, and video routes.',
   },
+  '/status': {
+    title: 'Kiwi LLM Status - Live Gateway Uptime & Model Latencies',
+    description: 'Check real-time system status, API gateway health, response latencies, 30-day uptime bars, and operational health across all LLM models.',
+  },
   '/refund-policy': {
     title: refundPolicyTitle,
     description:

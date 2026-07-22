@@ -1,0 +1,130 @@
+{
+  "working": [
+    {
+      "model": "meta/llama-3.2-11b-vision-instruct",
+      "latency": 529,
+      "status": "WORKING",
+      "snippet": "{\"id\":\"chatcmpl-44bdabd2b2344b9c95afade59b6b229c\",\"object\":\"chat.completion\",\"cr"
+    },
+    {
+      "model": "meta/llama-guard-4-12b",
+      "latency": 529,
+      "status": "WORKING",
+      "snippet": "{\"id\":\"chatcmpl-b425114a34c64c5fb4c48fbf4d4e0d15\",\"object\":\"chat.completion\",\"cr"
+    },
+    {
+      "model": "mistralai/mistral-small-4-119b-2603",
+      "latency": 542,
+      "status": "WORKING",
+      "snippet": "{\"id\":\"chatcmpl-a5224a9fb92c8ecf\",\"object\":\"chat.completion\",\"created\":178471014"
+    },
+    {
+      "model": "abacusai/dracarys-llama-3.1-70b-instruct",
+      "latency": 663,
+      "status": "WORKING",
+      "snippet": "{\"id\":\"00c59c22a23e470a94bddb67225b8a11\",\"object\":\"chat.completion\",\"created\":17"
+    },
+    {
+      "model": "google/gemma-3n-e4b-it",
+      "latency": 772,
+      "status": "WORKING",
+      "snippet": "{\"id\":\"chatcmpl-1f991ef1b2f944f4987c6dc4e97b7913\",\"object\":\"chat.completion\",\"cr"
+    },
+    {
+      "model": "nvidia/nemotron-3-ultra-550b-a55b",
+      "latency": 796,
+      "status": "WORKING",
+      "snippet": "{\"id\":\"chatcmpl-49a405c6-e8b7-475e-a00b-95529b08caf9\",\"choices\":[{\"index\":0,\"mes"
+    },
+    {
+      "model": "mistralai/mixtral-8x7b-instruct-v0.1",
+      "latency": 866,
+      "status": "WORKING",
+      "snippet": "{\"id\":\"chatcmpl-92b084cdf42d145a\",\"object\":\"chat.completion\",\"created\":178471014"
+    },
+    {
+      "model": "stepfun-ai/step-3.7-flash",
+      "latency": 1666,
+      "status": "WORKING",
+      "snippet": "{\"id\":\"chatcmpl-811067d3df95c606\",\"object\":\"chat.completion\",\"created\":178471014"
+    },
+    {
+      "model": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+      "latency": 5552,
+      "status": "WORKING",
+      "snippet": "{\"id\":\"chatcmpl-a1559c32e14f224a\",\"object\":\"chat.completion\",\"created\":178471014"
+    }
+  ],
+  "failed": [
+    {
+      "model": "meta/llama-3.1-405b-instruct",
+      "latency": 340,
+      "status": "FAILED",
+      "code": 404,
+      "snippet": "404 page not found\n"
+    },
+    {
+      "model": "deepseek-ai/deepseek-v3.1-terminus",
+      "latency": 322,
+      "status": "FAILED",
+      "code": 404,
+      "snippet": "404 page not found\n"
+    },
+    {
+      "model": "qwen/qwen3.5-397b-a17b",
+      "latency": 35008,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "qwen/qwen3-coder-480b-a35b-instruct",
+      "latency": 364,
+      "status": "FAILED",
+      "code": 410,
+      "snippet": "{\"type\":\"about:blank\",\"title\":\"Gone\",\"status\":410,\"detail\":\"The model 'qwen/qwen"
+    },
+    {
+      "model": "meta/llama-3.3-70b-instruct",
+      "latency": 35007,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "z-ai/glm-5.2",
+      "latency": 35007,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "mistralai/mistral-large-3-675b-instruct-2512",
+      "latency": 35007,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "moonshotai/kimi-k2-thinking",
+      "latency": 362,
+      "status": "FAILED",
+      "code": 410,
+      "snippet": "{\"type\":\"about:blank\",\"title\":\"Gone\",\"status\":410,\"detail\":\"The model 'moonshota"
+    },
+    {
+      "model": "minimaxai/minimax-m3",
+      "latency": 35007,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "latency": 35007,
+      "status": "FAILED",
+      "error": "AbortError"
+    },
+    {
+      "model": "bytedance/seed-oss-36b-instruct",
+      "latency": 35007,
+      "status": "FAILED",
+      "error": "AbortError"
+    }
+  ]
+}
