@@ -343,6 +343,13 @@ export async function getDefaultWorkspace(client = pgPool, authUser = null) {
     let workspaceResult = await client.query('select * from workspaces where owner_user_id = $1 order by created_at asc limit 1', [appUser.id])
     if (workspaceResult.rowCount) return workspaceResult.rows[0]
 
+    // Fallback: find by email and relink the owner_user_id
+    workspaceResult = await client.query('select * from workspaces where email = $1 order by created_at asc limit 1', [authUser.email])
+    if (workspaceResult.rowCount) {
+      await client.query('update workspaces set owner_user_id = $1 where id = $2', [appUser.id, workspaceResult.rows[0].id])
+      return { ...workspaceResult.rows[0], owner_user_id: appUser.id }
+    }
+
     workspaceResult = await client.query(
       `
         insert into workspaces (name, email, owner_user_id, plan, credit_balance, credit_usd_balance, free_rpm_limit, free_rpd_limit, draws_left)
