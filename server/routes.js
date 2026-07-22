@@ -710,13 +710,20 @@ router.post('/api/referrals/claim', requireAuth, async (req, res) => {
       
       const existing = await pgPool.query('select * from referrals where referred_workspace_id = $1', [workspace.id])
       if (existing.rowCount === 0) {
-        const inviter = await pgPool.query('select id from workspaces where id = $1', [inviterCode])
+        const inviter = await pgPool.query(
+          'SELECT id FROM workspaces WHERE id = $1 OR user_email = $1 OR id::text = $1 LIMIT 1',
+          [inviterCode]
+        )
         if (inviter.rowCount) {
+          const inviterId = inviter.rows[0].id
+          if (workspace.id === inviterId) {
+            return res.status(400).json({ error: 'Cannot refer yourself' })
+          }
           await pgPool.query('begin')
           try {
-            await pgPool.query('insert into referrals (referred_workspace_id, inviter_workspace_id, api_key_reward_claimed) values ($1, $2, true)', [workspace.id, inviter.rows[0].id])
+            await pgPool.query('insert into referrals (referred_workspace_id, inviter_workspace_id, api_key_reward_claimed) values ($1, $2, true)', [workspace.id, inviterId])
             await pgPool.query('update workspaces set draws_left = draws_left + 1 where id = $1', [workspace.id])
-            await pgPool.query('update workspaces set draws_left = draws_left + 1 where id = $1', [inviter.rows[0].id])
+            await pgPool.query('update workspaces set draws_left = draws_left + 1 where id = $1', [inviterId])
             await pgPool.query('commit')
             return res.json({ ok: true })
           } catch (e) {
