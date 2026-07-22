@@ -10,8 +10,6 @@ export const renderHome = () => `
         <span>Kiwi LLM</span>
       </a>
       <div class="nav-links" aria-label="Product sections">
-        <a class="nav-spin-badge" href="/invite">🎁 Spin & Earn ($1000 Prize)</a>
-        <span aria-hidden="true"></span>
         <a href="#home">Home</a>
         <span aria-hidden="true"></span>
         <a href="#how">How</a>

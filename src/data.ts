@@ -50,7 +50,6 @@ export const footerColumns = [
 ]
 
 export const pageLinks = [
-  { label: '🎁 Spin & Earn ($1000 Prize)', href: '/invite', badge: true },
   { label: 'Docs', href: '/docs' },
   { label: 'Models', href: '/models' },
   { label: 'Top up', href: '/top-up' },
