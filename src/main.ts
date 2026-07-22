@@ -1059,22 +1059,37 @@ if (isTopUpPage) {
   window.addEventListener('kiwi-auth-synced', hydrateWalletHistory)
 
   // Top Up Modal Logic
-  const contactModal = document.querySelector('.contact-modal')
-  const contactBackdrop = document.getElementById('contact-backdrop')
-  const contactClose = document.getElementById('contact-close')
-  
-  const openContactModal = () => contactModal?.classList.add('is-open')
-  const closeContactModal = () => contactModal?.classList.remove('is-open')
-  
-  document.querySelectorAll('.buy-topup-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  const openContactModal = () => {
+    const modal = document.getElementById('contact-modal') || document.querySelector('.contact-modal')
+    if (modal) {
+      modal.removeAttribute('hidden')
+      modal.classList.add('is-open')
+    }
+  }
+
+  const closeContactModal = () => {
+    const modal = document.getElementById('contact-modal') || document.querySelector('.contact-modal')
+    if (modal) {
+      modal.classList.remove('is-open')
+      setTimeout(() => modal.setAttribute('hidden', ''), 180)
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement
+    const buyBtn = target.closest('.buy-topup-btn')
+    if (buyBtn) {
       e.preventDefault()
+      e.stopPropagation()
       openContactModal()
-    })
+      return
+    }
+
+    if (target.closest('#contact-close') || target.closest('#contact-backdrop')) {
+      e.preventDefault()
+      closeContactModal()
+    }
   })
-  
-  contactBackdrop?.addEventListener('click', closeContactModal)
-  contactClose?.addEventListener('click', closeContactModal)
 }
 
 if (isPlaygroundPage) {

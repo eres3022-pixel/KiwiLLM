@@ -3112,10 +3112,43 @@ code b {
   font-size: 14px;
 }
 
-.topup-grid a {
+.topup-grid .buy-topup-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 42px;
+  margin-top: 16px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(202, 255, 31, 0.12);
   color: var(--kiwi);
-  font-size: 13px;
-  font-weight: 800;
+  border: 1px solid rgba(202, 255, 31, 0.35);
+}
+
+.topup-grid .buy-topup-btn:hover {
+  background: var(--kiwi);
+  color: #071007;
+  border-color: var(--kiwi);
+  box-shadow: 0 6px 20px rgba(202, 255, 31, 0.3);
+  transform: translateY(-1px);
+}
+
+.topup-grid article.is-featured .buy-topup-btn {
+  background: linear-gradient(180deg, #eeffd4, var(--kiwi));
+  color: #071007;
+  border: none;
+  box-shadow: 0 8px 24px rgba(202, 255, 31, 0.25);
+}
+
+.topup-grid article.is-featured .buy-topup-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(202, 255, 31, 0.4);
 }
 
 .topup-included {
