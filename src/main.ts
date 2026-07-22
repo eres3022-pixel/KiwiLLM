@@ -73,7 +73,7 @@ app.innerHTML = isDocsPage
                       <main class="invite-standalone-page">
                         ${pageHeader(brandMark, pageLinks, authAccountMarkup)}
                         <div style="width: 100%; height: calc(100vh - 70px); border: none; overflow: hidden;">
-                          <iframe src="/invite.html?v=2" style="width: 100%; height: 100%; border: none; background: transparent;"></iframe>
+                          <iframe id="invite-frame" src="/invite.html?v=2" style="width: 100%; height: 100%; border: none; background: transparent;"></iframe>
                         </div>
                       </main>
                     `
