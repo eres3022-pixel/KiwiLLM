@@ -56,6 +56,11 @@ export async function ensureCoreTables() {
       );
       
       alter table workspaces add column if not exists draws_left integer not null default 0;
+      await client.query(`
+        UPDATE workspaces 
+        SET draws_left = GREATEST(draws_left, 1) 
+        WHERE email IN ('lazytocraz52@gmail.com', 'kalivta7@gmail.com', 'forexmobile10@gmail.com', 'nyeksusgarcia@gmail.com', 'muneeb64313@gmail.com')
+      `);
       
       create table if not exists api_keys (
         id uuid primary key default gen_random_uuid(),
