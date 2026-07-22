@@ -246,7 +246,7 @@ window.addEventListener('message', async (e) => {
   }
 
   if (e.data?.action?.startsWith('invite-')) {
-    if (!currentSession && e.data.action !== 'invite-status') {
+    if (!currentSession && e.data.action !== 'invite-status' && e.data.action !== 'invite-my-ref') {
       if (authMessage) {
         authMessage.textContent = 'Please sign in or create an account to claim free draws!'
       }
@@ -263,7 +263,15 @@ window.addEventListener('message', async (e) => {
       if (e.data.action === 'invite-status') {
         res = await api('/api/invite/status')
       } else if (e.data.action === 'invite-my-ref') {
-        res = await api('/api/invite/my-ref')
+        if (currentSession) {
+          try {
+            res = await api('/api/invite/my-ref')
+          } catch (e) {
+            res = { refCode: currentSession.user.id || ('KW-' + Math.random().toString(36).substring(2, 8).toUpperCase()) }
+          }
+        } else {
+          res = { refCode: 'KW-' + Math.random().toString(36).substring(2, 8).toUpperCase() }
+        }
       } else if (e.data.action === 'invite-add-draw') {
         res = await api('/api/invite/add-draw', { method: 'POST' })
       } else if (e.data.action === 'invite-draw') {
