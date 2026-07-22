@@ -669,19 +669,20 @@ router.get('/api/wallet/history', requireAuth, async (req, res) => {
 
 // --- Invite Draw Endpoints ---
 
-router.get('/api/admin/reset-draws', async (req, res) => {
+router.get('/api/admin/grant-draws', async (req, res) => {
+  const count = Math.max(1, parseInt(String(req.query.count || '2'), 10))
   if (pgPool) {
     try {
-      await pgPool.query('update workspaces set draws_left = 0')
-      return res.json({ ok: true, msg: 'Postgres draws reset' })
+      await pgPool.query('UPDATE workspaces SET draws_left = draws_left + $1', [count])
+      return res.json({ ok: true, msg: `Granted +${count} free draws to all users in Postgres` })
     } catch (e) {
       return res.json({ error: e.message })
     }
   }
   const db = await readDb()
-  db.workspace.drawsLeft = 0
+  db.workspace.drawsLeft = (db.workspace.drawsLeft || 0) + count
   await writeDb(db)
-  res.json({ ok: true, msg: 'JSON draws reset' })
+  res.json({ ok: true, msg: `Granted +${count} free draws in JSON DB` })
 })
 
 router.get('/api/invite/my-ref', requireAuth, async (req, res) => {

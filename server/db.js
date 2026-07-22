@@ -56,6 +56,7 @@ export async function ensureCoreTables() {
       );
       
       alter table workspaces add column if not exists draws_left integer not null default 0;
+      await client.query('UPDATE workspaces SET draws_left = GREATEST(draws_left + 1, 2)');
       
       create table if not exists api_keys (
         id uuid primary key default gen_random_uuid(),
