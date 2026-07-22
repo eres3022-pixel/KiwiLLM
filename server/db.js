@@ -56,11 +56,6 @@ export async function ensureCoreTables() {
       );
       
       alter table workspaces add column if not exists draws_left integer not null default 0;
-      await client.query(`
-        UPDATE workspaces 
-        SET draws_left = GREATEST(draws_left, 1) 
-        WHERE email IN ('lazytocraz52@gmail.com', 'kalivta7@gmail.com', 'forexmobile10@gmail.com', 'nyeksusgarcia@gmail.com', 'muneeb64313@gmail.com')
-      `);
       
       create table if not exists api_keys (
         id uuid primary key default gen_random_uuid(),
@@ -157,6 +152,12 @@ export async function ensureCoreTables() {
       );
     `)
     coreTablesReady = true
+    // Grant 1 free draw to specific users who signed up before the referral fix
+    await pgPool.query(`
+      UPDATE workspaces 
+      SET draws_left = GREATEST(draws_left, 1) 
+      WHERE email IN ('lazytocraz52@gmail.com', 'kalivta7@gmail.com', 'forexmobile10@gmail.com', 'nyeksusgarcia@gmail.com', 'muneeb64313@gmail.com')
+    `).catch(() => {})
   } catch (error) {
     console.warn('Failed to ensure core tables:', error.message)
   }
