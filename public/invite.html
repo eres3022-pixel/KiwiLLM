@@ -1310,7 +1310,8 @@
   var posterOverlay = document.getElementById('posterOverlay');
   var posterCopyBtn = document.getElementById('posterCopyBtn');
   var posterCloseBtn = document.getElementById('posterCloseBtn');
-  var REFERRAL_LINK = window.location.origin + '/?ref=KW-INVITE';
+  var REFERRAL_LINK = '';
+  var REFERRAL_LINK_LOADING = false;
   
   function updateCopyBtn() {
     if (posterCopyBtn) {
@@ -1356,29 +1357,31 @@
   }
   if (posterCopyBtn) {
     posterCopyBtn.addEventListener('click', function(){
-      var linkToCopy = REFERRAL_LINK || (window.location.origin + '/?ref=KW-INVITE');
-      var handleSuccess = function() {
-        if (posterCopyBtn) {
-          posterCopyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
-          setTimeout(function(){ 
-            updateCopyBtn();
-          }, 3000);
-        }
-        showCopyMsg("Referral link copied to clipboard!");
-      };
-
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(linkToCopy).then(handleSuccess).catch(handleSuccess);
-      } else {
-        handleSuccess();
-      }
-
-      // Refresh refCode silently in background
+      posterCopyBtn.innerHTML = '<span>Fetching link...</span>';
+      posterCopyBtn.style.pointerEvents = 'none';
       apiCall('invite-my-ref').then(function(res) {
-        if (res && res.refCode) {
-          REFERRAL_LINK = window.location.origin + '/?ref=' + res.refCode;
+        var finalLink = (res && res.refCode && res.refCode !== 'local-demo-ref')
+          ? (window.location.origin + '/?ref=' + res.refCode)
+          : null;
+        if (!finalLink) {
+          updateCopyBtn();
+          showToast('Could not load your referral link. Please try again.');
+          return;
         }
-      }).catch(function(e) { console.warn(e); });
+        REFERRAL_LINK = finalLink;
+        navigator.clipboard.writeText(finalLink).then(function(){
+          posterCopyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
+          posterCopyBtn.style.pointerEvents = 'auto';
+          setTimeout(function(){ updateCopyBtn(); }, 3000);
+          showCopyMsg('Referral link copied to clipboard!');
+        }).catch(function() {
+          updateCopyBtn();
+          showToast('Could not copy. Your link: ' + finalLink);
+        });
+      }).catch(function(err) {
+        updateCopyBtn();
+        showToast('Sign in to get your referral link.');
+      });
     });
   }
 
