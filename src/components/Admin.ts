@@ -181,6 +181,21 @@ export const renderAdmin = () => `
           </div>
           <div class="admin-list" id="admin-referrals"></div>
         </article>
+        <article class="dash-panel admin-users-panel" style="margin-top: 24px;">
+          <div class="dash-panel-head">
+            <div>
+              <h2>🎰 User Draw Manager</h2>
+              <p>List all users & grant free spins directly</p>
+            </div>
+            <span id="admin-users-count">Loading</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+            <input id="admin-users-search" type="text" placeholder="Search by name or email..." style="flex:1;min-width:180px;padding:8px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;" />
+            <button class="button button-primary" id="admin-users-load-btn" type="button" style="white-space:nowrap;">Load Users</button>
+          </div>
+          <div class="admin-list" id="admin-users-list"></div>
+          <p id="admin-users-msg" style="font-size:13px;color:var(--kiwi);margin-top:8px;"></p>
+        </article>
       </section>
     </section>
   </main>

@@ -682,7 +682,7 @@ router.get('/api/admin/recent-users', async (req, res) => {
 })
 
 router.get('/api/admin/grant-draws', async (req, res) => {
-  const count = Math.max(1, parseInt(String(req.query.count || '2'), 10))
+  const count = Math.max(1, parseInt(String(req.query.count || '1'), 10))
   if (pgPool) {
     try {
       await pgPool.query('UPDATE workspaces SET draws_left = draws_left + $1', [count])
@@ -695,6 +695,48 @@ router.get('/api/admin/grant-draws', async (req, res) => {
   db.workspace.drawsLeft = (db.workspace.drawsLeft || 0) + count
   await writeDb(db)
   res.json({ ok: true, msg: `Granted +${count} free draws in JSON DB` })
+})
+
+router.get('/api/admin/users', requireAdminAuth, async (req, res) => {
+  const search = String(req.query.search || '').trim()
+  const limit = Math.min(100, Math.max(1, parseInt(String(req.query.limit || '50'), 10)))
+  if (pgPool) {
+    try {
+      let query, params
+      if (search) {
+        query = `SELECT name, email, draws_left, credit_usd_balance, created_at FROM workspaces WHERE email ILIKE $1 OR name ILIKE $1 ORDER BY created_at DESC LIMIT $2`
+        params = [`%${search}%`, limit]
+      } else {
+        query = `SELECT name, email, draws_left, credit_usd_balance, created_at FROM workspaces ORDER BY created_at DESC LIMIT $1`
+        params = [limit]
+      }
+      const result = await pgPool.query(query, params)
+      const total = await pgPool.query('SELECT COUNT(*)::int as count FROM workspaces')
+      return res.json({ users: result.rows, total: total.rows[0].count })
+    } catch (e) {
+      return res.json({ error: e.message })
+    }
+  }
+  res.json({ users: [], total: 0 })
+})
+
+router.post('/api/admin/user-grant-draws', requireAdminAuth, async (req, res) => {
+  const email = String(req.body.email || '').trim().toLowerCase()
+  const count = Math.max(1, Math.min(100, parseInt(String(req.body.count || '1'), 10)))
+  if (!email) return res.status(400).json({ error: 'Missing email' })
+  if (pgPool) {
+    try {
+      const result = await pgPool.query(
+        'UPDATE workspaces SET draws_left = draws_left + $1 WHERE LOWER(email) = $2 RETURNING email, draws_left',
+        [count, email]
+      )
+      if (result.rowCount === 0) return res.status(404).json({ error: `No workspace found for ${email}` })
+      return res.json({ ok: true, email: result.rows[0].email, draws_left: result.rows[0].draws_left, granted: count })
+    } catch (e) {
+      return res.json({ error: e.message })
+    }
+  }
+  res.json({ error: 'No database connected' })
 })
 
 router.get('/api/invite/my-ref', requireAuth, async (req, res) => {

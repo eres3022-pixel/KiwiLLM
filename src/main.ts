@@ -1003,6 +1003,64 @@ if (isAdminPage) {
       if (codeCount) codeCount.textContent = `${data.redemptionCodes.length} codes`
       if (prizeCount) prizeCount.textContent = `${data.prizes.length} prizes`
       if (referralCount) referralCount.textContent = `${data.referrals.length} referrals`
+
+      // Wire up User Draw Manager
+      const usersLoadBtn = document.querySelector<HTMLButtonElement>('#admin-users-load-btn')
+      const usersSearch = document.querySelector<HTMLInputElement>('#admin-users-search')
+      const usersList = document.querySelector<HTMLElement>('#admin-users-list')
+      const usersCount = document.querySelector<HTMLElement>('#admin-users-count')
+      const usersMsg = document.querySelector<HTMLElement>('#admin-users-msg')
+
+      async function loadUsers() {
+        if (!usersList) return
+        const q = usersSearch?.value.trim() || ''
+        usersCount && (usersCount.textContent = 'Loading...')
+        usersList.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">Loading users...</p>'
+        try {
+          const res = await api<{ users: any[]; total: number }>(`/api/admin/users?limit=50&search=${encodeURIComponent(q)}`)
+          usersCount && (usersCount.textContent = `${res.total} total`)
+          if (!res.users?.length) { usersList.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">No users found.</p>'; return }
+          usersList.innerHTML = res.users.map((u: any) => `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap;">
+              <div style="min-width:0;">
+                <strong style="font-size:13px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(u.email)}</strong>
+                <span style="font-size:11px;color:var(--text-muted);">${escapeHtml(u.name || '—')}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+                <span style="font-size:12px;background:var(--surface-2);padding:3px 8px;border-radius:6px;">🎰 ${u.draws_left} draws</span>
+                <input type="number" min="1" max="100" value="1" style="width:52px;padding:4px 6px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;" data-grant-email="${escapeHtml(u.email)}" class="admin-grant-input" />
+                <button class="button button-primary admin-grant-btn" data-email="${escapeHtml(u.email)}" style="font-size:12px;padding:5px 10px;">+Grant</button>
+              </div>
+            </div>
+          `).join('')
+
+          usersList.querySelectorAll<HTMLButtonElement>('.admin-grant-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const email = btn.dataset.email || ''
+              const input = usersList.querySelector<HTMLInputElement>(`.admin-grant-input[data-grant-email="${CSS.escape(email)}"]`)
+              const count = parseInt(input?.value || '1', 10)
+              btn.disabled = true; btn.textContent = '...'
+              try {
+                const r = await api<any>('/api/admin/user-grant-draws', { method: 'POST', body: JSON.stringify({ email, count }) })
+                if (usersMsg) usersMsg.textContent = `✅ Granted +${count} draw(s) to ${email} — now has ${r.draws_left} draws`
+                btn.textContent = '✅'
+                setTimeout(() => { btn.textContent = '+Grant'; btn.disabled = false }, 3000)
+                loadUsers()
+              } catch (err: any) {
+                if (usersMsg) usersMsg.textContent = `❌ ${err.message}`
+                btn.textContent = '+Grant'; btn.disabled = false
+              }
+            })
+          })
+        } catch (err: any) {
+          usersList.innerHTML = `<p style="color:var(--danger);font-size:13px;">${escapeHtml(err.message)}</p>`
+        }
+      }
+
+      usersLoadBtn?.addEventListener('click', loadUsers)
+      usersSearch?.addEventListener('keydown', (e) => { if (e.key === 'Enter') loadUsers() })
+      loadUsers()
+
     } catch (error) {
       setAdminStatus('Access blocked', error instanceof Error ? error.message : 'Could not load admin data.')
     }
