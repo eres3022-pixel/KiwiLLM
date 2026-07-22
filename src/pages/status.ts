@@ -99,7 +99,7 @@ export const renderStatusPage = (pageHeader: string) => `
           <div class="incident-item" style="padding: 20px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; background: rgba(0, 0, 0, 0.25); margin-bottom: 16px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
               <strong style="color: #fff; font-size: 16px;">Infrastructure & Model Catalog Upgrade</strong>
-              <span class="badge badge-outline" style="color: var(--kiwi); border-color: var(--kiwi);">Resolved</span>
+              <span class="badge badge-outline" style="color: #10b981; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.1);">Resolved</span>
             </div>
             <p style="color: var(--text-2); font-size: 14px; margin: 0 0 10px 0;">All core gateway endpoints and model routes verified 100% operational with low latency priority routing.</p>
             <small style="color: var(--muted); font-size: 12px;">Jul 22, 2026</small>
@@ -107,7 +107,7 @@ export const renderStatusPage = (pageHeader: string) => `
           <div class="incident-item" style="padding: 20px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; background: rgba(0, 0, 0, 0.25);">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
               <strong style="color: #fff; font-size: 16px;">Scheduled Gateway Maintenance</strong>
-              <span class="badge badge-outline" style="color: var(--kiwi); border-color: var(--kiwi);">Resolved</span>
+              <span class="badge badge-outline" style="color: #10b981; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.1);">Resolved</span>
             </div>
             <p style="color: var(--text-2); font-size: 14px; margin: 0 0 10px 0;">Completed database pool optimization and upgraded upstream proxy handlers. Zero downtime experienced.</p>
             <small style="color: var(--muted); font-size: 12px;">Jul 15, 2026</small>

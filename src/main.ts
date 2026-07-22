@@ -1119,7 +1119,7 @@ if (isStatusPage) {
                 <td style="font-weight: 600; color: #fff;">${escapeHtml(formatModelName(m.id))}</td>
                 <td><span class="badge badge-outline">${escapeHtml(m.provider)}</span></td>
                 <td>${escapeHtml(m.type)}</td>
-                <td><span class="badge" style="background: rgba(202, 255, 31, 0.15); color: var(--kiwi); border: 1px solid rgba(202, 255, 31, 0.3);">${m.latencyMs} ms</span></td>
+                <td><span class="badge" style="background: rgba(255, 255, 255, 0.06); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.12); font-weight: 500;">${m.latencyMs} ms</span></td>
                 <td><div class="uptime-bars-wrap">${bars}</div></td>
                 <td style="text-align: right;"><span class="status-badge ${m.status === 'operational' ? 'is-operational' : 'is-degraded'}">${m.status === 'operational' ? 'Operational' : 'Degraded'}</span></td>
               </tr>

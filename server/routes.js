@@ -210,8 +210,6 @@ router.get('/api/status', async (req, res) => {
   try {
     const modelsList = await getAvailableModels()
     const uptimeBars = Array(30).fill(100)
-    uptimeBars[14] = 99.8
-    uptimeBars[22] = 99.9
 
     res.json({
       overall: 'operational',
