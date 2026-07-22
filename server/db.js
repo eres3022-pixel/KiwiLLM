@@ -180,12 +180,7 @@ export const fallbackModels = [
   { id: 'step-3.5-flash', provider: 'StepFun', type: 'Text', context: '128k', input: 0.09, output: 0.30, status: 'Live' },
   { id: 'step-3.5-flash-2603', provider: 'StepFun', type: 'Text', context: '128k', input: 0.09, output: 0.30, status: 'Live' },
   { id: 'step-3.7-flash', provider: 'StepFun', type: 'Text', context: '128k', input: 0.20, output: 1.15, status: 'Live' },
-  { id: 'step-image-edit-2', provider: 'OpenAI', type: 'Image', context: 'Provider default', input: 120, output: 120, status: 'Live' },
   { id: 'step-router-v1', provider: 'StepFun', type: 'Text', context: '128k', input: 1.0, output: 1.0, status: 'Live' },
-  { id: 'stepaudio-2.5-asr', provider: 'OpenAI', type: 'Text', context: 'Provider default', input: 120, output: 120, status: 'Live' },
-  { id: 'stepaudio-2.5-chat', provider: 'StepFun', type: 'Audio', context: '128k', input: 75, output: 75, status: 'Live' },
-  { id: 'stepaudio-2.5-realtime', provider: 'OpenAI', type: 'Text', context: 'Provider default', input: 15, output: 15, status: 'Live' },
-  { id: 'stepaudio-2.5-tts', provider: 'OpenAI', type: 'Text', context: 'Provider default', input: 120, output: 120, status: 'Live' },
 ]
 
 export let modelCache = { expiresAt: 0, models: fallbackModels }

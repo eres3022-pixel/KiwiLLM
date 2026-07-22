@@ -193,7 +193,8 @@ export function normalizeWorkerModel(model) {
     'step-image-edit-2',
     'stepaudio-2.5-realtime',
     'stepaudio-2.5-tts',
-    'stepaudio-2.5-asr'
+    'stepaudio-2.5-asr',
+    'stepaudio-2.5-chat'
   ]
   if (blocklist.includes(id)) return null
   const fallback = fallbackModels.find((item) => item.id === id)
