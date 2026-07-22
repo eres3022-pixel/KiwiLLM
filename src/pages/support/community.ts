@@ -21,5 +21,5 @@ export const communityPage: SupportPage = {
         text: 'Public community spaces are not the right place for account-specific billing, security, or credential issues. Use email support for private matters.',
       },
     ],
-  cta: { label: 'Open Telegram', href: 'https://t.me/KIWILLM' },
+  cta: { label: 'Open Telegram', href: 'https://t.me/kiwillmofficial' },
 }

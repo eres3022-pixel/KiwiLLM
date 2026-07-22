@@ -233,7 +233,7 @@ export const renderHome = () => `
         <a class="button button-ghost" href="/dashboard">Claim starter credits →</a>
       </div>
 
-      <p class="social-line reveal-item">@KIWILLM · t.me/KIWILLM</p>
+      <p class="social-line reveal-item">@KIWILLM · t.me/kiwillmofficial</p>
     </section>
 
     <footer class="site-footer reveal-scope" aria-label="Kiwi LLM footer">

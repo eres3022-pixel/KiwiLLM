@@ -106,7 +106,7 @@ export const renderTopUpPage = (pageHeader: string, topUpPlans: TopUpPlan[]) => 
         <p style="color: var(--text-1); font-size: 14.5px; margin-bottom: 28px; line-height: 1.6;">Automated gateway payments are currently undergoing maintenance. To add credits to your account instantly, contact our admin team via Discord or Telegram below:</p>
         <div style="display: flex; gap: 14px; justify-content: center;">
           <a href="https://discord.gg/RCZXtvyByj" target="_blank" rel="noopener noreferrer" class="button button-primary" style="flex: 1; padding: 12px; font-weight: 700;">Discord</a>
-          <a href="https://t.me/kiwillm" target="_blank" rel="noopener noreferrer" class="button button-primary" style="flex: 1; padding: 12px; background: #2AABEE; color: #fff; border-color: #2AABEE; font-weight: 700;">Telegram</a>
+          <a href="https://t.me/kiwillmofficial" target="_blank" rel="noopener noreferrer" class="button button-primary" style="flex: 1; padding: 12px; background: #2AABEE; color: #fff; border-color: #2AABEE; font-weight: 700;">Telegram</a>
         </div>
       </div>
     </div>

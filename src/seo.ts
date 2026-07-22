@@ -130,7 +130,7 @@ export const applySeo = (path: string) => {
     name: 'Kiwi LLM',
     url: siteUrl,
     logo: defaultImage,
-    sameAs: ['https://x.com/KIWILLM', 'https://t.me/KIWILLM'],
+    sameAs: ['https://x.com/KIWILLM', 'https://t.me/kiwillmofficial'],
   })
 
   upsertJsonLd('kiwi-software-jsonld', {
