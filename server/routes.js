@@ -668,9 +668,10 @@ router.get('/api/wallet/history', requireAuth, async (req, res) => {
 })
 
 router.get('/api/admin/recent-users', async (req, res) => {
+  const limit = Math.max(1, Math.min(50, parseInt(String(req.query.limit || '10'), 10)))
   if (pgPool) {
     try {
-      const result = await pgPool.query('SELECT name, email, draws_left, created_at FROM workspaces ORDER BY created_at DESC LIMIT 5')
+      const result = await pgPool.query('SELECT name, email, draws_left, created_at FROM workspaces ORDER BY created_at DESC LIMIT $1', [limit])
       return res.json({ users: result.rows })
     } catch (e) {
       return res.json({ error: e.message })
