@@ -1280,6 +1280,7 @@ if (isAccountPage) {
         }
 
         try {
+          if (!supabase) throw new Error('Supabase client is not configured.')
           const { data, error } = await supabase.auth.updateUser({
             data: {
               full_name: newName,
@@ -1343,6 +1344,7 @@ if (isAccountPage) {
         }
 
         try {
+          if (!supabase) throw new Error('Supabase client is not configured.')
           const { error } = await supabase.auth.updateUser({ password: newPass })
           if (error) throw error
 
