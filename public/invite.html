@@ -1345,14 +1345,25 @@
   }
   if (posterCopyBtn) {
     posterCopyBtn.addEventListener('click', function(){
-      navigator.clipboard.writeText(REFERRAL_LINK).then(function(){
-        posterCopyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
-        setTimeout(function(){ 
-          posterCopyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg><span id="posterCopyText">Copy Invite Link</span>'; 
-        }, 2000);
-        showToast('Invite link copied to clipboard!');
-      }).catch(function(){
-        showToast('Could not copy — please copy manually: ' + REFERRAL_LINK);
+      posterCopyBtn.innerHTML = '<span>Copying...</span>';
+      apiCall('invite-my-ref').then(function(res) {
+        var finalLink = (res && res.refCode) ? (window.location.origin + '/?ref=' + res.refCode) : REFERRAL_LINK;
+        REFERRAL_LINK = finalLink;
+        navigator.clipboard.writeText(finalLink).then(function(){
+          posterCopyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
+          setTimeout(function(){ 
+            updateCopyBtn();
+          }, 3000);
+          showCopyMsg("Referral link copied to clipboard!");
+        });
+      }).catch(function() {
+        navigator.clipboard.writeText(REFERRAL_LINK).then(function(){
+          posterCopyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
+          setTimeout(function(){ 
+            updateCopyBtn();
+          }, 3000);
+          showCopyMsg("Referral link copied to clipboard!");
+        });
       });
     });
   }

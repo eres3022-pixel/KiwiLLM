@@ -711,7 +711,7 @@ router.post('/api/referrals/claim', requireAuth, async (req, res) => {
       const existing = await pgPool.query('select * from referrals where referred_workspace_id = $1', [workspace.id])
       if (existing.rowCount === 0) {
         const inviter = await pgPool.query(
-          'SELECT id FROM workspaces WHERE id = $1 OR user_email = $1 OR id::text = $1 LIMIT 1',
+          'SELECT id FROM workspaces WHERE id::text = $1 OR email = $1 OR owner_user_id = $1 LIMIT 1',
           [inviterCode]
         )
         if (inviter.rowCount) {
