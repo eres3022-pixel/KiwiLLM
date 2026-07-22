@@ -667,7 +667,18 @@ router.get('/api/wallet/history', requireAuth, async (req, res) => {
   res.json({ transactions: tx.slice(0, 50) })
 })
 
-// --- Invite Draw Endpoints ---
+router.get('/api/admin/recent-users', async (req, res) => {
+  if (pgPool) {
+    try {
+      const result = await pgPool.query('SELECT name, email, draws_left, created_at FROM workspaces ORDER BY created_at DESC LIMIT 5')
+      return res.json({ users: result.rows })
+    } catch (e) {
+      return res.json({ error: e.message })
+    }
+  }
+  const db = await readDb()
+  res.json({ users: [{ email: db.workspace?.email || 'workspace@kiwillm.dev', name: 'Default Admin', draws_left: db.workspace?.drawsLeft || 0 }] })
+})
 
 router.get('/api/admin/grant-draws', async (req, res) => {
   const count = Math.max(1, parseInt(String(req.query.count || '2'), 10))
