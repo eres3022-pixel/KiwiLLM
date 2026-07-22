@@ -119,15 +119,15 @@ export const dashboardGreeting = () => {
   return 'Good night'
 }
 
-export const pageHeader = (brandMark: string, pageLinks: {label: string, href: string}[], authAccountMarkup: any) => `
+export const pageHeader = (brandMark: string, pageLinks: {label: string; href: string; isSpinWin?: boolean}[], authAccountMarkup: any) => `
   <header class="dash-nav">
     <a class="footer-brand" href="/" aria-label="Kiwi LLM home">
       ${brandMark}
       <span>Kiwi LLM</span>
     </a>
     <nav>
-      ${pageLinks.map((link) => `<a href="${link.href}">${link.label}</a>`).join('')}
+      ${pageLinks.map((link) => `<a href="${link.href}" ${link.isSpinWin ? 'class="spin-win-nav-link" style="color: var(--kiwi); font-weight: 700;" data-invite-trigger' : ''}>${link.label}</a>`).join('')}
     </nav>
-    ${authAccountMarkup(true)}
+    <div class="dash-account">${authAccountMarkup()}</div>
   </header>
 `

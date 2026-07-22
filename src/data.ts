@@ -50,9 +50,12 @@ export const footerColumns = [
 ]
 
 export const pageLinks = [
-  { label: 'Docs', href: '/docs' },
+  { label: 'Dashboard', href: '/dashboard' },
   { label: 'Models', href: '/models' },
-  { label: 'Top up', href: '/top-up' },
+  { label: 'Docs', href: '/docs' },
+  { label: 'Top Up', href: '/top-up' },
+  { label: 'Status', href: '/status' },
+  { label: '🎁 Spin & Win', href: '/invite', isSpinWin: true },
 ]
 
 export const dashboardPlaceholders = ['Credit balance', 'Requests', 'Tokens', 'Credits used']

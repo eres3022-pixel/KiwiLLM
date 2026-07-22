@@ -1,21 +1,10 @@
 import { brandMark, authAccountMarkup } from '../icons'
-import { modelFilters } from '../data'
+import { modelFilters, pageLinks } from '../data'
+import { pageHeader } from '../helpers'
 
 export const renderModels = () => `
   <main class="models-page">
-    <header class="dash-nav">
-      <a class="footer-brand" href="/" aria-label="Kiwi LLM home">
-        ${brandMark}
-        <span>Kiwi LLM</span>
-      </a>
-      <nav>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/models">Models</a>
-        <a href="/docs">Docs</a>
-        <a href="/">Home</a>
-      </nav>
-      ${authAccountMarkup(true)}
-    </header>
+    ${pageHeader(brandMark, pageLinks, authAccountMarkup)}
 
     <section class="models-shell">
       <div class="models-hero">

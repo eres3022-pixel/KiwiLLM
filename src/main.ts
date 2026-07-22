@@ -196,6 +196,13 @@ document.querySelectorAll<HTMLElement>('[data-auth-close]').forEach((button) => 
 
 const inviteModal = document.getElementById('invite-modal')
 const openInviteModal = () => {
+  if (!currentSession) {
+    if (authMessage) {
+      authMessage.textContent = 'Please sign in or create an account to play the Lucky Draw & win free API credits!'
+    }
+    openAuthModal()
+    return
+  }
   if (!inviteModal) return
   inviteModal.hidden = false
   document.body.style.overflow = 'hidden'
@@ -225,6 +232,18 @@ window.addEventListener('message', async (e) => {
   }
 
   if (e.data?.action?.startsWith('invite-')) {
+    if (!currentSession && e.data.action !== 'invite-status') {
+      if (authMessage) {
+        authMessage.textContent = 'Please sign in or create an account to claim free draws!'
+      }
+      openAuthModal()
+      const iframe = document.getElementById('invite-frame') as HTMLIFrameElement
+      if (iframe?.contentWindow) {
+        iframe.contentWindow.postMessage({ id: e.data.id, error: 'Unauthorized' }, '*')
+      }
+      return
+    }
+
     try {
       let res: any;
       if (e.data.action === 'invite-status') {
@@ -1104,6 +1123,28 @@ if (isTopUpPage) {
 
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement
+
+    // Intercept Spin & Win / Invite links
+    const inviteTrigger = target.closest<HTMLElement>('a[href="/invite"], [data-invite-trigger], .spin-win-nav-link')
+    if (inviteTrigger) {
+      e.preventDefault()
+      e.stopPropagation()
+      openInviteModal()
+      return
+    }
+
+    // Intercept Auth links for Dashboard / Usage when not logged in
+    const authProtectedLink = target.closest<HTMLElement>('a[href="/dashboard"], a[href="/usage"]')
+    if (authProtectedLink && !currentSession) {
+      e.preventDefault()
+      e.stopPropagation()
+      if (authMessage) {
+        authMessage.textContent = 'Please sign in or create an account to access your workspace dashboard.'
+      }
+      openAuthModal()
+      return
+    }
+
     const buyBtn = target.closest('.buy-topup-btn')
     if (buyBtn) {
       e.preventDefault()

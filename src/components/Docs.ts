@@ -1,18 +1,10 @@
 import { brandMark, authAccountMarkup } from '../icons'
-import { docsCodeBlocks } from '../data'
-import { codePanel } from '../helpers'
+import { docsCodeBlocks, pageLinks } from '../data'
+import { codePanel, pageHeader } from '../helpers'
 
 export const renderDocs = () => `
   <main class="docs-page">
-    <header class="docs-nav">
-      <a class="docs-logo" href="/">${brandMark}<span>Kiwi LLM</span></a>
-      <span>Docs</span>
-      <nav>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/models">Models</a>
-      </nav>
-      ${authAccountMarkup(true)}
-    </header>
+    ${pageHeader(brandMark, pageLinks, authAccountMarkup)}
 
     <article class="docs-container">
       <section class="docs-hero">

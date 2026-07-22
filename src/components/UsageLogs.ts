@@ -1,21 +1,10 @@
 import { brandMark, authAccountMarkup } from '../icons'
+import { pageLinks } from '../data'
+import { pageHeader } from '../helpers'
 
 export const renderUsageLogs = () => `
   <main class="dashboard-page">
-    <header class="dash-nav">
-      <a class="footer-brand" href="/" aria-label="Kiwi LLM home">
-        ${brandMark}
-        <span>Kiwi LLM</span>
-      </a>
-      <nav>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/usage" class="nav-active">Usage</a>
-        <a href="/models">Models</a>
-        <a href="/docs">Docs</a>
-        <a href="/top-up">Wallet</a>
-      </nav>
-      <div class="dash-account">${authAccountMarkup()}</div>
-    </header>
+    ${pageHeader(brandMark, pageLinks, authAccountMarkup)}
 
     <section class="dash-shell">
       <div class="dash-hero">
