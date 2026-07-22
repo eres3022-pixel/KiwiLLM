@@ -839,7 +839,25 @@ function pickPrize() {
 router.get('/api/invite/status', requireAuth, async (req, res) => {
   if (pgPool) {
     try {
-      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
+      const email = String(req.authUser?.email || '').toLowerCase().trim()
+      if (!email) return res.status(401).json({ error: 'No email in session' })
+
+      // Always look up workspace by email directly - most reliable
+      let workspaceResult = await pgPool.query('select * from workspaces where LOWER(email) = $1 order by created_at asc limit 1', [email])
+      if (!workspaceResult.rowCount) {
+        // First login - create workspace
+        const appUserResult = await pgPool.query(
+          `insert into app_users (email, name, role) values ($1, $2, 'user') on conflict (email) do update set name = excluded.name returning *`,
+          [email, req.authUser?.user_metadata?.full_name || req.authUser?.user_metadata?.name || email.split('@')[0]]
+        )
+        workspaceResult = await pgPool.query(
+          `insert into workspaces (name, email, owner_user_id, plan, credit_balance, credit_usd_balance, free_rpm_limit, free_rpd_limit, draws_left)
+           values ($1, $2, $3, 'free', 1000, 20.00, $4, $5, 0) returning *`,
+          [email.split('@')[0] + ' Workspace', email, appUserResult.rows[0].id, freeRpmLimit, freeRpdLimit]
+        )
+      }
+      const workspace = workspaceResult.rows[0]
+
       const prizeResult = await pgPool.query('select amount, created_at from prize_history where workspace_id = $1 order by created_at desc', [workspace.id])
       const referredResult = await pgPool.query(`
         select u.email, u.name
@@ -871,8 +889,9 @@ router.get('/api/invite/status', requireAuth, async (req, res) => {
 router.post('/api/invite/add-draw', requireAuth, async (req, res) => {
   if (pgPool) {
     try {
-      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
-      await pgPool.query('update workspaces set draws_left = draws_left + 1 where id = $1', [workspace.id])
+      const email = String(req.authUser?.email || '').toLowerCase().trim()
+      const result = await pgPool.query('update workspaces set draws_left = draws_left + 1 where LOWER(email) = $1 returning id', [email])
+      if (!result.rowCount) return res.status(404).json({ error: 'Workspace not found' })
       return res.json({ ok: true })
     } catch (err) {
       console.warn('PG add draw failed:', err.message)
@@ -887,7 +906,10 @@ router.post('/api/invite/add-draw', requireAuth, async (req, res) => {
 router.post('/api/invite/draw', requireAuth, async (req, res) => {
   if (pgPool) {
     try {
-      const workspace = await getDefaultWorkspace(pgPool, req.authUser)
+      const email = String(req.authUser?.email || '').toLowerCase().trim()
+      const wsResult = await pgPool.query('select * from workspaces where LOWER(email) = $1 limit 1', [email])
+      if (!wsResult.rowCount) return res.status(404).json({ error: 'Workspace not found' })
+      const workspace = wsResult.rows[0]
       if ((workspace.draws_left || 0) <= 0) {
         return res.status(400).json({ error: 'No draws left.' })
       }
