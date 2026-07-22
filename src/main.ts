@@ -47,6 +47,7 @@ const isTopUpPage = window.location.pathname === '/top-up'
 const isRefundPage = window.location.pathname === '/refund-policy'
 const isStatusPage = window.location.pathname === '/status'
 const isAccountPage = window.location.pathname === '/account'
+const isInvitePage = window.location.pathname === '/invite' || window.location.pathname === '/invite.html'
 const supportPage = supportPages[window.location.pathname]
 applySeo(window.location.pathname)
 app.innerHTML = isDocsPage
@@ -67,7 +68,16 @@ app.innerHTML = isDocsPage
                 ? renderStatusPage(pageHeader(brandMark, pageLinks, authAccountMarkup))
                 : isAccountPage
                   ? renderAccountPage(pageHeader(brandMark, pageLinks, authAccountMarkup))
-                  : isRefundPage
+                  : isInvitePage
+                    ? `
+                      <main class="invite-standalone-page">
+                        ${pageHeader(brandMark, pageLinks, authAccountMarkup)}
+                        <div style="width: 100%; height: calc(100vh - 70px); border: none; overflow: hidden;">
+                          <iframe src="/invite.html?v=2" style="width: 100%; height: 100%; border: none; background: transparent;"></iframe>
+                        </div>
+                      </main>
+                    `
+                    : isRefundPage
                     ? renderRefundPolicyPage()
                     : supportPage || window.location.pathname !== '/'
                     ? renderSupportPage(supportPage || pageNotFound, pageHeader(brandMark, pageLinks, authAccountMarkup))

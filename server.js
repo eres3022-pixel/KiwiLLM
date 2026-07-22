@@ -47,6 +47,10 @@ app.use((error, _req, res, next) => {
 
 app.use((req, res) => {
   if (existsSync(distPath) && !req.path.startsWith('/api') && !req.path.startsWith('/v1') && req.path !== '/health') {
+    if (req.path === '/invite' || req.path === '/invite.html') {
+      const inviteHtml = join(distPath, 'invite.html')
+      if (existsSync(inviteHtml)) return res.sendFile(inviteHtml)
+    }
     // Serve specific HTML files (e.g. /invite.html) directly if they exist
     const specificFile = join(distPath, req.path)
     if (req.path !== '/' && req.path.endsWith('.html') && existsSync(specificFile)) {

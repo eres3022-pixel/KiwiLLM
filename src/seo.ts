@@ -57,6 +57,10 @@ const routeSeo: Record<string, SeoConfig> = {
     description: 'Manage your Kiwi LLM account profile, display name, avatar, security, and authentication credentials.',
     noindex: true,
   },
+  '/invite': {
+    title: 'Spin & Win - Kiwi LLM 3D Lucky Draw',
+    description: 'Spin the Kiwi 3D Lucky Wheel to win up to $1,000 in free AI API credits for DeepSeek V4, Qwen 3.5, GLM 5.2, and Llama 3.3.',
+  },
   '/refund-policy': {
     title: refundPolicyTitle,
     description:
