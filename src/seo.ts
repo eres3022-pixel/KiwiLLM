@@ -52,6 +52,11 @@ const routeSeo: Record<string, SeoConfig> = {
     title: 'Kiwi LLM Status - Live Gateway Uptime & Model Latencies',
     description: 'Check real-time system status, API gateway health, response latencies, 30-day uptime bars, and operational health across all LLM models.',
   },
+  '/account': {
+    title: 'Account Settings - Kiwi LLM',
+    description: 'Manage your Kiwi LLM account profile, display name, avatar, security, and authentication credentials.',
+    noindex: true,
+  },
   '/refund-policy': {
     title: refundPolicyTitle,
     description:

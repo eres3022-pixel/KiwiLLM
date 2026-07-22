@@ -8,6 +8,7 @@ export const authAccountMarkup = (compact = false) => `
     </button>
     <div class="auth-menu" role="menu" data-auth-menu hidden>
       <a href="/dashboard" role="menuitem" data-auth-dashboard>Dashboard</a>
+      <a href="/account" role="menuitem" data-auth-account-link>Account Settings</a>
       <button type="button" role="menuitem" data-auth-signout>Sign out</button>
     </div>
   </div>

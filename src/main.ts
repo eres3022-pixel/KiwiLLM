@@ -5,6 +5,7 @@ import { pageNotFound, renderSupportPage, supportPages } from './pages/supportPa
 import { renderRefundPolicyPage } from './pages/refundPolicy'
 import { renderTopUpPage } from './pages/topUp'
 import { renderStatusPage } from './pages/status'
+import { renderAccountPage } from './pages/account'
 import { applySeo } from './seo'
 
 import { renderHome } from './components/Home'
@@ -45,6 +46,7 @@ const isUsagePage = window.location.pathname === '/usage'
 const isTopUpPage = window.location.pathname === '/top-up'
 const isRefundPage = window.location.pathname === '/refund-policy'
 const isStatusPage = window.location.pathname === '/status'
+const isAccountPage = window.location.pathname === '/account'
 const supportPage = supportPages[window.location.pathname]
 applySeo(window.location.pathname)
 app.innerHTML = isDocsPage
@@ -63,11 +65,13 @@ app.innerHTML = isDocsPage
               ? renderTopUpPage(pageHeader(brandMark, pageLinks, authAccountMarkup), topUpPlans)
               : isStatusPage
                 ? renderStatusPage(pageHeader(brandMark, pageLinks, authAccountMarkup))
-                : isRefundPage
-                  ? renderRefundPolicyPage()
-                  : supportPage || window.location.pathname !== '/'
-                  ? renderSupportPage(supportPage || pageNotFound, pageHeader(brandMark, pageLinks, authAccountMarkup))
-                  : renderHome()
+                : isAccountPage
+                  ? renderAccountPage(pageHeader(brandMark, pageLinks, authAccountMarkup))
+                  : isRefundPage
+                    ? renderRefundPolicyPage()
+                    : supportPage || window.location.pathname !== '/'
+                    ? renderSupportPage(supportPage || pageNotFound, pageHeader(brandMark, pageLinks, authAccountMarkup))
+                    : renderHome()
 
 document.body.insertAdjacentHTML(
   'beforeend',
@@ -1197,6 +1201,176 @@ if (isStatusPage) {
   }
 
   hydrateStatus()
+}
+
+if (isAccountPage) {
+  const hydrateAccountPage = () => {
+    if (!currentSession) {
+      if (authMessage) {
+        authMessage.textContent = 'Please sign in or create an account to access account settings.'
+      }
+      openAuthModal()
+      return
+    }
+
+    const profile = getAuthProfile(currentSession.user)
+    const nameInput = document.getElementById('account-name-input') as HTMLInputElement
+    const avatarInput = document.getElementById('account-avatar-input') as HTMLInputElement
+    const emailInput = document.getElementById('account-email-input') as HTMLInputElement
+    const heroName = document.getElementById('account-hero-name')
+    const heroEmail = document.getElementById('account-hero-email')
+    const uuidDisplay = document.getElementById('account-uuid-display')
+    const avatarHero = document.getElementById('account-avatar-hero')
+    const avatarPreviewBox = document.getElementById('account-avatar-preview-box')
+
+    if (nameInput) nameInput.value = profile.name
+    if (avatarInput) avatarInput.value = profile.avatarUrl
+    if (emailInput) emailInput.value = profile.email
+    if (heroName) heroName.textContent = profile.name
+    if (heroEmail) heroEmail.textContent = profile.email
+    if (uuidDisplay) uuidDisplay.textContent = currentSession.user.id || 'N/A'
+
+    const updateAvatarPreviewUI = (url: string, name: string) => {
+      const initial = initialsFor(name)
+      if (avatarHero) {
+        if (url) {
+          avatarHero.style.backgroundImage = `url("${url}")`
+          avatarHero.style.backgroundSize = 'cover'
+          avatarHero.innerHTML = ''
+        } else {
+          avatarHero.style.backgroundImage = ''
+          avatarHero.innerHTML = `<span id="account-avatar-initials">${initial}</span>`
+        }
+      }
+      if (avatarPreviewBox) {
+        if (url) {
+          avatarPreviewBox.style.backgroundImage = `url("${url}")`
+          avatarPreviewBox.style.backgroundSize = 'cover'
+          avatarPreviewBox.innerHTML = ''
+        } else {
+          avatarPreviewBox.style.backgroundImage = ''
+          avatarPreviewBox.innerHTML = `<span>${initial}</span>`
+        }
+      }
+    }
+
+    updateAvatarPreviewUI(profile.avatarUrl, profile.name)
+
+    if (avatarInput) {
+      avatarInput.addEventListener('input', () => {
+        updateAvatarPreviewUI(avatarInput.value.trim(), nameInput?.value || profile.name)
+      })
+    }
+
+    // Save Profile Form Handler
+    const profileForm = document.getElementById('account-profile-form') as HTMLFormElement
+    const saveBtn = document.getElementById('save-profile-btn') as HTMLButtonElement
+    const statusMsg = document.getElementById('profile-status-message')
+
+    if (profileForm) {
+      profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        const newName = nameInput.value.trim()
+        const newAvatar = avatarInput.value.trim()
+
+        if (!newName) return
+        if (saveBtn) {
+          saveBtn.textContent = 'Saving...'
+          saveBtn.setAttribute('disabled', 'true')
+        }
+
+        try {
+          const { data, error } = await supabase.auth.updateUser({
+            data: {
+              full_name: newName,
+              avatar_url: newAvatar,
+            },
+          })
+
+          if (error) throw error
+
+          if (data.user && currentSession) {
+            currentSession.user = data.user
+            setCurrentSession(currentSession)
+            syncAuthUi(currentSession)
+            updateAvatarPreviewUI(newAvatar, newName)
+          }
+
+          if (statusMsg) {
+            statusMsg.style.display = 'block'
+            statusMsg.style.color = '#10b981'
+            statusMsg.textContent = '✓ Profile updated successfully!'
+            setTimeout(() => { statusMsg.style.display = 'none' }, 4000)
+          }
+        } catch (err: any) {
+          if (statusMsg) {
+            statusMsg.style.display = 'block'
+            statusMsg.style.color = '#ef4444'
+            statusMsg.textContent = err.message || 'Failed to update profile'
+          }
+        } finally {
+          if (saveBtn) {
+            saveBtn.textContent = 'Save Profile Changes'
+            saveBtn.removeAttribute('disabled')
+          }
+        }
+      })
+    }
+
+    // Update Password Form Handler
+    const passwordForm = document.getElementById('account-password-form') as HTMLFormElement
+    const updatePassBtn = document.getElementById('update-password-btn') as HTMLButtonElement
+    const passStatusMsg = document.getElementById('password-status-message')
+
+    if (passwordForm) {
+      passwordForm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        const newPass = (document.getElementById('account-new-password') as HTMLInputElement).value
+        const confirmPass = (document.getElementById('account-confirm-password') as HTMLInputElement).value
+
+        if (newPass !== confirmPass) {
+          if (passStatusMsg) {
+            passStatusMsg.style.display = 'block'
+            passStatusMsg.style.color = '#ef4444'
+            passStatusMsg.textContent = 'Passwords do not match.'
+          }
+          return
+        }
+
+        if (updatePassBtn) {
+          updatePassBtn.textContent = 'Updating...'
+          updatePassBtn.setAttribute('disabled', 'true')
+        }
+
+        try {
+          const { error } = await supabase.auth.updateUser({ password: newPass })
+          if (error) throw error
+
+          passwordForm.reset()
+          if (passStatusMsg) {
+            passStatusMsg.style.display = 'block'
+            passStatusMsg.style.color = '#10b981'
+            passStatusMsg.textContent = '✓ Password updated successfully!'
+            setTimeout(() => { passStatusMsg.style.display = 'none' }, 4000)
+          }
+        } catch (err: any) {
+          if (passStatusMsg) {
+            passStatusMsg.style.display = 'block'
+            passStatusMsg.style.color = '#ef4444'
+            passStatusMsg.textContent = err.message || 'Failed to update password'
+          }
+        } finally {
+          if (updatePassBtn) {
+            updatePassBtn.textContent = 'Update Password'
+            updatePassBtn.removeAttribute('disabled')
+          }
+        }
+      })
+    }
+  }
+
+  hydrateAccountPage()
+  window.addEventListener('kiwi-auth-synced', hydrateAccountPage)
 }
 
 if (isPlaygroundPage) {
