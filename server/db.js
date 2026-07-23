@@ -826,7 +826,8 @@ export async function getAdminOverview() {
       select
         coalesce(sum(requests), 0)::int as requests,
         coalesce(sum(total_tokens), 0)::bigint as tokens,
-        coalesce(sum(credits_used), 0)::numeric as credits
+        coalesce(sum(credits_used), 0)::numeric as credits,
+        coalesce(sum(usd_estimate), 0)::numeric as usd
       from daily_usage
     `),
     pgPool.query(`
@@ -889,7 +890,7 @@ export async function getAdminOverview() {
       revokedKeys: Number(keyCounts.rows[0]?.revoked || 0),
       requests30d: Number(usageTotals.rows[0]?.requests || 0),
       tokens30d: Number(usageTotals.rows[0]?.tokens || 0),
-      creditsUsed30d: Number(usageTotals.rows[0]?.usd || 0),
+      creditsUsed30d: Number(modelUsage.rows.reduce((acc, r) => acc + Number(r.spend || 0), 0) || usageTotals.rows[0]?.usd || 0),
       creditsBought: 0,
       revenue: 0,
       playgroundRuns: Number(runs.rows.length || 0),
