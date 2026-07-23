@@ -29,8 +29,8 @@ export function getRotatedWorkerApiKey() {
 export const workerApiKey = workerApiKeys[0] || ''
 export const kiwiApiPrefix = process.env.KIWI_API_KEY_PREFIX || 'Kiwi'
 export const workspaceEmail = process.env.KIWI_WORKSPACE_EMAIL || 'workspace@kiwillm.dev'
-export const freeRpmLimit = Number(process.env.KIWI_FREE_RPM || 10)
-export const freeRpdLimit = Number(process.env.KIWI_FREE_RPD || 200)
+export const freeRpmLimit = Number(process.env.KIWI_FREE_RPM || 30)
+export const freeRpdLimit = Number(process.env.KIWI_FREE_RPD || 500)
 export const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 export const supabasePublishableKey =
   process.env.SUPABASE_PUBLISHABLE_KEY ||

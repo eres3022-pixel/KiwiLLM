@@ -293,14 +293,26 @@ export async function proxyWorker(req, res, workerPath) {
   const key = await findKiwiKey(userKey)
 
   if (!key) {
-    return res.status(401).json({ error: `Missing or invalid ${kiwiApiPrefix} API key.` })
+    return res.status(401).json({
+      error: {
+        message: `Missing or invalid ${kiwiApiPrefix} API key. Please check your key at https://kiwillm.in/dashboard`,
+        type: 'invalid_request_error',
+        code: 'invalid_api_key'
+      }
+    })
   }
 
   if (pgPool) {
     const rateLimit = await checkPgFreeRateLimit(key)
     if (rateLimit) {
       res.set('Retry-After', String(rateLimit.retryAfter))
-      return res.status(rateLimit.status).json({ error: rateLimit.error })
+      return res.status(rateLimit.status).json({
+        error: {
+          message: rateLimit.error,
+          type: 'rate_limit_error',
+          code: 'rate_limit_exceeded'
+        }
+      })
     }
   } else {
     const db = await readDb()
@@ -308,7 +320,13 @@ export async function proxyWorker(req, res, workerPath) {
     if (rateLimit) {
       res.set('Retry-After', String(rateLimit.retryAfter))
       await writeDb(db)
-      return res.status(rateLimit.status).json({ error: rateLimit.error })
+      return res.status(rateLimit.status).json({
+        error: {
+          message: rateLimit.error,
+          type: 'rate_limit_error',
+          code: 'rate_limit_exceeded'
+        }
+      })
     }
     await writeDb(db)
   }
