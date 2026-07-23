@@ -483,11 +483,13 @@ const rateLimitCache = new Map()
 export async function checkPgFreeRateLimit(key) {
   if (!pgPool) return null
 
-  // Check if credit balance is empty
-  const usdBalance = Number(key.credit_usd_balance ?? 20)
-  const creditBalance = Number(key.credit_balance ?? 1000)
-  if (usdBalance <= 0 && creditBalance <= 0) {
-    return { status: 402, error: 'Insufficient credit balance. Please spin to win free credits or top up on dashboard.', retryAfter: 0 }
+  // Air-tight credit security: block if balance <= 0 (unless admin master key)
+  if ((key.plan || 'free') !== 'admin') {
+    const usdBalance = Number(key.credit_usd_balance || 0)
+    const creditBalance = Number(key.credit_balance || 0)
+    if (usdBalance <= 0 && creditBalance <= 0) {
+      return { status: 402, error: 'Insufficient credit balance. Please spin to win free credits or top up on dashboard.', retryAfter: 0 }
+    }
   }
 
   const rpm = 10 // Strictly 10 RPM free limit
