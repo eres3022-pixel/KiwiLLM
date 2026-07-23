@@ -418,7 +418,7 @@ export async function findPgKey(value = '') {
 
   const result = await pgPool.query(
     `
-      select api_keys.*, workspaces.free_rpm_limit, workspaces.free_rpd_limit
+      select api_keys.*, workspaces.free_rpm_limit, workspaces.free_rpd_limit, workspaces.credit_balance, workspaces.credit_usd_balance
       from api_keys
       join workspaces on workspaces.id = api_keys.workspace_id
       where api_keys.key_hash = $1 and api_keys.revoked_at is null
@@ -481,9 +481,16 @@ export async function createPgKey({ name, selectedModels, authUser }) {
 const rateLimitCache = new Map()
 
 export async function checkPgFreeRateLimit(key) {
-  if (!pgPool || (key.plan || 'free') !== 'free') return null
+  if (!pgPool) return null
 
-  const rpm = Number(key.free_rpm_limit || freeRpmLimit)
+  // Check if credit balance is empty
+  const usdBalance = Number(key.credit_usd_balance ?? 20)
+  const creditBalance = Number(key.credit_balance ?? 1000)
+  if (usdBalance <= 0 && creditBalance <= 0) {
+    return { status: 402, error: 'Insufficient credit balance. Please spin to win free credits or top up on dashboard.', retryAfter: 0 }
+  }
+
+  const rpm = 10 // Strictly 10 RPM free limit
   const now = Date.now()
   
   if (!rateLimitCache.has(key.id)) {
@@ -494,7 +501,7 @@ export async function checkPgFreeRateLimit(key) {
   timestamps = timestamps.filter((timestamp) => now - timestamp < 60000)
   
   if (timestamps.length >= rpm) {
-    return { status: 429, error: `Free plan limit reached: ${rpm} requests per minute.`, retryAfter: 60 }
+    return { status: 429, error: `Rate limit reached: ${rpm} requests per minute.`, retryAfter: 60 }
   }
 
   timestamps.push(now)
