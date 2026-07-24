@@ -215,43 +215,7 @@ export function normalizeWorkerModel(model) {
 }
 
 export async function getAvailableModels() {
-  if (Date.now() < modelCache.expiresAt) return modelCache.models
-
-  const allModels = new Map()
-
-  await Promise.all(
-    gateways.map(async (gateway) => {
-      try {
-        const activeKey = getRotatedKeyForGateway(gateway)
-        const response = await fetch(`${gateway.url}/v1/models`, {
-          headers: activeKey ? { Authorization: `Bearer ${activeKey}` } : {},
-        })
-        if (response.ok) {
-          const payload = await response.json()
-          if (Array.isArray(payload.data)) {
-            payload.data.forEach((m) => {
-              const normalized = normalizeWorkerModel(m)
-              if (normalized && !allModels.has(normalized.id)) {
-                allModels.set(normalized.id, normalized)
-              }
-            })
-          }
-        }
-      } catch (error) {
-        console.warn(`Could not load worker models from ${gateway.url}: ${error instanceof Error ? error.message : 'unknown error'}`)
-      }
-    })
-  )
-
-  if (allModels.size > 0) {
-    modelCache.expiresAt = Date.now() + 5 * 60 * 1000
-    modelCache.models = Array.from(allModels.values()).sort((a, b) => a.id.localeCompare(b.id))
-  } else {
-    modelCache.expiresAt = Date.now() + 60 * 1000
-    modelCache.models = modelCache.models.length ? modelCache.models : fallbackModels
-  }
-
-  return modelCache.models
+  return fallbackModels
 }
 
 export function recordMeteredUsage(db, { keyValue, model, tokens, requests = 1 }) {
