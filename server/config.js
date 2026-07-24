@@ -42,8 +42,12 @@ export function getRotatedKeyForGateway(gateway) {
   return key
 }
 
-// Aliases for backward compatibility in config response
+// Aliases for backward compatibility in config response and routes
 export const workerBaseUrl = gateways[0]?.url || 'https://api.hcnsec.cn'
+export const workerApiKey = gateways[0]?.keys?.[0] || ''
+export function getRotatedWorkerApiKey() {
+  return getRotatedKeyForGateway(gateways[0])
+}
 export const kiwiApiPrefix = process.env.KIWI_API_KEY_PREFIX || 'Kiwi'
 export const workspaceEmail = process.env.KIWI_WORKSPACE_EMAIL || 'workspace@kiwillm.dev'
 export const freeRpmLimit = Number(process.env.KIWI_FREE_RPM || 10)
