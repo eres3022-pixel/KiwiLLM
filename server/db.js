@@ -177,7 +177,6 @@ export const fallbackModels = [
   { id: 'kat-coder-pro-v2.5', provider: 'Kat', type: 'Code', context: '128k', input: 0.74, output: 2.96, status: 'Live' },
   { id: 'Kimi-K2.6', provider: 'Moonshot', type: 'Text', context: '128k', input: 0.95, output: 4.00, status: 'Live' },
   { id: 'MiniMax-M2.7', provider: 'MiniMax', type: 'Text', context: '128k', input: 0.3, output: 1.2, status: 'Live' },
-  { id: 'MiniMax-M3', provider: 'MiniMax', type: 'Reasoning', context: '128k', input: 0.30, output: 1.20, status: 'Live' },
   { id: 'minimaxai/minimax-m2.7', provider: 'MiniMax', type: 'Text', context: '128k', input: 0.14, output: 0.14, status: 'Live' },
   { id: 'mistralai/mistral-small-4-119b-2603', provider: 'Mistral', type: 'Text', context: '32k', input: 2.00, output: 6.00, status: 'Live' },
   { id: 'mistralai/mistral-nemotron', provider: 'NVIDIA', type: 'Code', context: '128k', input: 0.15, output: 0.15, status: 'Live' },
@@ -196,10 +195,7 @@ export const fallbackModels = [
   { id: 'openai/gpt-oss-20b', provider: 'OpenAI', type: 'Text', context: '128k', input: 0.20, output: 0.40, status: 'Live' },
 
   { id: 'Qwen3-Coder-Next-FP8', provider: 'Alibaba', type: 'Code', context: '128k', input: 0.11, output: 0.80, status: 'Live' },
-  { id: 'Qwen3.5-397B-A17B', provider: 'Alibaba', type: 'Reasoning', context: '128k', input: 0.39, output: 0.90, status: 'Live' },
   { id: 'Qwen3.6-35B-A3B', provider: 'Alibaba', type: 'Text', context: '128k', input: 0.14, output: 0.90, status: 'Live' },
-  { id: 'sensenova-6.7-flash-lite', provider: 'SenseTime', type: 'Text', context: '128k', input: 0.01, output: 0.02, status: 'Live' },
-  { id: 'Spark-X2-Flash', provider: 'iFlytek', type: 'Text', context: '128k', input: 0.28, output: 0.28, status: 'Live' },
   { id: 'step-3.5-flash', provider: 'StepFun', type: 'Text', context: '128k', input: 0.09, output: 0.30, status: 'Live' },
   { id: 'step-3.5-flash-2603', provider: 'StepFun', type: 'Text', context: '128k', input: 0.09, output: 0.30, status: 'Live' },
   { id: 'step-3.7-flash', provider: 'StepFun', type: 'Text', context: '128k', input: 0.20, output: 1.15, status: 'Live' },
