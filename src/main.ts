@@ -111,6 +111,22 @@ document.body.insertAdjacentHTML(
     <div class="invite-modal" id="invite-modal" hidden>
       <iframe src="/invite.html?v=2" id="invite-frame" style="width: 100%; height: 100%; border: none; background: transparent;"></iframe>
     </div>
+
+    <div class="referral-popup-overlay" id="referral-daily-popup" role="dialog" aria-modal="true" aria-labelledby="referral-popup-title" hidden>
+      <div class="referral-popup">
+        <button class="referral-popup-close" id="referral-popup-close" aria-label="Close">&times;</button>
+        <img class="referral-popup-img" src="/referral-popup-banner.jpg" alt="KiwiLLM — One API. Every Model. Infinite Possibilities." />
+        <div class="referral-popup-body">
+          <span class="referral-popup-tag">🎰 Free Spin</span>
+          <h2 class="referral-popup-title" id="referral-popup-title">Invite a friend, you both get a free spin</h2>
+          <p class="referral-popup-desc">Share your invite link — when your friend signs up, you both get a spin on the wheel to win up to <strong style="color:#caff1f">$1000 in credits</strong>. No catch.</p>
+          <div class="referral-popup-actions">
+            <button class="referral-popup-later" id="referral-popup-later">Maybe Later</button>
+            <button class="referral-popup-cta" id="referral-popup-cta">Invite Now →</button>
+          </div>
+        </div>
+      </div>
+    </div>
   `,
 )
 
@@ -228,6 +244,48 @@ const closeInviteModal = () => {
   document.body.style.overflow = ''
   window.setTimeout(() => { inviteModal.hidden = true }, 300)
 }
+
+// ── Referral Daily Popup ────────────────────────────────────────────────
+const REFERRAL_POPUP_KEY = 'kiwi_ref_popup_dismissed'
+const REFERRAL_POPUP_COOLDOWN = 24 * 60 * 60 * 1000 // 24 hours
+
+const referralPopupEl = document.getElementById('referral-daily-popup') as HTMLElement | null
+
+const closeReferralPopup = (andOpenInvite = false) => {
+  if (!referralPopupEl) return
+  referralPopupEl.classList.remove('is-open')
+  document.body.style.overflow = ''
+  window.setTimeout(() => { referralPopupEl.hidden = true }, 350)
+  try { localStorage.setItem(REFERRAL_POPUP_KEY, String(Date.now())) } catch(e) {}
+  if (andOpenInvite) window.setTimeout(openInviteModal, 380)
+}
+
+const maybeShowReferralPopup = () => {
+  if (!referralPopupEl) return
+  // Only show on homepage
+  if (window.location.pathname !== '/') return
+  try {
+    const dismissed = Number(localStorage.getItem(REFERRAL_POPUP_KEY) || 0)
+    if (Date.now() - dismissed < REFERRAL_POPUP_COOLDOWN) return
+  } catch(e) {}
+  window.setTimeout(() => {
+    if (!referralPopupEl) return
+    referralPopupEl.hidden = false
+    document.body.style.overflow = 'hidden'
+    requestAnimationFrame(() => referralPopupEl.classList.add('is-open'))
+  }, 1500)
+}
+
+document.getElementById('referral-popup-close')?.addEventListener('click', () => closeReferralPopup(false))
+document.getElementById('referral-popup-later')?.addEventListener('click', () => closeReferralPopup(false))
+document.getElementById('referral-popup-cta')?.addEventListener('click', () => closeReferralPopup(true))
+
+// Close on overlay backdrop click
+referralPopupEl?.addEventListener('click', (e) => {
+  if (e.target === referralPopupEl) closeReferralPopup(false)
+})
+
+maybeShowReferralPopup()
 
 document.querySelectorAll<HTMLElement>('.dash-invite-card').forEach((btn) => {
   btn.addEventListener('click', (e) => {

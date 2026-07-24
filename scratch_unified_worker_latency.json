@@ -1,0 +1,182 @@
+{
+  "workerUrl": "https://unified-ai-worker.rutv.workers.dev",
+  "timestamp": "2026-07-23T10:50:48.765Z",
+  "totalModelsCount": 144,
+  "workingCount": 9,
+  "failedCount": 21,
+  "working": [
+    {
+      "model": "chatai-gpt-4o-mini",
+      "latencyMs": 2202,
+      "snippet": "{\"id\":\"270d934c-c366-4d0a-bb5a-4e8110397b77\",\"object\":\"chat.completion\",\"created\":1784803864,\"model\""
+    },
+    {
+      "model": "chatai-gpt-4o",
+      "latencyMs": 2482,
+      "snippet": "{\"id\":\"bb182d13-8023-4d09-86ee-9cb7bb1da44e\",\"object\":\"chat.completion\",\"created\":1784803866,\"model\""
+    },
+    {
+      "model": "chatai-gpt-3.5-turbo",
+      "latencyMs": 3566,
+      "snippet": "{\"id\":\"99004370-a9e2-4254-9617-bba24b112eed\",\"object\":\"chat.completion\",\"created\":1784803870,\"model\""
+    },
+    {
+      "model": "chatai-claude-sonnet",
+      "latencyMs": 1801,
+      "snippet": "{\"id\":\"2683edbc-7eb8-4e52-9796-7a6fbc49cc0a\",\"object\":\"chat.completion\",\"created\":1784803872,\"model\""
+    },
+    {
+      "model": "chatai-llama-3.1-8b",
+      "latencyMs": 3312,
+      "snippet": "{\"id\":\"5b6a49db-6a45-461a-aec5-a2f2b8e21674\",\"object\":\"chat.completion\",\"created\":1784803875,\"model\""
+    },
+    {
+      "model": "chatbotai-gpt-3.5-turbo",
+      "latencyMs": 1331,
+      "snippet": "{\"id\":\"8b9024bd-aa17-45ba-8924-af6fb0ae8c7f\",\"object\":\"chat.completion\",\"created\":1784803877,\"model\""
+    },
+    {
+      "model": "chatbotai-gpt-4o-mini",
+      "latencyMs": 2007,
+      "snippet": "{\"id\":\"a5ba6017-31e4-4de0-b3c8-982346768238\",\"object\":\"chat.completion\",\"created\":1784803878,\"model\""
+    },
+    {
+      "model": "chatbotai-gpt-4o",
+      "latencyMs": 1805,
+      "snippet": "{\"id\":\"3e2a43e7-8e9a-4047-b31e-3d6763259d87\",\"object\":\"chat.completion\",\"created\":1784803880,\"model\""
+    },
+    {
+      "model": "chatbotai-claude-3-sonnet",
+      "latencyMs": 2561,
+      "snippet": "{\"id\":\"5fcfd641-b95b-4cd9-9671-0aef56eaf542\",\"object\":\"chat.completion\",\"created\":1784803883,\"model\""
+    }
+  ],
+  "failed": [
+    {
+      "model": "llama-3.2-1b",
+      "statusCode": 502,
+      "latencyMs": 920,
+      "error": "{\"error\":\"All providers failed for llama-3.2-1b. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-ff7d298f-5"
+    },
+    {
+      "model": "llama-3.1-8b",
+      "statusCode": 502,
+      "latencyMs": 1074,
+      "error": "{\"error\":\"All providers failed for llama-3.1-8b. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-76896af5-c"
+    },
+    {
+      "model": "llama-3.1-8b-awq",
+      "statusCode": 502,
+      "latencyMs": 298,
+      "error": "{\"error\":\"All providers failed for llama-3.1-8b-awq. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-7a32cf"
+    },
+    {
+      "model": "llama-3.1-8b-fp8",
+      "statusCode": 502,
+      "latencyMs": 747,
+      "error": "{\"error\":\"All providers failed for llama-3.1-8b-fp8. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-ed784e"
+    },
+    {
+      "model": "llama-3.3-70b-fp8",
+      "statusCode": 502,
+      "latencyMs": 312,
+      "error": "{\"error\":\"All providers failed for llama-3.3-70b-fp8. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-9802c"
+    },
+    {
+      "model": "llama-3-8b",
+      "statusCode": 502,
+      "latencyMs": 250,
+      "error": "{\"error\":\"All providers failed for llama-3-8b. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-c5a45e8d-3e6"
+    },
+    {
+      "model": "llama-3-8b-awq",
+      "statusCode": 502,
+      "latencyMs": 261,
+      "error": "{\"error\":\"All providers failed for llama-3-8b-awq. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-ca5483c0"
+    },
+    {
+      "model": "llama-4-scout",
+      "statusCode": 502,
+      "latencyMs": 964,
+      "error": "{\"error\":\"All providers failed for llama-4-scout. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-601bca4e-"
+    },
+    {
+      "model": "llama-2-7b",
+      "statusCode": 502,
+      "latencyMs": 268,
+      "error": "{\"error\":\"All providers failed for llama-2-7b. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-95f498c4-47e"
+    },
+    {
+      "model": "llama-guard-3",
+      "statusCode": 502,
+      "latencyMs": 310,
+      "error": "{\"error\":\"All providers failed for llama-guard-3. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-d200ee3f-"
+    },
+    {
+      "model": "qwq-32b",
+      "statusCode": 502,
+      "latencyMs": 273,
+      "error": "{\"error\":\"All providers failed for qwq-32b. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-69eb1ce1-c2ab-4"
+    },
+    {
+      "model": "qwen-2.5-coder",
+      "statusCode": 502,
+      "latencyMs": 265,
+      "error": "{\"error\":\"All providers failed for qwen-2.5-coder. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-37d21a45"
+    },
+    {
+      "model": "gemma-3-12b",
+      "statusCode": 502,
+      "latencyMs": 276,
+      "error": "{\"error\":\"All providers failed for gemma-3-12b. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-5ad3ee59-c7"
+    },
+    {
+      "model": "phi-2",
+      "statusCode": 502,
+      "latencyMs": 260,
+      "error": "{\"error\":\"All providers failed for phi-2. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-080e4931-1a49-43f"
+    },
+    {
+      "model": "llama",
+      "statusCode": 502,
+      "latencyMs": 284,
+      "error": "{\"error\":\"All providers failed for llama. Last error: HTTP 403: {\\\"id\\\":\\\"chatcmpl-fda637d8-de19-48d"
+    },
+    {
+      "model": "gpt-oss-120b",
+      "statusCode": 502,
+      "latencyMs": 1556,
+      "error": "{\"error\":\"All providers failed for gpt-oss-120b. Last error: HTTP 404: {\\\"error\\\":\\\"Model 'gpt-oss-1"
+    },
+    {
+      "model": "gpt-oss-20b",
+      "statusCode": 502,
+      "latencyMs": 355,
+      "error": "{\"error\":\"All providers failed for gpt-oss-20b. Last error: HTTP 503: {\\\"error\\\":{\\\"code\\\":\\\"model_n"
+    },
+    {
+      "model": "gpt-5-nano",
+      "statusCode": 502,
+      "latencyMs": 1384,
+      "error": "{\"error\":\"All providers failed for gpt-5-nano. Last error: HTTP 404: {\\\"error\\\":\\\"Model 'gpt-5-nano'"
+    },
+    {
+      "model": "claude-sonnet",
+      "statusCode": 502,
+      "latencyMs": 3643,
+      "error": "{\"error\":\"All providers failed for claude-sonnet. Last error: HTTP 429: {\\\"error\\\":{\\\"code\\\":\\\"\\\",\\\""
+    },
+    {
+      "model": "claude-3-sonnet",
+      "statusCode": 502,
+      "latencyMs": 2016,
+      "error": "{\"error\":\"All providers failed for claude-3-sonnet. Last error: HTTP 429: {\\\"error\\\":{\\\"code\\\":\\\"\\\","
+    },
+    {
+      "model": "claude-sonnet-4.5",
+      "statusCode": 502,
+      "latencyMs": 204,
+      "error": "{\"error\":\"All providers failed for claude-sonnet-4.5. Last error: HTTP 429: {\\\"error\\\":{\\\"code\\\":\\\"\\"
+    }
+  ]
+}
