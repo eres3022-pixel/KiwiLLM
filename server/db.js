@@ -192,14 +192,8 @@ export const fallbackModels = [
   { id: 'google/gemma-4-31b-it', provider: 'Google', type: 'Text', context: '32k', input: 0.13, output: 0.35, status: 'Live' },
 
   { id: 'llama-3.3-70b-versatile', provider: 'Meta', type: 'Text', context: '128k', input: 0.59, output: 0.79, status: 'Live' },
-  { id: 'llama-3.1-8b-instant', provider: 'Meta', type: 'Text', context: '128k', input: 0.05, output: 0.08, status: 'Live' },
-  { id: 'groq/compound', provider: 'Compound', type: 'Reasoning', context: '128k', input: 0.20, output: 0.50, status: 'Live' },
-  { id: 'groq/compound-mini', provider: 'Compound', type: 'Reasoning', context: '128k', input: 0.10, output: 0.20, status: 'Live' },
   { id: 'openai/gpt-oss-120b', provider: 'OpenAI', type: 'Text', context: '128k', input: 0.90, output: 2.00, status: 'Live' },
   { id: 'openai/gpt-oss-20b', provider: 'OpenAI', type: 'Text', context: '128k', input: 0.20, output: 0.40, status: 'Live' },
-  { id: 'openai/gpt-oss-safeguard-20b', provider: 'Safety', type: 'Text', context: '128k', input: 0.10, output: 0.20, status: 'Live' },
-  { id: 'meta-llama/llama-prompt-guard-2-22m', provider: 'Safety', type: 'Text', context: '128k', input: 0.01, output: 0.01, status: 'Live' },
-  { id: 'meta-llama/llama-prompt-guard-2-86m', provider: 'Safety', type: 'Text', context: '128k', input: 0.01, output: 0.01, status: 'Live' },
 
   { id: 'Qwen3-Coder-Next-FP8', provider: 'Alibaba', type: 'Code', context: '128k', input: 0.11, output: 0.80, status: 'Live' },
   { id: 'Qwen3.5-397B-A17B', provider: 'Alibaba', type: 'Reasoning', context: '128k', input: 0.39, output: 0.90, status: 'Live' },
