@@ -1,6 +1,6 @@
 import crypto from 'node:crypto'
 import {
-  workerBaseUrl, workerApiKey, getRotatedWorkerApiKey, kiwiApiPrefix, freeRpmLimit, freeRpdLimit
+  gateways, getRotatedKeyForGateway, kiwiApiPrefix, freeRpmLimit, freeRpdLimit, workerBaseUrl
 } from './config.js'
 import {
   fallbackModels, modelCache, pgPool, memoryDb, readDb, writeDb, checkPgFreeRateLimit, recordPgUsage, findPgKey
@@ -198,6 +198,10 @@ export function normalizeWorkerModel(model) {
   ]
   if (blocklist.includes(id)) return null
   const fallback = fallbackModels.find((item) => item.id === id)
+  
+  // STRICT ALLOWLIST: Only allow models you have explicitly registered in server/db.js
+  if (!fallback) return null
+
   return {
     id,
     provider: fallback?.provider || normalizeProvider(model.owned_by || id.split('/')[0] || 'Upstream'),
@@ -213,22 +217,36 @@ export function normalizeWorkerModel(model) {
 export async function getAvailableModels() {
   if (Date.now() < modelCache.expiresAt) return modelCache.models
 
-  try {
-    const activeKey = getRotatedWorkerApiKey() || workerApiKey
-    const response = await fetch(`${workerBaseUrl}/v1/models`, {
-      headers: activeKey ? { Authorization: `Bearer ${activeKey}` } : {},
+  const allModels = new Map()
+
+  await Promise.all(
+    gateways.map(async (gateway) => {
+      try {
+        const activeKey = getRotatedKeyForGateway(gateway)
+        const response = await fetch(`${gateway.url}/v1/models`, {
+          headers: activeKey ? { Authorization: `Bearer ${activeKey}` } : {},
+        })
+        if (response.ok) {
+          const payload = await response.json()
+          if (Array.isArray(payload.data)) {
+            payload.data.forEach((m) => {
+              const normalized = normalizeWorkerModel(m)
+              if (normalized && !allModels.has(normalized.id)) {
+                allModels.set(normalized.id, normalized)
+              }
+            })
+          }
+        }
+      } catch (error) {
+        console.warn(`Could not load worker models from ${gateway.url}: ${error instanceof Error ? error.message : 'unknown error'}`)
+      }
     })
-    if (!response.ok) throw new Error(`Worker returned ${response.status}`)
-    const payload = await response.json()
-    const workerModels = Array.isArray(payload.data)
-      ? payload.data.map(normalizeWorkerModel).filter(Boolean)
-      : []
-    if (workerModels.length) {
-      modelCache.expiresAt = Date.now() + 5 * 60 * 1000
-      modelCache.models = workerModels.sort((a, b) => a.id.localeCompare(b.id))
-    }
-  } catch (error) {
-    console.warn(`Could not load worker models: ${error instanceof Error ? error.message : 'unknown error'}`)
+  )
+
+  if (allModels.size > 0) {
+    modelCache.expiresAt = Date.now() + 5 * 60 * 1000
+    modelCache.models = Array.from(allModels.values()).sort((a, b) => a.id.localeCompare(b.id))
+  } else {
     modelCache.expiresAt = Date.now() + 60 * 1000
     modelCache.models = modelCache.models.length ? modelCache.models : fallbackModels
   }
@@ -331,25 +349,49 @@ export async function proxyWorker(req, res, workerPath) {
     await writeDb(db)
   }
 
-  const activeApiKey = getRotatedWorkerApiKey() || workerApiKey
-
   const headers = {
     'Content-Type': 'application/json',
   }
-
-  if (activeApiKey) {
-    headers.Authorization = `Bearer ${activeApiKey}`
-  } else if (req.get('authorization')) {
+  if (req.get('authorization')) {
     headers.Authorization = req.get('authorization')
   }
 
-  try {
-    const response = await fetch(`${workerBaseUrl}${workerPath}`, {
-      method: req.method,
-      headers,
-      body: req.method === 'GET' ? undefined : JSON.stringify(req.body || {}),
-    })
+  let finalResponse = null
+  let finalGatewayUrl = ''
 
+  for (const gateway of gateways) {
+    const activeApiKey = getRotatedKeyForGateway(gateway)
+    const currentHeaders = { ...headers }
+    if (activeApiKey) {
+      currentHeaders.Authorization = `Bearer ${activeApiKey}`
+    }
+
+    try {
+      const response = await fetch(`${gateway.url}${workerPath}`, {
+        method: req.method,
+        headers: currentHeaders,
+        body: req.method === 'GET' ? undefined : JSON.stringify(req.body || {}),
+      })
+
+      finalResponse = response
+      finalGatewayUrl = gateway.url
+
+      // Break on success or client errors (except 404 model not found)
+      if (response.ok || (response.status >= 400 && response.status < 500 && response.status !== 404)) {
+        break
+      }
+    } catch (err) {
+      // Network error, try next gateway
+    }
+  }
+
+  if (!finalResponse) {
+    return res.status(502).json({ error: { message: 'All upstream gateways failed or are unreachable' } })
+  }
+
+  const response = finalResponse
+
+  try {
     const contentType = response.headers.get('content-type') || ''
     res.status(response.status)
 
